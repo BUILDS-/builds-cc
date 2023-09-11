@@ -12,7 +12,6 @@ const MailingList = () => {
                 <form action="//builds.us14.list-manage.com/subscribe/post?u=48eeff7657509db01b37d0c9b&amp;id=c7c2160530"
                     method="post"
                     target="_blank"
-                    noValidate
                 >
                     <Group>
                         <Input placeholder="Email" sx={{ flex: 1 }} type='email' name='EMAIL' required />
