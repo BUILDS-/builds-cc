@@ -8,8 +8,9 @@ import {
 } from "@mantine/core";
 import { EboardMemberType } from "types";
 import EboardMember from "../components/EboardMember";
+import Layout from "components/Layout";
 
-const eboardMembers : EboardMemberType[] = [
+const eboardMembers: EboardMemberType[] = [
     {
         name: "Dominic Maglione",
         bio: "President",
@@ -55,25 +56,27 @@ const eboardMembers : EboardMemberType[] = [
 const Eboard: FC = () => {
 
     return (
-        <Container>
-            <Title py="xl" align="center">
-                Our E-Board
-            </Title>
-            <Grid sx={{ display: "flex", justifyContent: "center" }}>
-                {eboardMembers?.map((member) => (
-                    <Grid.Col xs={4} key={member.name}>
-                        <EboardMember
-                            name={member.name}
-                            bio={member.bio}
-                            image={member.image}
-                            linkedin={member.linkedin}
-                            github={member.github}
-                            website={member.website}
-                        />
-                    </Grid.Col>
-                ))}
-            </Grid>
-        </Container>
+        <Layout>
+            <Container>
+                <Title py="xl" align="center">
+                    Our E-Board
+                </Title>
+                <Grid sx={{ display: "flex", justifyContent: "center" }}>
+                    {eboardMembers?.map((member) => (
+                        <Grid.Col xs={4} key={member.name}>
+                            <EboardMember
+                                name={member.name}
+                                bio={member.bio}
+                                image={member.image}
+                                linkedin={member.linkedin}
+                                github={member.github}
+                                website={member.website}
+                            />
+                        </Grid.Col>
+                    ))}
+                </Grid>
+            </Container>
+        </Layout>
     );
 };
 

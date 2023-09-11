@@ -16,6 +16,7 @@ import Features from "components/Home/Features";
 import Hacker from "components/Home/Hacker";
 import MailingList from "components/MailingList";
 import { navigate } from "gatsby";
+import Layout from "components/Layout";
 
 const useStyles = createStyles((theme) => ({
     wrapper: {
@@ -113,102 +114,108 @@ const useStyles = createStyles((theme) => ({
 const Hero = () => {
     const { classes, cx, theme } = useStyles();
 
-    return (
-        <>
-            <div className={classes.wrapper}>
-                <Overlay color="#000" opacity={0.65} zIndex={1} />
-                <div className={classes.inner}>
-                    <Title className={classes.title}>
-                        <Text
-                            component="span"
-                            inherit
-                            className={classes.highlight}
-                        >
-                            BU
-                        </Text>{" "}
-                        Information Lab and Design Space
-                    </Title>
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
-                    <Container size={640}>
-                        <Stack>
-                            <Text size="lg" className={classes.description}>
-                                BUILDS is an inclusive group of students,
-                                artists, hackers, and organizers who believe in
-                                the do-it-yourself attitude and hacker ethic.
-                            </Text>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                }}
+    return (
+        <Layout>
+            <>
+                <div className={classes.wrapper}>
+                    <Overlay color="#000" opacity={0.65} zIndex={1} />
+                    <div className={classes.inner}>
+                        <Title className={classes.title}>
+                            <Text
+                                component="span"
+                                inherit
+                                className={classes.highlight}
                             >
-                                <Button
-                                    variant="light"
+                                BU
+                            </Text>{" "}
+                            Information Lab and Design Space
+                        </Title>
+
+                        <Container size={640}>
+                            <Stack>
+                                <Text size="lg" className={classes.description}>
+                                    BUILDS is an inclusive group of students,
+                                    artists, hackers, and organizers who believe in
+                                    the do-it-yourself attitude and hacker ethic.
+                                </Text>
+                                <Box
                                     sx={{
-                                        paddingLeft: 3,
-                                        background: "rgba(100, 20, 20, 0.7)",
-                                        color: theme.colors.red[1],
-                                        "&:hover": {
-                                            background: "rgba(80, 10, 10, 0.6)",
-                                        },
+                                        display: "flex",
+                                        justifyContent: "center",
                                     }}
-                                    color="red"
-                                    radius="xl"
-                                    component="a"
-                                    target="_blank"
-                                    compact
-                                    rel="noopener noreferrer"
-                                    href="https://goo.gl/maps/orBVW5yHXipxvBAR8"
-                                    leftIcon={<IconMapPin size={18} />}
                                 >
-                                    665 Commonwealth Ave | Room 220
-                                </Button>
-                            </Box>
-                        </Stack>
-                    </Container>
-                    <div className={classes.controls}>
-                        <Button
-                            role='link'
-                            onClick={() => navigate('/events')}
-                            className={classes.control}
-                            variant="white"
-                            size="lg"
-                        >
-                            Our Events
-                        </Button>
-                        <Button
-                            component="a"
-                            href="https://builds.us14.list-manage.com/subscribe?u=48eeff7657509db01b37d0c9b&id=c7c2160530"
-                            target="_blank"
-                            rel="noopener"
-                            className={cx(
-                                classes.control,
-                                classes.secondaryControl
-                            )}
-                            size="lg"
-                        >
-                            Our Mailing List
-                        </Button>
+                                    <Button
+                                        variant="light"
+                                        sx={{
+                                            paddingLeft: 3,
+                                            background: "rgba(100, 20, 20, 0.7)",
+                                            color: theme.colors.red[1],
+                                            "&:hover": {
+                                                background: "rgba(80, 10, 10, 0.6)",
+                                            },
+                                        }}
+                                        color="red"
+                                        radius="xl"
+                                        component="a"
+                                        target="_blank"
+                                        compact
+                                        rel="noopener noreferrer"
+                                        href="https://goo.gl/maps/orBVW5yHXipxvBAR8"
+                                        leftIcon={<IconMapPin size={18} />}
+                                    >
+                                        665 Commonwealth Ave | Room 220
+                                    </Button>
+                                </Box>
+                            </Stack>
+                        </Container>
+                        <div className={classes.controls}>
+                            <Button
+                                role='link'
+                                onClick={() => navigate('/events')}
+                                className={classes.control}
+                                variant="white"
+                                size="lg"
+                            >
+                                Our Events
+                            </Button>
+                            <Button
+                                component="a"
+                                href="https://builds.us14.list-manage.com/subscribe?u=48eeff7657509db01b37d0c9b&id=c7c2160530"
+                                target="_blank"
+                                rel="noopener"
+                                className={cx(
+                                    classes.control,
+                                    classes.secondaryControl
+                                )}
+                                size="lg"
+                            >
+                                Our Mailing List
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <Container mt="lg">
-                <Grid>
-                    <Grid.Col xs={12}>
-                        <Features />
-                    </Grid.Col>
-                    <Grid.Col xs={12}>
-                        <Hacker />
-                    </Grid.Col>
-                    <Grid.Col xs={12} sm={6}>
-                        <MailingList />
-                    </Grid.Col>
-                    <Grid.Col xs={12} sm={6}>
-                        <Contact />
-                    </Grid.Col>
-                </Grid>
-            </Container>
-        </>
+                <Container mt="lg">
+                    <Grid>
+                        <Grid.Col xs={12}>
+                            <Features />
+                        </Grid.Col>
+                        <Grid.Col xs={12}>
+                            <Hacker />
+                        </Grid.Col>
+                        <Grid.Col xs={12} sm={6}>
+                            <MailingList />
+                        </Grid.Col>
+                        <Grid.Col xs={12} sm={6}>
+                            <Contact />
+                        </Grid.Col>
+                    </Grid>
+                </Container>
+            </>
+        </Layout>
     );
 };
 

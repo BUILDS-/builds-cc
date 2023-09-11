@@ -18,6 +18,9 @@ import { useEffect, useState } from "react";
 import { IconFilter } from "@tabler/icons";
 import axios from "axios";
 import { BadgeResponse, InstructorResponse } from "types/api";
+import Navbar from "components/Navbar";
+import Footer from "components/Footer";
+import Layout from "components/Layout";
 
 const useStyles = createStyles((theme) => ({
     filters: {
@@ -28,12 +31,12 @@ const useStyles = createStyles((theme) => ({
         paddingBottom: theme.spacing.md,
         gap: theme.spacing.md,
         borderBottom: `1px solid ${theme.colorScheme === "dark"
-                ? theme.colors.dark[5]
-                : theme.colors.gray[2]
+            ? theme.colors.dark[5]
+            : theme.colors.gray[2]
             }`,
         borderTop: `1px solid ${theme.colorScheme === "dark"
-                ? theme.colors.dark[5]
-                : theme.colors.gray[2]
+            ? theme.colors.dark[5]
+            : theme.colors.gray[2]
             }`,
     },
 
@@ -254,13 +257,15 @@ const Events: NextPage = () => {
     }, [])
 
     return (
-        <Container>
-            <Title py="xl" align="center">
-                Events
-            </Title>
-            {/* <Filters /> */}
-            <EventsCarousel current={current} events={events} />
-        </Container>
+        <Layout>
+            <Container>
+                <Title py="xl" align="center">
+                    Events
+                </Title>
+                {/* <Filters /> */}
+                <EventsCarousel current={current} events={events} />
+            </Container>
+        </Layout>
     );
 };
 

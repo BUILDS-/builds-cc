@@ -10,8 +10,6 @@ import {
   Box,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
-import Navbar from "components/Navbar";
-import Footer from "components/Footer";
 import { ToastContainer } from "react-toastify";
 import { Location } from "@reach/router";
 
@@ -43,11 +41,7 @@ const MyApp: FC<{ children: React.ReactElement }> = ({ children }) => {
               primaryShade: { light: 6, dark: 8 },
             }}
           >
-            <Navbar />
-            <Box>
-              {children}
-            </Box>
-            <Footer />
+            {children}
             <ToastContainer
               theme={dark ? "dark" : "light"}
               autoClose={2000}
