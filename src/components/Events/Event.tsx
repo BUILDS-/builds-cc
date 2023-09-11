@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import {
     Card,
     Text,
@@ -63,31 +65,29 @@ const Event = ({
     const is_past = new Date() > date;
     const dark = theme.colorScheme === "dark";
 
-    const router = useRouter();
+    // const updateInstructors = (id: string | undefined) => {
+    //     let current = router.query.instructors ?? [];
+    //     if (typeof current === "string") {
+    //         current = [current];
+    //     }
 
-    const updateInstructors = (id: string | undefined) => {
-        let current = router.query.instructors ?? [];
-        if (typeof current === "string") {
-            current = [current];
-        }
+    //     if (id != null)
+    //         router.push({
+    //             query: { ...router.query, instructors: [...current, id] },
+    //         });
+    // };
 
-        if (id != null)
-            router.push({
-                query: { ...router.query, instructors: [...current, id] },
-            });
-    };
+    // const updateBadges = (id: string | undefined) => {
+    //     let current = router.query.badges ?? [];
+    //     if (typeof current === "string") {
+    //         current = [current];
+    //     }
 
-    const updateBadges = (id: string | undefined) => {
-        let current = router.query.badges ?? [];
-        if (typeof current === "string") {
-            current = [current];
-        }
-
-        if (id != null)
-            router.push({
-                query: { ...router.query, badges: [...current, id] },
-            });
-    };
+    //     if (id != null)
+    //         router.push({
+    //             query: { ...router.query, badges: [...current, id] },
+    //         });
+    // };
 
     return (
         <Card

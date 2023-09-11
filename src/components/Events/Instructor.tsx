@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import { Badge, Image, useMantineColorScheme } from "@mantine/core";
 import { IconUserCircle } from "@tabler/icons-react";
 import { InstructorType } from "types";

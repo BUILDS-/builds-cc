@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState, FC } from "react";
 
 import {
     createStyles,
@@ -14,6 +14,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IconSun, IconMoonStars } from "@tabler/icons-react";
 import { Link } from "gatsby";
+import { useLocation } from "@reach/router";
 
 type LinkType = {
     link: string;
@@ -110,7 +111,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 
-const Navbar = () => {
+const Navbar : FC = () => {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     const [items, setItems] = useState<ReactNode[]>([]);
     const dark = colorScheme === "dark";
@@ -118,23 +119,22 @@ const Navbar = () => {
     const [opened, { toggle, close }] = useDisclosure(false);
 
     const { classes, cx } = useStyles();
+
+    const location = useLocation();
+
     useEffect(() => {
-        const active = window.location.pathname;
+        const active = location.pathname;
 
         let newItems = LINKS.map((link) => (
-            <Link key={link.label} to={link.link}>
-                <a
-                    className={cx(classes.link, {
-                        [classes.linkActive]: active === link.link,
-                    })}
-                >
-                    {link.label}
-                </a>
+            <Link key={link.label} to={link.link} className={cx(classes.link, {
+                [classes.linkActive]: active === link.link,
+            })}>
+                {link.label}
             </Link>
         ));
 
         setItems(newItems);
-    }, [dark]);
+    }, [dark, location.pathname]);
 
     return (
         <Header height={HEADER_HEIGHT} className={classes.root}>

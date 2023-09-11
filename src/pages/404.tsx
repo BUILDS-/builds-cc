@@ -1,49 +1,94 @@
-import * as React from "react"
-import { Link, HeadFC, PageProps } from "gatsby"
+import * as React from "react";
+import {
+    createStyles,
+    Container,
+    Title,
+    Text,
+    Button,
+    Group,
+} from "@mantine/core";
+import { Link } from "gatsby";
 
-const pageStyles = {
-  color: "#232129",
-  padding: "96px",
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-}
+const useStyles = createStyles((theme) => ({
+    root: {
+        paddingTop: 80,
+        paddingBottom: 80,
+    },
 
-const paragraphStyles = {
-  marginBottom: 48,
-}
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-}
+    inner: {
+        position: "relative",
+    },
 
-const NotFoundPage: React.FC<PageProps> = () => {
-  return (
-    <main style={pageStyles}>
-      <h1 style={headingStyles}>Page not found</h1>
-      <p style={paragraphStyles}>
-        Sorry 😔, we couldn’t find what you were looking for.
-        <br />
-        {process.env.NODE_ENV === "development" ? (
-          <>
-            <br />
-            Try creating a page in <code style={codeStyles}>src/pages/</code>.
-            <br />
-          </>
-        ) : null}
-        <br />
-        <Link to="/">Go home</Link>.
-      </p>
-    </main>
-  )
-}
+    label: {
+        textAlign: "center",
+        fontWeight: 900,
+        fontSize: 220,
+        lineHeight: 1,
+        paddingBottom: theme.spacing.xl,
+        color: theme.fn.primaryColor("light"),
 
-export default NotFoundPage
+        [theme.fn.smallerThan("sm")]: {
+            fontSize: 120,
+        },
+    },
 
-export const Head: HeadFC = () => <title>Not found</title>
+    content: {
+        position: "relative",
+        zIndex: 1,
+
+        [theme.fn.smallerThan("sm")]: {
+            paddingTop: 120,
+        },
+    },
+
+    title: {
+        fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+        textAlign: "center",
+        fontWeight: 900,
+        fontSize: 38,
+
+        [theme.fn.smallerThan("sm")]: {
+            fontSize: 32,
+        },
+    },
+
+    description: {
+        maxWidth: 540,
+        margin: "auto",
+        marginTop: theme.spacing.xl,
+        marginBottom: theme.spacing.xl,
+    },
+}));
+
+const Custom404 = () => {
+    const { classes } = useStyles();
+
+    return (
+        <Container className={classes.root}>
+            <div className={classes.inner}>
+                <div className={classes.label}>404</div>
+                <div className={classes.content}>
+                    <Title className={classes.title}>Nothing to see here</Title>
+                    <Text
+                        color="dimmed"
+                        size="lg"
+                        align="center"
+                        className={classes.description}
+                    >
+                        Page you are trying to open does not exist. You may have
+                        mistyped the address, or the page has been moved to
+                        another URL. If you think this is an error contact
+                        support.
+                    </Text>
+                    <Group position="center">
+                        <Link to="/">
+                            <Button size="md">Take me back to home page</Button>
+                        </Link>
+                    </Group>
+                </div>
+            </div>
+        </Container>
+    );
+};
+
+export default Custom404;

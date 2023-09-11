@@ -15,7 +15,7 @@ import Contact from "components/Contact";
 import Features from "components/Home/Features";
 import Hacker from "components/Home/Hacker";
 import MailingList from "components/MailingList";
-import { Link } from "gatsby";
+import { navigate } from "gatsby";
 
 const useStyles = createStyles((theme) => ({
     wrapper: {
@@ -167,15 +167,15 @@ const Hero = () => {
                         </Stack>
                     </Container>
                     <div className={classes.controls}>
-                        <Link to="/events">
-                            <Button
-                                className={classes.control}
-                                variant="white"
-                                size="lg"
-                            >
-                                Our Events
-                            </Button>
-                        </Link>
+                        <Button
+                            role='link'
+                            onClick={() => navigate('/events')}
+                            className={classes.control}
+                            variant="white"
+                            size="lg"
+                        >
+                            Our Events
+                        </Button>
                         <Button
                             component="a"
                             href="https://builds.us14.list-manage.com/subscribe?u=48eeff7657509db01b37d0c9b&id=c7c2160530"

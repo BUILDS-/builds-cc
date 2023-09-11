@@ -13,7 +13,7 @@ import { useLocalStorage } from "@mantine/hooks";
 import Navbar from "components/Navbar";
 import Footer from "components/Footer";
 import { ToastContainer } from "react-toastify";
-
+import { Location } from "@reach/router";
 
 const MyApp: FC<{ children: React.ReactElement }> = ({ children }) => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -28,34 +28,38 @@ const MyApp: FC<{ children: React.ReactElement }> = ({ children }) => {
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{
-          colorScheme,
-          primaryColor: "red",
-          primaryShade: { light: 6, dark: 8 },
-        }}
-      >
-        <Navbar />
-        <Box>
-          {children}
-        </Box>
-        <Footer />
-        <ToastContainer
-          theme={dark ? "dark" : "light"}
-          autoClose={2000}
-          closeOnClick
-          pauseOnFocusLoss={false}
-          draggable={false}
-          pauseOnHover={false}
-        />
-      </MantineProvider>
-    </ColorSchemeProvider>
+    <Location>
+      {() => (
+        <ColorSchemeProvider
+          colorScheme={colorScheme}
+          toggleColorScheme={toggleColorScheme}
+        >
+          <MantineProvider
+            withGlobalStyles
+            withNormalizeCSS
+            theme={{
+              colorScheme,
+              primaryColor: "red",
+              primaryShade: { light: 6, dark: 8 },
+            }}
+          >
+            <Navbar />
+            <Box>
+              {children}
+            </Box>
+            <Footer />
+            <ToastContainer
+              theme={dark ? "dark" : "light"}
+              autoClose={2000}
+              closeOnClick
+              pauseOnFocusLoss={false}
+              draggable={false}
+              pauseOnHover={false}
+            />
+          </MantineProvider>
+        </ColorSchemeProvider>
+      )}
+    </Location>
   );
 }
 
