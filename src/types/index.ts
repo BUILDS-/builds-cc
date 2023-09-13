@@ -24,7 +24,7 @@ export type EventType = {
 export type EboardMemberType = {
     username?: string;
     name: string;
-    bio: string;
+    role: string;
     image: string;
     linkedin?: string;
     github?: string;

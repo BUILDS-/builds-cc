@@ -70,7 +70,7 @@ const SocialsLink = ({ href, text, theme, icon }: SocialLinkTypes) => {
 
 const EboardMember = ({
     name,
-    bio,
+    role,
     image,
     linkedin,
     github,
@@ -97,7 +97,7 @@ const EboardMember = ({
                 {name}
             </Text>
             <Text align="center" size="sm" color="dimmed" mb="sm">
-                {bio}
+                {role}
             </Text>
             {linkedin && (
                 <SocialsLink
