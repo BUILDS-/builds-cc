@@ -197,10 +197,12 @@ const Events: FC<EventsProps> = ({ data }) => {
                 instructors: frontmatter.instructors,
                 location: frontmatter.location,
             })
-        );
+        ).reverse(); // since we're getting the most recent events first, we have to reverse the array
     }, [data]);
 
     useEffect(() => {
+        console.log(events);
+
         // current is the most recent event that hasn't passed
         const now = new Date();
 
@@ -212,7 +214,7 @@ const Events: FC<EventsProps> = ({ data }) => {
         if (curr === -1) {
             setCurrent(events.length - 1);
         }
-    }, [])
+    }, [events])
 
     return (
         <Layout>
@@ -231,8 +233,9 @@ export default Events;
 export const query = graphql`
     query {
         allMarkdownRemark(
+            limit: 10
             filter: { fileAbsolutePath: { regex: "src/events/" } }
-            sort: { frontmatter : { date : ASC } }
+            sort: { frontmatter : { date : DESC } }
         ) {
             nodes {
                 frontmatter {

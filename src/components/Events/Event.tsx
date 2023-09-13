@@ -8,6 +8,7 @@ import {
     createStyles,
     Image,
     Space,
+    Box,
 } from "@mantine/core";
 import format from "date-fns/format";
 import { BadgeType, InstructorType } from "types";
@@ -95,7 +96,6 @@ const Event = ({
             radius="md"
             className={classes.card}
             sx={{
-                opacity: is_past ? 0.3 : 1,
                 maxWidth: maxWidth || "none",
             }}
         >
@@ -113,18 +113,13 @@ const Event = ({
             </Card.Section>
 
             <Card.Section className={classes.section} sx={{ flex: 1 }}>
-                <Group position="apart">
-                    <Text size="lg" weight={500}>
-                        {title}
-                    </Text>
-                    <Group spacing="xs">
-                        {is_past && <MBadge>Past</MBadge>}
-                        <MBadge color="blue.5">📍 {location}</MBadge>
-                    </Group>
-                </Group>
-                <Text size="md" mb="xs" color={dark ? "gray.6" : "gray"}>
+                <Text size="lg" weight={500}>
+                    {title}
+                </Text>
+                <Text size="md" color={dark ? "gray.6" : "gray"}>
                     {format(date, "MMMM do, yyyy 'at' h:mm a")}
                 </Text>
+                <MBadge mb='sm' color="blue.5">📍 {location}</MBadge>
                 <Text size="sm">{description}</Text>
             </Card.Section>
 
@@ -137,7 +132,7 @@ const Event = ({
                         <Badge
                             key={b.label}
                             badge={b}
-                            onClick={() => updateBadges(b._id)}
+                        // onClick={() => updateBadges(b._id)}
                         />
                     ))}
                 </Group>
@@ -153,7 +148,7 @@ const Event = ({
                             key={key}
                             name={i.name}
                             image={i.image}
-                            onClick={() => updateInstructors(i._id)}
+                        // onClick={() => updateInstructors(i._id)}
                         />
                     ))}
                 </Group>
@@ -161,18 +156,22 @@ const Event = ({
 
 
             <Space h="md" />
-            <AddToCalendarButton
-                name={title}
-                description={description}
-                // in format YYYY-MM-DD
-                startDate={format(date, "yyyy-MM-dd")}
-                endDate={format(date, "yyyy-MM-dd")}
-                startTime={format(date, "HH:mm:ss")}
-                // end Time is 1 hour after start time
-                endTime={format(new Date(date.getTime() + 60 * 60 * 1000), "HH:mm:ss")}
-                timeZone="America/New_York"
-                options={['Apple', 'Google', 'Microsoft365', 'MicrosoftTeams', 'iCal']}
-            ></AddToCalendarButton>
+            <Box>
+                <AddToCalendarButton
+                    name={title}
+                    description={description}
+                    // in format YYYY-MM-DD
+                    startDate={format(date, "yyyy-MM-dd")}
+                    endDate={format(date, "yyyy-MM-dd")}
+                    startTime={format(date, "HH:mm:ss")}
+                    // end Time is 1 hour after start time
+                    endTime={format(new Date(date.getTime() + 60 * 60 * 1000), "HH:mm:ss")}
+                    timeZone="America/New_York"
+                    options={['Apple', 'Google', 'Microsoft365', 'MicrosoftTeams', 'iCal']}
+                    pastDateHandling="disable"
+                    label={is_past ? "Past Event" : "Add to Calendar"}
+                />
+            </Box>
         </Card>
     );
 };
