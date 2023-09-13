@@ -47,7 +47,7 @@ const useStyles = createStyles((theme) => ({
         color: theme.white,
         marginBottom: theme.spacing.xs,
         textAlign: "center",
-        fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+        fontFamily: `${theme.fontFamily}`,
 
         "@media (max-width: 520px)": {
             fontSize: 28,
@@ -56,7 +56,7 @@ const useStyles = createStyles((theme) => ({
     },
 
     highlight: {
-        color: theme.colors[theme.primaryColor],
+        color: theme.colors.red[9],
     },
 
     description: {
