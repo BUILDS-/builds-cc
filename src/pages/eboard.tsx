@@ -62,7 +62,7 @@ export const query = graphql`
         allMarkdownRemark(
             filter: {
                 fileAbsolutePath: {
-                    regex: "/src/pages/eboard/"
+                    regex: "/src/eboard/"
                 }
             },
             sort: {

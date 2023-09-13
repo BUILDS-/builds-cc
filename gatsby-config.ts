@@ -35,6 +35,21 @@ const config: GatsbyConfig = {
     },
     __key: "pages"
   }, {
+    resolve: 'gatsby-source-filesystem',
+    options: {
+      "name": "eboard",
+      "path": "./src/eboard/"
+    },
+    __key: "eboard"
+  }, {
+    resolve: 'gatsby-source-filesystem',
+    options: {
+      "name": "events",
+      "path": "./src/events/"
+    },
+    __key: "events"
+  },
+  {
       resolve: "gatsby-plugin-root-import",
       options: {
         ...rootDirsConfig,

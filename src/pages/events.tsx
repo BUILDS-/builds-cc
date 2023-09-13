@@ -1,26 +1,18 @@
-/* eslint-disable react/jsx-key */
 import * as React from "react";
+import { FC, useEffect, useState, useMemo } from "react";
 import {
-    Box,
     Container,
     createStyles,
-    Group,
-    MultiSelect,
-    SelectItem,
     Title,
-    Text,
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import Event from "components/Events/Event";
 import { useMediaQuery } from "@mantine/hooks";
 import { BadgeType, EventType, InstructorType } from "types";
-import { useEffect, useState } from "react";
 import { IconFilter } from "@tabler/icons";
-import axios from "axios";
 import { BadgeResponse, InstructorResponse } from "types/api";
-import Navbar from "components/Navbar";
-import Footer from "components/Footer";
 import Layout from "components/Layout";
+import { graphql } from "gatsby";
 
 const useStyles = createStyles((theme) => ({
     filters: {
@@ -172,75 +164,41 @@ const EventsCarousel = ({ current, events }: CarousePropTypes) => {
 //     );
 // };
 
-const events: EventType[] = [
-    {
-        title: "Build Your Own Macropad",
-        description: "Learn how to build your own macropad using hotswap sockets and QMK firmware!",
-        badges: [
-            {
-                label: "Hardware",
-                emoji: "🖥️",
-            },
-        ],
-        // date is April 27, 2023 at 7:00PM EST
-        date: new Date(2023, 3, 27, 19, 0, 0, 0),
-        image: "../assets/events/macropad.jpg",
-        instructors: [
-            {
-                name: "Dominic Maglione",
-                image: "",
-            }
-        ],
-        location: "CDS 220",
-    },
-    {
-        title: "BUILDS Welcome Event",
-        description: "Come join us for our first event of the semester! Free food and drinks provided. Socialize, learn about BUILDS, and meet our members!",
-        badges: [
-            {
-                label: "Social",
-                emoji: "🎉",
-            },
-        ],
-        // date is Sept 12, 2023 at 7:30PM EST
-        date: new Date(2023, 8, 12, 19, 30, 0, 0),
-        image: "../assets/builds_group_pic_1.jpeg",
-        instructors: [
-            {
-                name: "BUILDS",
-                image: "",
-            }
-        ],
-        location: "CDS 220",
-    },
-    {
-        title: "Pimp My Terminal",
-        description: "Learn how to customize your terminal to make it look cool and be more productive!",
-        badges: [
-            {
-                label: "Terminal",
-                emoji: "⌨️",
-            },
-        ],
-        // date is Sept 19, 2023 at 7:30PM EST
-        date: new Date(2023, 8, 19, 19, 30, 0, 0),
-        image: "../assets/events/pimp-my-terminal.svg",
-        instructors: [
-            {
-                name: "Dominic Maglione",
-                image: "",
-            }
-        ],
-        location: "CDS 220",
+interface EventsProps {
+    data: {
+        allMarkdownRemark: {
+            nodes: {
+                frontmatter: {
+                    title: string;
+                    description: string;
+                    badges: BadgeType[];
+                    date: Date;
+                    image: string;
+                    instructors: InstructorType[];
+                    location: string;
+                }
+            }[]
+        }
     }
-]
+}
 
-const Events: NextPage = () => {
-    // Styles
-    const { classes } = useStyles();
-
+const Events: FC<EventsProps> = ({ data }) => {
     // State data
     const [current, setCurrent] = useState<number>();
+
+    const events = useMemo(() => {
+        return data.allMarkdownRemark.nodes.map(
+            ({ frontmatter }) => ({
+                title: frontmatter.title,
+                description: frontmatter.description,
+                badges: frontmatter.badges,
+                date: frontmatter.date,
+                image: frontmatter.image,
+                instructors: frontmatter.instructors,
+                location: frontmatter.location,
+            })
+        );
+    }, [data]);
 
     useEffect(() => {
         // current is the most recent event that hasn't passed
@@ -262,11 +220,37 @@ const Events: NextPage = () => {
                 <Title py="xl" align="center">
                     Events
                 </Title>
-                {/* <Filters /> */}
-                <EventsCarousel current={current} events={events} />
+                <EventsCarousel current={current} events={events}/>
             </Container>
         </Layout>
     );
 };
 
 export default Events;
+
+export const query = graphql`
+    query {
+        allMarkdownRemark(
+            filter: { fileAbsolutePath: { regex: "src/events/" } }
+            sort: { frontmatter : { date : ASC } }
+        ) {
+            nodes {
+                frontmatter {
+                    title
+                    description
+                    badges {
+                        label
+                        emoji
+                    }
+                    date
+                    image
+                    instructors {
+                        name
+                        image
+                    }
+                    location
+                }
+            }
+        }
+    }
+`;
