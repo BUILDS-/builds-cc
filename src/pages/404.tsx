@@ -8,6 +8,7 @@ import {
     Group,
 } from "@mantine/core";
 import { Link } from "gatsby";
+import Layout from "components/Layout";
 
 const useStyles = createStyles((theme) => ({
     root: {
@@ -25,7 +26,7 @@ const useStyles = createStyles((theme) => ({
         fontSize: 220,
         lineHeight: 1,
         paddingBottom: theme.spacing.xl,
-        color: theme.fn.primaryColor("light"),
+        color: theme.colors.red[6],
 
         [theme.fn.smallerThan("sm")]: {
             fontSize: 120,
@@ -64,30 +65,32 @@ const Custom404 = () => {
     const { classes } = useStyles();
 
     return (
-        <Container className={classes.root}>
-            <div className={classes.inner}>
-                <div className={classes.label}>404</div>
-                <div className={classes.content}>
-                    <Title className={classes.title}>Nothing to see here</Title>
-                    <Text
-                        color="dimmed"
-                        size="lg"
-                        align="center"
-                        className={classes.description}
-                    >
-                        Page you are trying to open does not exist. You may have
-                        mistyped the address, or the page has been moved to
-                        another URL. If you think this is an error contact
-                        support.
-                    </Text>
-                    <Group position="center">
-                        <Link to="/">
-                            <Button size="md">Take me back to home page</Button>
-                        </Link>
-                    </Group>
+        <Layout>
+            <Container className={classes.root}>
+                <div className={classes.inner}>
+                    <div className={classes.label}>404</div>
+                    <div className={classes.content}>
+                        <Title className={classes.title}>Nothing to see here</Title>
+                        <Text
+                            color="dimmed"
+                            size="lg"
+                            align="center"
+                            className={classes.description}
+                        >
+                            Page you are trying to open does not exist. You may have
+                            mistyped the address, or the page has been moved to
+                            another URL. If you think this is an error contact
+                            support.
+                        </Text>
+                        <Group position="center">
+                            <Link to="/">
+                                <Button size="md">Take me back to home page</Button>
+                            </Link>
+                        </Group>
+                    </div>
                 </div>
-            </div>
-        </Container>
+            </Container>
+        </Layout>
     );
 };
 
