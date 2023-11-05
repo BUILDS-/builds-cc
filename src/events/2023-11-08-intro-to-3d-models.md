@@ -8,7 +8,7 @@ badges:
     emoji: "📐"
   - label: "3D Printing"
     emoji: "🖨️"
-date: 2023-11-08T19:00:00-04:00
+date: 2023-11-08T20:00:00-04:00
 image: "./assets/events/intro-to-3d-models.jpg"
 instructors:
   - name: "Dominic Maglione"
