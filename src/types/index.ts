@@ -19,6 +19,8 @@ export type EventType = {
     location: string;
     instructors: InstructorType[];
     badges: BadgeType[];
+    link?: string;
+    linkText?: string;
 };
 
 export type EboardMemberType = {

@@ -9,8 +9,6 @@ import { Carousel } from "@mantine/carousel";
 import Event from "components/Events/Event";
 import { useMediaQuery } from "@mantine/hooks";
 import { BadgeType, EventType, InstructorType } from "types";
-import { IconFilter } from "@tabler/icons";
-import { BadgeResponse, InstructorResponse } from "types/api";
 import Layout from "components/Layout";
 import { graphql } from "gatsby";
 
@@ -101,69 +99,14 @@ const EventsCarousel = ({ current, events }: CarousePropTypes) => {
             {events.map((event, key) => (
                 <Carousel.Slide key={key}>
                     <Event
-                        title={event.title}
-                        description={event.description}
-                        badges={event.badges}
+                        {...event}
                         date={new Date(event.date)}
-                        image={event.image}
-                        instructors={event.instructors}
-                        location={event.location}
                     />
                 </Carousel.Slide>
             ))}
         </Carousel>
     );
 };
-
-// const Filters = () => {
-//     const { classes } = useStyles();
-
-//     const [badges, setBadges] = useState<SelectItem[]>([]);
-//     const [instructors, setInstructors] = useState<SelectItem[]>([]);
-
-
-//     const filterInstructors = (instructorIds: string[]) => {
-//         router.push({ query: { ...router.query, instructors: instructorIds } });
-//     };
-
-//     const getSelInstructors = () => {
-//         if (typeof router.query.instructors === "string")
-//             return [router.query.instructors];
-//         return router.query.instructors ?? [];
-//     };
-
-//     const filterBadges = (badgeIds: string[]) => {
-//         router.push({ query: { ...router.query, badges: badgeIds } });
-//     };
-
-//     const getSelBadges = () => {
-//         if (typeof router.query.badges === "string")
-//             return [router.query.badges];
-//         return router.query.badges ?? [];
-//     };
-
-//     return (
-//         <Box className={classes.filters}>
-//             <Group pr="md" align="flex-start" spacing={0}>
-//                 <IconFilter className={classes.filterIcon} size={24} />
-//                 <Text className={classes.filterIcon}>Filters</Text>
-//             </Group>
-//             <MultiSelect
-//                 data={instructors}
-//                 placeholder="Select instructors"
-//                 onChange={filterInstructors}
-//                 value={getSelInstructors()}
-//             />
-//             <MultiSelect
-//                 data={badges}
-//                 placeholder="Select badges"
-//                 onChange={filterBadges}
-//                 value={getSelBadges()}
-//             />
-//         </Box>
-//     );
-// };
-
 interface EventsProps {
     data: {
         allMarkdownRemark: {
@@ -176,6 +119,8 @@ interface EventsProps {
                     image: string;
                     instructors: InstructorType[];
                     location: string;
+                    link?: string;
+                    linkText?: string;
                 }
             }[]
         }
@@ -196,6 +141,8 @@ const Events: FC<EventsProps> = ({ data }) => {
                 image: frontmatter.image,
                 instructors: frontmatter.instructors,
                 location: frontmatter.location,
+                link: frontmatter?.link,
+                linkText: frontmatter?.linkText,
             })
         ).reverse(); // since we're getting the most recent events first, we have to reverse the array
     }, [data]);
@@ -252,6 +199,8 @@ export const query = graphql`
                         image
                     }
                     location
+                    link
+                    linkText
                 }
             }
         }

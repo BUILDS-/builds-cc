@@ -9,12 +9,13 @@ import {
     Image,
     Space,
     Box,
+    Button,
 } from "@mantine/core";
 import format from "date-fns/format";
 import { BadgeType, InstructorType } from "types";
 import Badge from "./Badge";
 import Instructor from "./Instructor";
-import { AddToCalendarButton } from 'add-to-calendar-button-react';
+// import { AddToCalendarButton } from 'add-to-calendar-button-react';
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -50,6 +51,8 @@ type PropTypes = {
     instructors: InstructorType[];
     location: string;
     maxWidth?: string;
+    link?: string;
+    linkText?: string;
 };
 
 const Event = ({
@@ -61,6 +64,8 @@ const Event = ({
     instructors,
     location,
     maxWidth,
+    link,
+    linkText,
 }: PropTypes) => {
     const { classes, theme } = useStyles();
     const is_past = new Date() > date;
@@ -157,20 +162,22 @@ const Event = ({
 
             <Space h="md" />
             <Box>
-                <AddToCalendarButton
-                    name={title}
-                    description={description}
-                    // in format YYYY-MM-DD
-                    startDate={format(date, "yyyy-MM-dd")}
-                    endDate={format(date, "yyyy-MM-dd")}
-                    startTime={format(date, "HH:mm:ss")}
-                    // end Time is 1 hour after start time
-                    endTime={format(new Date(date.getTime() + 60 * 60 * 1000), "HH:mm:ss")}
-                    timeZone="America/New_York"
-                    options={['Apple', 'Google', 'Microsoft365', 'MicrosoftTeams', 'iCal']}
-                    pastDateHandling="disable"
-                    label={is_past ? "Past Event" : "Add to Calendar"}
-                />
+                {
+                    link && (
+                        <Button
+                            fullWidth
+                            color="blue"
+                            variant="outline"
+                            disabled={is_past}
+                            href={link}
+                            component="a"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {linkText ?? "Register"}
+                        </Button>
+                    )
+                }
             </Box>
         </Card>
     );
