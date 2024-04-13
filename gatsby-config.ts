@@ -14,9 +14,9 @@ srcDirs.forEach((srcDir) => {
 const config: GatsbyConfig = {
   siteMetadata: {
     title: `builds.cc`,
-    siteUrl: `https://builds.cc`
+    siteUrl: `https://builds.cc`,
   },
-  trailingSlash: 'never',
+  trailingSlash: "never",
   // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
   // If you use VSCode you can also use the GraphQL plugin
   // Learn more at: https://gatsby.dev/graphql-typegen
@@ -28,36 +28,39 @@ const config: GatsbyConfig = {
     "gatsby-plugin-sitemap",
     "gatsby-plugin-mdx",
     "gatsby-plugin-sharp",
-    "gatsby-transformer-sharp", {
-    resolve: 'gatsby-source-filesystem',
-    options: {
-      "name": "pages",
-      "path": "./src/pages/"
+    "gatsby-transformer-sharp",
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "pages",
+        path: "./src/pages/",
+      },
+      __key: "pages",
     },
-    __key: "pages"
-  }, {
-    resolve: 'gatsby-source-filesystem',
-    options: {
-      "name": "eboard",
-      "path": "./src/eboard/"
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "eboard",
+        path: "./src/eboard/",
+      },
+      __key: "eboard",
     },
-    __key: "eboard"
-  }, {
-    resolve: 'gatsby-source-filesystem',
-    options: {
-      "name": "events",
-      "path": "./src/events/"
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "events",
+        path: "./src/events/",
+      },
+      __key: "events",
     },
-    __key: "events"
-  },
-  {
+    {
       resolve: "gatsby-plugin-root-import",
       options: {
         ...rootDirsConfig,
         static: path.resolve(__dirname, "static"),
-      }
+      },
     },
-  ]
+  ],
 };
 
 export default config;
