@@ -1,9 +1,7 @@
 ---
-name: "Dominic Maglione"
+name: "Rohin Warner"
 role: "President"
-image: "assets/eboard/dcmag.jpeg"
-linkedin: "https://www.linkedin.com/in/dcmaglione/"
-github: "https://github.com/dcmaglione"
-website: "https://dcmaglione.com/"
+image: "assets/eboard/rwarner.jpeg"
+linkedin: "https://www.linkedin.com/in/rohin-warner-853ba5300/"
 position: 0
 ---

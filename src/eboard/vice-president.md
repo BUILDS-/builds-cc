@@ -1,9 +1,9 @@
 ---
-name: "Phillip Tran"
+name: "Alicja Mahr"
 role: "Vice President"
-image: "assets/eboard/ptran.jpeg"
-linkedin: "https://www.linkedin.com/in/ptrandev/"
-github: "https://github.com/ptrandev"
-website: "https://ptran.dev/"
+image: "assets/eboard/amahr.jpeg"
+linkedin: "https://www.linkedin.com/in/alicjamahr/"
+github: "https://github.com/braxton"
+website: "https://mahr.cc/"
 position: 1
 ---

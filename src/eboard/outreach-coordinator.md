@@ -1,9 +1,7 @@
 ---
-name: "Alicja Mahr"
+name: "Rafay Adnan"
 role: "Outreach Coordinator"
-image: "assets/eboard/amahr.jpeg"
-linkedin: "https://www.linkedin.com/in/alicjamahr/"
-github: "https://github.com/braxton"
-website: "https://mahr.cc/"
+image: "assets/eboard/radnan.jpeg"
+linkedin: "https://www.linkedin.com/in/rafay-a-b323ab209/"
 position: 4
 ---
