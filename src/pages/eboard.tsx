@@ -83,6 +83,16 @@ const Eboard: FC<ProfileProps> = ({ data }) => {
                 "Treasurer",
                 "Secretary",
               ];
+
+              // If the roles are not in the list, put them at the end
+              if (
+                !a.frontmatter.roles ||
+                !b.frontmatter.roles ||
+                !roleOrder.includes(a.frontmatter.roles[0]?.role) ||
+                !roleOrder.includes(b.frontmatter.roles[0]?.role)
+              )
+                return -99;
+
               return (
                 roleOrder.indexOf(a.frontmatter.roles[0]?.role) -
                 roleOrder.indexOf(b.frontmatter.roles[0]?.role)

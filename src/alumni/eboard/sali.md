@@ -1,4 +1,4 @@
 ---
 name: "Sumara Ali"
-roles: [{ role: "President", yearsActive: "2019-2020" }]
+roles: [{ role: "President", yearsActive: "2018-2019" }]
 ---

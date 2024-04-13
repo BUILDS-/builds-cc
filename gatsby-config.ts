@@ -54,6 +54,14 @@ const config: GatsbyConfig = {
       __key: "events",
     },
     {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "alumni",
+        path: "./src/alumni/",
+      },
+      __key: "alumni",
+    },
+    {
       resolve: "gatsby-plugin-root-import",
       options: {
         ...rootDirsConfig,
