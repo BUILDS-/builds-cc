@@ -3,7 +3,7 @@ import { Box, Title, Text, Stack, Card, Grid, Image } from "@mantine/core";
 
 const _FEATURES = [
     {
-        image: "assets/builds_room_number.jpeg",
+        image: "assets/builds_room_number.jpg",
         title: "Enjoy our Hackerspace",
         description:
             "Our hackerspace is open 24/7. Come in and work on your projects, or just hang out and chat with other members. Our amazing community is incredibly knowledgeable!",
