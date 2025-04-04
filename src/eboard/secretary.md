@@ -1,9 +1,7 @@
 ---
-name: "Tiger Liu"
+name: "Pardesh Dhakal"
 role: "Secretary"
-image: "assets/eboard/tliu.jpeg"
-linkedin: "https://www.linkedin.com/in/daian-liu-a69990193/"
-github: "https://github.com/T0raT"
-website: "https://tigerliu.cc/"
+image: "assets/eboard/missing.png"
+linkedin: "https://www.linkedin.com/in/pardesh-dhakal-26622821b/"
 position: 2
 ---

@@ -1,7 +1,6 @@
 ---
-name: "Rafay Adnan"
+name: "Ben Gonzalez"
 role: "Outreach Coordinator"
-image: "assets/eboard/radnan.jpeg"
-linkedin: "https://www.linkedin.com/in/rafay-a-b323ab209/"
+image: "assets/eboard/missing.png"
 position: 4
 ---
