@@ -1,8 +1,6 @@
 ---
-name: "Min Cho"
+name: "Theo Harlan"
 role: "Treasurer"
-image: "assets/eboard/mcho.jpeg"
-linkedin: "https://www.linkedin.com/in/seungmin-cho-096888236/"
-github: "https://github.com/ojnim"
+image: "assets/eboard/missing.png"
 position: 3
 ---

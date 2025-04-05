@@ -1,9 +1,8 @@
 ---
-name: "Alicja Mahr"
+name: "Min Cho"
 role: "Vice President"
-image: "assets/eboard/amahr.jpeg"
-linkedin: "https://www.linkedin.com/in/alicjamahr/"
-github: "https://github.com/braxton"
-website: "https://mahr.cc/"
+image: "assets/eboard/mcho.jpeg"
+linkedin: "https://www.linkedin.com/in/seungmin-cho-096888236/"
+github: "https://github.com/ojnim"
 position: 1
 ---
