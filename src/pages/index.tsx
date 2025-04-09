@@ -23,12 +23,12 @@ const useStyles = createStyles((theme) => ({
         position: "relative",
         paddingTop: 500,
         paddingBottom: 130,
-        backgroundImage: "url(assets/buildsGroupPicUpdated.jpg)",
+        backgroundImage: "url(assets/builds_group_pic_1.jpg)",
         backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundPosition:'center',
 
         "@media (max-width: 420px)": {
-            paddingTop: 80,
+            paddingTop: 40,
             paddingBottom: 50,
         },
     },
