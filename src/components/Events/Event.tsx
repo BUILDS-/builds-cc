@@ -22,7 +22,8 @@ const useStyles = createStyles((theme) => ({
         backgroundColor:
             theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
         padding: theme.spacing.md,
-        height: "100%",
+        height: "50%",
+        maxWidth: "50%",
         display: "flex",
         flexDirection: "column",
     },
@@ -33,6 +34,7 @@ const useStyles = createStyles((theme) => ({
             : theme.colors.gray[3]
             }`,
         padding: theme.spacing.md,
+
     },
 
     label: {
@@ -101,18 +103,17 @@ const Event = ({
             radius="md"
             className={classes.card}
             sx={{
-                maxWidth: maxWidth || "none",
+                maxWidth: 400 || "none",
             }}
         >
             <Card.Section
                 className={classes.section}
-                sx={{ height: 180, padding: 0, overflow: "hidden" }}
+                sx={{maxHeight:300,  padding: 0, overflow: "hidden" }}
             >
                 <Image
                     src={image}
                     alt={title}
                     fit="cover"
-                    height={180}
                     imageProps={{ loading: "lazy" }}
                 />
             </Card.Section>
@@ -147,7 +148,7 @@ const Event = ({
                 <Text className={classes.label} color="dimmed">
                     Instructors
                 </Text>
-                <Group spacing={7} mt={5}>
+                <Group spacing={10} m={5}>
                     {instructors.map((i, key) => (
                         <Instructor
                             key={key}

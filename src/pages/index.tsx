@@ -21,14 +21,14 @@ import Layout from "components/Layout";
 const useStyles = createStyles((theme) => ({
     wrapper: {
         position: "relative",
-        paddingTop: 180,
+        paddingTop: 500,
         paddingBottom: 130,
-        backgroundImage: "url(assets/builds_group_pic_1.jpeg)",
+        backgroundImage: "url(assets/builds_group_pic_1.jpg)",
         backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundPosition:'center',
 
-        "@media (max-width: 520px)": {
-            paddingTop: 80,
+        "@media (max-width: 420px)": {
+            paddingTop: 40,
             paddingBottom: 50,
         },
     },

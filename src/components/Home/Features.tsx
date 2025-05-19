@@ -3,13 +3,13 @@ import { Box, Title, Text, Stack, Card, Grid, Image } from "@mantine/core";
 
 const _FEATURES = [
     {
-        image: "assets/builds_room_number.jpeg",
+        image: "assets/builds_room_number1.jpg",
         title: "Enjoy our Hackerspace",
         description:
             "Our hackerspace is open 24/7. Come in and work on your projects, or just hang out and chat with other members. Our amazing community is incredibly knowledgeable!",
     },
     {
-        image: "assets/builds_group_pic_3.jpeg",
+        image: "assets/builds_group_pic_3.jpg",
         title: "Pursue Personal Projects",
         description:
             "We provide everything you need to bring your ideas to life. We a variety of tools and equipment available for use, including a 3D printer, soldering irons, power tools, computers, and more.",
@@ -44,7 +44,7 @@ const Features = () => {
                                     <Card.Section>
                                         <Image
                                             src={feature.image}
-                                            height={160}
+                                            height={250}
                                             alt="Norway"
                                             imageProps={{ loading: "lazy" }}
                                         />
