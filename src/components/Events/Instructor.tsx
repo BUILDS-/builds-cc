@@ -14,7 +14,7 @@ type PropTypes = {
 const Instructor = ({ image, name, scale, onClick }: PropTypes) => {
     const { colorScheme } = useMantineColorScheme();
     const dark = colorScheme === "dark";
-
+    console.log("\"A Good Engineer always leaves an Easter Egg\" -Daniyal")
     return (
         <Badge
             onClick={onClick}
@@ -30,24 +30,21 @@ const Instructor = ({ image, name, scale, onClick }: PropTypes) => {
                 paddingLeft: 0,
                 transform: `scale(${scale ?? 1})`,
                 cursor: "pointer",
+                marginLeft:10
             }}
             leftSection={
                 image ? (
                     <Image
-                        alt="Avatar for badge"
-                        width={17}
-                        height={17}
+                        alt=""
+                        width={10}
+                        height={15}
                         mr={5}
                         src={image}
                         radius={100}
                     />
                 ) : (
-                    <IconUserCircle
-                        height={17}
-                        width={17}
-                        size={17}
-                        style={{ margin: 0, marginRight: 5 }}
-                    />
+                
+         <Avatar variant="outline" radius="sm" size="xs" color="rgba(255, 255, 255, 1)" src="" />
                 )
             }
             size="md"

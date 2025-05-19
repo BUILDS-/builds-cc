@@ -4,6 +4,7 @@ import {
     Container,
     createStyles,
     Title,
+    Grid
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import Event from "components/Events/Event";
@@ -18,7 +19,6 @@ const useStyles = createStyles((theme) => ({
         alignItems: "center",
         marginBottom: theme.spacing.md,
         paddingTop: theme.spacing.md,
-        paddingBottom: theme.spacing.md,
         gap: theme.spacing.md,
         borderBottom: `1px solid ${theme.colorScheme === "dark"
             ? theme.colors.dark[5]
@@ -29,7 +29,6 @@ const useStyles = createStyles((theme) => ({
             : theme.colors.gray[2]
             }`,
     },
-
     filterIcon: {
         color:
             theme.colorScheme === "dark"
@@ -44,7 +43,6 @@ const useStyles = createStyles((theme) => ({
         height: "100%",
         width: "100%",
     },
-
     notFound: {
         width: "100%",
         textAlign: "center",
@@ -57,7 +55,8 @@ type CarousePropTypes = {
     events: EventType[];
 };
 
-const EventsCarousel = ({ current, events }: CarousePropTypes) => {
+    console.log("\"A Good Engineer always leaves an Easter Egg\" -Daniyal")
+const EventsBox = ({ current, events }: CarousePropTypes) => {
     // Styles
     const { theme } = useStyles();
     const dark = theme.colorScheme === "dark";
@@ -65,46 +64,20 @@ const EventsCarousel = ({ current, events }: CarousePropTypes) => {
     const isBiggerThanMd = useMediaQuery("(min-width: 768px)");
 
     return (
-        <Carousel
-            slideSize="40%"
-            slideGap="md"
-            controlSize={30}
-            draggable
-            withControls={isBiggerThanMd}
-            withIndicators
-            align={isBiggerThanMd ? "center" : "start"}
-            pb={44}
-            breakpoints={[
-                { maxWidth: "lg", slideSize: "40%" },
-                { maxWidth: "md", slideSize: "50%" },
-                {
-                    maxWidth: "sm",
-                    slideSize: "82%",
-                    slideGap: "sm",
-                },
-            ]}
-            styles={{
-                control: {
-                    backgroundColor: dark ? "dark" : "gray",
-                    color: dark ? "black" : "white",
-                    opacity: 1,
-                },
-                indicator: {
-                    backgroundColor: dark ? "dark" : "gray",
-                },
-            }}
-            height="100%"
-            initialSlide={current}
-        >
-            {events.map((event, key) => (
-                <Carousel.Slide key={key}>
+    <Grid justify="center"  align="center"
+    m="2%">
+   {events.map((event, key) => (
+                <Grid.Col key={key} offset={.3}
+                h={'content'}
+                span={'content'}
+                >
                     <Event
                         {...event}
                         date={new Date(event.date)}
                     />
-                </Carousel.Slide>
+                </Grid.Col>
             ))}
-        </Carousel>
+    </Grid>
     );
 };
 interface EventsProps {
@@ -164,13 +137,12 @@ const Events: FC<EventsProps> = ({ data }) => {
     }, [events])
 
     return (
-        <Layout>
-            <Container>
-                <Title py="xl" align="center">
+        <Layout >
+                <Title align="center" mt="2%" >
                     Events
                 </Title>
-                <EventsCarousel current={current} events={events}/>
-            </Container>
+
+                <EventsBox current={current} events={events}/>
         </Layout>
     );
 };

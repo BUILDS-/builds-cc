@@ -9,7 +9,7 @@ const _FEATURES = [
             "Our hackerspace is open 24/7. Come in and work on your projects, or just hang out and chat with other members. Our amazing community is incredibly knowledgeable!",
     },
     {
-        image: "assets/builds_group_pic_3.jpeg",
+        image: "assets/builds_group_pic_3.jpg",
         title: "Pursue Personal Projects",
         description:
             "We provide everything you need to bring your ideas to life. We a variety of tools and equipment available for use, including a 3D printer, soldering irons, power tools, computers, and more.",
