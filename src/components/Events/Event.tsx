@@ -28,10 +28,9 @@ const useStyles = createStyles((theme) => ({
   },
 
   section: {
-    borderBottom: `1px solid ${theme.colorScheme === "dark"
-      ? theme.colors.dark[4]
-      : theme.colors.gray[3]
-      }`,
+    borderBottom: `1px solid ${
+      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]
+    }`,
     padding: theme.spacing.md,
   },
 
@@ -124,7 +123,9 @@ const Event = ({
         <Text size="md" color={dark ? "gray.6" : "gray"}>
           {format(date, "MMMM do, yyyy 'at' h:mm a")}
         </Text>
-        <MBadge mb='sm' color="blue.5">📍 {location}</MBadge>
+        <MBadge mb="sm" color="blue.5">
+          📍 {location}
+        </MBadge>
         <Text size="sm">{description}</Text>
       </Card.Section>
 
@@ -137,7 +138,7 @@ const Event = ({
             <Badge
               key={b.label}
               badge={b}
-            // onClick={() => updateBadges(b._id)}
+              // onClick={() => updateBadges(b._id)}
             />
           ))}
         </Group>
@@ -153,33 +154,32 @@ const Event = ({
               key={key}
               name={i.name}
               image={i.image}
-            // onClick={() => updateInstructors(i._id)}
+              // onClick={() => updateInstructors(i._id)}
             />
           ))}
         </Group>
       </Card.Section>
 
-
       <Space h="md" />
       <Box>
-        {
-          link && (
-            <Button
-              fullWidth
-              color="blue"
-              variant="outline"
-              disabled={is_past && (linkText == "Register")} // retain old functionality to prevent links to old register pages
-              // but allows us to link to other websites if the event doesn't require registration
+        {link && (
+          <Button
+            fullWidth
+            color="blue"
+            variant="outline"
+            disabled={
+              (is_past && linkText === "Register") || linkText === "N/A"
+            } // retain old functionality to prevent links to old register pages
+            // but allows us to link to other websites if the event doesn't require registration
 
-              href={link}
-              component="a"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {linkText ?? "Register"}
-            </Button>
-          )
-        }
+            href={link}
+            component="a"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {linkText ?? "Register"}
+          </Button>
+        )}
       </Box>
     </Card>
   );
