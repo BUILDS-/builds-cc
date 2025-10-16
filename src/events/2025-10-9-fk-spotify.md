@@ -6,8 +6,8 @@ badges:
     emoji: "🌐"
 date: 2025-10-09T18:30:00-04:00
 image: "./assets/events/fk-spotify.png"
-link: "www.duckduckgo.com"
-linkText: "N/A"
+link: "https://docs.google.com/presentation/d/1DCj4qOGEsqfhQgsgHf_6a7hi4XWFbwPIYvehoDeWDJc/edit?usp=sharing"
+linkText: "Slides"
 instructors:
   - name: "Rafay Adnan"
     image: "./assets/eboard/radnan.jpeg"

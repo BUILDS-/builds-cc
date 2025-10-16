@@ -41,6 +41,14 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+type linkText =
+  | "N/A"
+  | "Github"
+  | "Register"
+  | "Slides"
+  | "Website"
+  | "Discord"; // Custom ADT for enable/disable card button at bottom
+
 type PropTypes = {
   title: string;
   description: string;
@@ -51,7 +59,7 @@ type PropTypes = {
   location: string;
   maxWidth?: string;
   link?: string;
-  linkText?: string;
+  linkText?: linkText;
 };
 
 const Event = ({
@@ -69,6 +77,16 @@ const Event = ({
   const { classes, theme } = useStyles();
   const is_past = new Date() > date;
   const dark = theme.colorScheme === "dark";
+
+  let disableBtn = false;
+  switch (linkText) {
+    case "N/A":
+      disableBtn = true;
+      break;
+    case "Register":
+      disableBtn = is_past ? true : false;
+      break;
+  }
 
   // const updateInstructors = (id: string | undefined) => {
   //     let current = router.query.instructors ?? [];
@@ -167,17 +185,13 @@ const Event = ({
             fullWidth
             color="blue"
             variant="outline"
-            disabled={
-              (is_past && linkText === "Register") || linkText === "N/A"
-            } // retain old functionality to prevent links to old register pages
-            // but allows us to link to other websites if the event doesn't require registration
-
+            disabled={disableBtn}
             href={link}
             component="a"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {linkText ?? "Register"}
+            {linkText}
           </Button>
         )}
       </Box>

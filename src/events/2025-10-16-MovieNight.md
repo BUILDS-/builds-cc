@@ -6,7 +6,7 @@ badges:
     emoji: "🎬"
 date: 2025-10-16T19:00:00-04:00
 image: "./assets/events/stevejobs2015.jpg"
-link: "www.duckduckgo.com"
+link: "builds.cc"
 linkText: "N/A"
 instructors:
   - name: "Minecraft Steve"
