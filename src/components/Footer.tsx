@@ -62,7 +62,7 @@ const Footer = () => {
                         <IconBrandInstagram stroke={1.5} />
                     </ActionIcon>
                 </Group>
-                <Text size='sm' className={classes.copyright}>© 2023 BUILDS</Text>
+                <Text size='sm' className={classes.copyright}>© 2025 BUILDS</Text>
             </Container>
         </div>
     );
