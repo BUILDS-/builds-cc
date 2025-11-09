@@ -12,7 +12,7 @@ import {
   Button,
 } from "@mantine/core";
 import format from "date-fns/format";
-import { BadgeType, InstructorType } from "types";
+import { BadgeType, InstructorType, EventLinkText } from "types";
 import Badge from "./Badge";
 import Instructor from "./Instructor";
 // import { AddToCalendarButton } from 'add-to-calendar-button-react';
@@ -41,14 +41,6 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-type linkText =
-  | "N/A"
-  | "Github"
-  | "Register"
-  | "Slides"
-  | "Website"
-  | "Discord"; // Custom ADT for enable/disable card button at bottom
-
 type PropTypes = {
   title: string;
   description: string;
@@ -59,7 +51,7 @@ type PropTypes = {
   location: string;
   maxWidth?: string;
   link?: string;
-  linkText?: linkText;
+  linkText?: EventLinkText;
 };
 
 const Event = ({

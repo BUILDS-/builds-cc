@@ -8,7 +8,7 @@ import {
 import { Carousel } from "@mantine/carousel";
 import Event from "components/Events/Event";
 import { useMediaQuery } from "@mantine/hooks";
-import { BadgeType, EventType, InstructorType } from "types";
+import { BadgeType, EventType, InstructorType, EventLinkText } from "types";
 import Layout from "components/Layout";
 import { graphql } from "gatsby";
 
@@ -142,7 +142,7 @@ const Events: FC<EventsProps> = ({ data }) => {
                 instructors: frontmatter.instructors,
                 location: frontmatter.location,
                 link: frontmatter?.link,
-                linkText: frontmatter?.linkText,
+                linkText: frontmatter?.linkText as EventLinkText,
             })
         ).reverse(); // since we're getting the most recent events first, we have to reverse the array
     }, [data]);

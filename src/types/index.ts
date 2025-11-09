@@ -10,6 +10,14 @@ export type BadgeType = {
   label: string;
 };
 
+export type EventLinkText =
+  | "N/A"
+  | "Github"
+  | "Register"
+  | "Slides"
+  | "Website"
+  | "Discord";
+
 export type EventType = {
   _id?: string;
   title: string;
@@ -20,7 +28,7 @@ export type EventType = {
   instructors: InstructorType[];
   badges: BadgeType[];
   link?: string;
-  linkText?: string;
+  linkText?: EventLinkText;
 };
 
 export type ProfileType = {
