@@ -6,7 +6,7 @@ badges:
     emoji: "./assets/events/aws-outage-cloud.svg"
 date: 2025-11-13T18:30:00-05:00
 image: "./assets/events/aws-outage.svg"
-link: "WIP"
+link: "https://docs.google.com/presentation/d/1flM2hQpdiqhU9JmnEAjJo-0l21BXdmu4BXpYBJ6tusc/edit?usp=sharing"
 linkText: "Slides"
 instructors:
   - name: "Ivan Khramtchenko"
