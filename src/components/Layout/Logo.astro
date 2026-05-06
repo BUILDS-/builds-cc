@@ -1,0 +1,76 @@
+---
+import fl from "figlet";
+import AnsiShadow from "figlet/fonts/ANSI Shadow";
+fl.parseFont("AnsiShadow", AnsiShadow); // load font
+const BU = fl.textSync("BU", { font: "AnsiShadow" }).trim();
+const ILDS = fl.textSync("ILDS", { font: "AnsiShadow" }).trim();
+---
+
+<header id="logo-container">
+  <pre class="logo-accent">{BU}</pre>
+  <pre>{ILDS}</pre>
+</header>
+
+<script>
+  import { animate } from "animejs";
+
+  document.addEventListener("navOpen", () => {
+    if (document.body.hasAttribute("data-nav-open")) {
+      animate(`#logo-container`, {
+        duration: 500,
+        ease: "outElastic(1,2)",
+        top: `+=120`,
+      });
+    }
+  });
+
+  document.addEventListener("navClose", () => {
+    if (!document.body.hasAttribute("data-nav-open")) {
+      animate(`#logo-container`, {
+        duration: 500,
+        ease: "outElastic(1,2)",
+        top: `-=120`,
+      });
+    }
+  });
+</script>
+<style>
+  #logo-container {
+    position: fixed;
+    top: 8px;
+    left: 50%;
+    transform: translatex(-50%);
+    width: fit-content;
+    white-space: nowrap;
+    text-align: center;
+    background-color: var(--color-bg);
+    height: 44px;
+    z-index: var(--z-logo);
+  }
+
+  #logo-container pre {
+    font-family: "Courier New", monospace;
+    font-size: 8px;
+    line-height: 1;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    color: var(--color-text);
+  }
+
+  #logo-container .logo-accent {
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 800px) {
+    #logo-container {
+      top: 18px;
+      left: 40px;
+      transform: none;
+      height: 85px;
+    }
+    #logo-container pre {
+      font-size: 15px;
+    }
+  }
+</style>

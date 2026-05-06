@@ -1,0 +1,132 @@
+---
+import { Font } from "astro:assets";
+import Logo from "@components/Layout/Logo.astro";
+import MobileNavIcon from "@components/Layout/MobileNavIcon.astro";
+import NavMenu from "@components/Layout/NavMenu.astro";
+import SVGWrapper from "@components/Layout/SVGWrapper.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Font cssVariable="--font-ZxProto" />
+    <Font cssVariable="--font-Barcode" />
+    <Font cssVariable="--font-Atkinson" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>BUILDS</title>
+  </head>
+  <body>
+    <MobileNavIcon />
+    <NavMenu />
+    <Logo />
+    <SVGWrapper />
+    <div id="app">
+      <main id="swup">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<script>
+  import { engine } from "animejs";
+  engine.defaults.frameRate = 120; // 120FPS WEEWOOWEEWOO
+</script>
+
+<style is:global>
+  body {
+    font-family: var(--font-Atkinson);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-ZxProto);
+  }
+
+  h1,
+  h2,
+  p {
+    margin: 0;
+  }
+</style>
+
+<style>
+  :root {
+    --color-white-1: #fff;
+    --color-white-2: #f3f3ff;
+    --color-white-3: #a4a4a4;
+    --color-black-1: #000;
+    --color-black-2: #101016;
+    --color-black-3: #565656;
+
+    --color-dark-orange: #ff8c00;
+    --color-seagrass: #65a98f;
+    --color-rust-brown: #a93400;
+    --color-papaya-white: #fff4db;
+
+    --color-bg: var(--color-black-1);
+    --color-text: var(--color-papaya-white);
+    --color-border: var(--color-white-3);
+    --color-accent: red;
+
+    --mobile-padding-top: 30px;
+    --mobile-padding-outer: 15px;
+    --mobile-padding-inner: 15px;
+
+    --desktop-padding-top: 60px;
+    --desktop-padding-outer: 20px;
+    --desktop-padding-inner: 20px;
+
+    --nav-height: 120px;
+
+    --z-svg: 69;
+    --z-logo: 420;
+    --z-nav: 1999;
+    --z-hamburger: 2000;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    overflow: hidden;
+  }
+
+  #app {
+    height: 100vh; /* fallback */
+    height: 100dvh; /* better on mobile browser UI changes */
+    width: 100%;
+
+    overflow-y: scroll;
+    overscroll-behavior: none;
+    scrollbar-width: none;
+  }
+
+  main {
+    margin: var(--mobile-padding-top) var(--mobile-padding-outer)
+      var(--mobile-padding-outer);
+  }
+
+  /* SVG specific stylings */
+
+  @media (min-width: 800px) {
+    main {
+      margin: var(--desktop-padding-top) var(--desktop-padding-outer)
+        var(--desktop-padding-outer);
+    }
+  }
+</style>

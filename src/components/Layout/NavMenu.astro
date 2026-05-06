@@ -1,0 +1,174 @@
+---
+const pathname = new URL(Astro.request.url).pathname;
+const currentPath = pathname.slice(1);
+---
+
+<nav id="navMenu">
+  <ul>
+    <li>
+      <a href="/" aria-label="Builds home page">Home</a>
+    </li>
+    <li>
+      <a href="/events" aria-label="Builds events page">Events</a>
+    </li>
+    <li><a href="/eboard" aria-label="Builds eboard page">E-Board</a></li>
+  </ul>
+  <div id="highlight"></div>
+</nav>
+
+<script>
+  /*
+   * Clicking on a link, similar to MobileNavIcon, also dispatches/fires a
+   * CustomEvent to notify components to animate the "closing" animation.
+   * */
+  import { animate } from "animejs";
+  import { getCurrentUrl } from "swup";
+
+  const $navMenu = document.getElementById("navMenu");
+  if (!$navMenu) throw new Error("navMenu does not exist somehow");
+  const $allLinks = $navMenu.querySelectorAll("li");
+  const $highlightBlock = $navMenu.querySelector("#highlight");
+  const isMobile = () => window.matchMedia("(max-width: 800px)").matches;
+
+  function animateNav($link: HTMLLIElement) {
+    if (!$navMenu) throw new Error("error");
+    const { x: navX, y: navY } = $navMenu.getBoundingClientRect();
+    const { width, height, x, y } = $link.getBoundingClientRect();
+    animate($highlightBlock as HTMLDivElement, {
+      width: width,
+      height: height,
+      x: isMobile() ? x : x - navX,
+      y: isMobile() ? y : y - navY,
+      duration: 500,
+      ease: "out(5.82)",
+    });
+  }
+
+  function updateActiveLink() {
+    const url = getCurrentUrl();
+    $allLinks.forEach(($link) => {
+      const href = $link.children[0].getAttribute("href");
+      if (href === url) {
+        $link.classList.add("active");
+        animateNav($link);
+      } else {
+        $link.classList.remove("active");
+      }
+    });
+  }
+
+  function toggleNav() {
+    if (!isMobile()) return;
+    if (!$navMenu) throw new Error("navMenu does not exist");
+    if (document.body.hasAttribute("data-nav-open")) {
+      $navMenu.style.opacity = "1";
+      $navMenu.style.visibility = "visible";
+    } else {
+      $navMenu.style.opacity = "0";
+      $navMenu.style.visibility = "hidden";
+    }
+  }
+
+  updateActiveLink();
+  document.addEventListener("swup:animation:out:start", () => {
+    // Animation starts on swup view transition start
+    updateActiveLink();
+  });
+  document.addEventListener("swup:history:popstate", () => {
+    // Animation when forward/back are pressed in a browser
+    updateActiveLink();
+  });
+
+  let resizeTimer: ReturnType<typeof setTimeout>;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (!isMobile()) {
+        // Styling needs clearing because they have priority over media query
+        // So for media query to show opacity and visibility, this is needed
+        $navMenu.style.opacity = "";
+        $navMenu.style.visibility = "";
+      }
+      const $active = $navMenu.querySelector("li.active");
+      if ($active) animateNav($active as HTMLLIElement);
+    }, 50);
+  });
+
+  // Below are code responsible for navOpen and navClose events
+  // which should only happen on mobile screen sizes
+
+  $allLinks.forEach(($link) => {
+    $link.addEventListener("click", () => {
+      if (!isMobile()) return;
+      document.body.removeAttribute("data-nav-open");
+      document.dispatchEvent(new CustomEvent("navClose"));
+    });
+  });
+
+  document.addEventListener("navOpen", toggleNav);
+  document.addEventListener("navClose", toggleNav);
+</script>
+
+<style>
+  nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    position: fixed;
+    width: 100%;
+    height: var(--nav-height);
+    z-index: var(--z-nav);
+    box-sizing: border-box;
+  }
+  ul {
+    border: 1px solid var(--color-border);
+    text-align: center;
+    list-style: none;
+    height: fit-content;
+    padding: 2px;
+    margin: 0;
+
+    display: flex;
+    flex-direction: row;
+
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
+  li {
+    padding: 5px 30px;
+    position: relative;
+    z-index: 2;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .active {
+    color: var(--color-text);
+  }
+
+  #highlight {
+    position: absolute;
+    background-color: var(--color-bg);
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  @media (min-width: 800px) {
+    nav {
+      justify-content: flex-end;
+      align-item: center;
+      height: fit-content;
+      margin-top: 10px;
+      opacity: 1;
+      visibility: visible;
+    }
+    ul {
+      margin-right: 20px;
+    }
+  }
+</style>

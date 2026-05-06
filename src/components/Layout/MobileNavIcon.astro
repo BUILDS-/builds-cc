@@ -1,0 +1,75 @@
+---
+import HamburgerIconSVG from "@assets/hamburger-menu.svg";
+---
+
+<div id="hamburger">
+  <HamburgerIconSVG />
+</div>
+
+<script>
+  /*
+   * A data attribute is toggled when this icon is clicked,
+   * simutaneously fires/dispatches a CustomEvent with data toggled boolean custom data.
+   *
+   * Components that needs to be animated listens for this CustomEvent,
+   * in order to reveal MobileNavMenu.
+   * */
+
+  import { animate } from "animejs";
+
+  const navOpen = new CustomEvent("navOpen");
+  const navClose = new CustomEvent("navClose");
+  const hamburger = document.querySelector("#hamburger");
+
+  hamburger?.addEventListener("click", () => {
+    // Toggling an attribute returns true/false as return value
+    const openNav = document.body.toggleAttribute("data-nav-open");
+    openNav
+      ? document.dispatchEvent(navOpen)
+      : document.dispatchEvent(navClose);
+  });
+
+  document.addEventListener("navOpen", () => {
+    if (document.body.hasAttribute("data-nav-open")) {
+      animate("#hamburger", {
+        duration: 500,
+        ease: "outElastic(1,2)",
+        translateY: `120`,
+      });
+    }
+  });
+
+  document.addEventListener("navClose", () => {
+    if (!document.body.hasAttribute("data-nav-open")) {
+      animate("#hamburger", {
+        duration: 500,
+        ease: "outElastic(1,2)",
+        translateY: `0`,
+      });
+    }
+  });
+</script>
+
+<style>
+  div {
+    position: fixed;
+    width: 35px;
+    height: 35px;
+    right: var(--mobile-padding-outer);
+    top: var(--mobile-padding-top);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    z-index: var(--z-hamburger);
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  @media (min-width: 800px) {
+    div {
+      display: none;
+    }
+  }
+</style>

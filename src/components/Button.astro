@@ -1,0 +1,45 @@
+---
+const { class: className, ...rest } = Astro.props;
+---
+
+<button class={className} {...rest}>
+  <slot>I am button</slot>
+</button>
+
+<style>
+  button {
+    border: 3px solid var(--color-papaya-white);
+    cursor: pointer;
+    padding: 7px 15px;
+    color: black;
+    background-color: var(--color-papaya-white);
+    transition:
+      border-color 100ms,
+      color 100ms,
+      transform 100ms;
+
+    font-family: var(--font-body);
+    font-size: 1rem;
+  }
+
+  @media (hover: hover) {
+    /* Prevents sticky hover effects on mobile touch devices */
+    button:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+      transform: translateX(3px) translateY(-3px);
+      transition:
+        border-color 170ms,
+        color 170ms,
+        transform 170ms;
+    }
+  }
+
+  button:active {
+    border-color: var(--color-accent);
+    transform: translateX(-2px) translateY(2px);
+    transition:
+      border-color 100ms,
+      transform 100ms;
+  }
+</style>

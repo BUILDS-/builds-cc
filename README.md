@@ -1,38 +1,46 @@
-# BUILDS.cc
+# Astro Starter Kit: Basics
 
-Install dependencies and run development server:
-
-```shell
-npm i
-npm run develop
+```sh
+bun create astro@latest -- --template basics
 ```
 
-The site is now running at http://localhost:8000.
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-## Adding New Events
+## 🚀 Project Structure
 
-You can add new events using a markdown file in the `src/events/` directory. The filename should be in the format `YYYY-MM-DD-event-name.md`. The file should have the following format:
+Inside of your Astro project, you'll see the following folders and files:
 
-```markdown
----
-title: "Event Title"
-description: "Event description."
-badges:
-  - label: "Beginner Friendly"
-    emoji: "👶"
-  - label: "3D Modeling"
-    emoji: "📐"
-  - label: "3D Printing"
-    emoji: "🖨️"
-date: YYYY-MM-DDTHH:MM:SS-04:00
-image: "./assets/events/event-image.jpg"
-instructors:
-  - name: "Instructor Name"
-    image: "./assets/eboard/instructor-image.jpg"
-location: "Location"
----
+```text
+/
+├── public/
+│   └── favicon.svg
+├── src
+│   ├── assets
+│   │   └── astro.svg
+│   ├── components
+│   │   └── Welcome.astro
+│   ├── layouts
+│   │   └── Layout.astro
+│   └── pages
+│       └── index.astro
+└── package.json
 ```
 
-You can add any necessary image assets to the `src/assets/events/` directory. The image path in the markdown file should be relative to the `src/` directory.
+To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
 
-Remember to run all images through https://tinypng.com/ before adding them to the site. This will reduce the file size and improve load times.
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `bun install`             | Installs dependencies                            |
+| `bun dev`             | Starts local dev server at `localhost:4321`      |
+| `bun build`           | Build your production site to `./dist/`          |
+| `bun preview`         | Preview your build locally, before deploying     |
+| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `bun astro -- --help` | Get help using the Astro CLI                     |
+
+## 👀 Want to learn more?
+
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
