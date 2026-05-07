@@ -36,8 +36,20 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
 </html>
 
 <script>
-  import { engine } from "animejs";
+  import { engine, animate, scrambleText } from "animejs";
   engine.defaults.frameRate = 120; // 120FPS WEEWOOWEEWOO
+
+  function scrambleTitle() {
+    animate("h1", {
+      innerHTML: scrambleText({ override: "_" }),
+    });
+    animate(".header-barcode", {
+      innerHTML: scrambleText({ override: "_" }),
+    });
+  }
+
+  scrambleTitle();
+  document.addEventListener("swup:page:view", scrambleTitle);
 </script>
 
 <style is:global>
@@ -86,7 +98,7 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
 
     --desktop-padding-top: 60px;
     --desktop-padding-outer: 20px;
-    --desktop-padding-inner: 20px;
+    --desktop-padding-inner: 30px;
 
     --nav-height: 120px;
 

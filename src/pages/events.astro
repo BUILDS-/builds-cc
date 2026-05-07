@@ -1,7 +1,102 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import Marquee from "@components/Marquee.astro";
 ---
 
 <Layout>
-  <h1>WIP</h1>
+  <section class="heading">
+    <h1>EVENTS</h1>
+    <h2 class="header-barcode">EVENTS</h2>
+  </section>
+  <Marquee />
 </Layout>
+
+<script>
+  import { animate, scrambleText } from "animejs";
+
+  animate("h1", {
+    innerHTML: scrambleText({ override: "_" }),
+  });
+</script>
+
+<style>
+  .heading {
+    padding: 60px var(--mobile-padding-inner) 20px var(--mobile-padding-inner);
+    border-bottom: 1px solid var(--color-border);
+
+    span {
+      color: var(--color-accent);
+    }
+
+    h1::after {
+      margin-left: 8px;
+      content: "\00258c";
+      font-size: 1.4rem;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      h1::after {
+        animation: cursor-blink 1s step-start 600ms infinite backwards;
+      }
+    }
+    .header-barcode {
+      margin: 0.8rem 0 1.5rem 0.1rem;
+      font-size: 2rem;
+      font-family: var(--font-Barcode);
+      letter-spacing: 3px;
+    }
+  }
+
+  @media (min-width: 800px) {
+    .text-barcode {
+      font-size: calc(1rem + 1vw);
+    }
+
+    .heading {
+      padding: 100px var(--desktop-padding-inner) var(--desktop-padding-inner);
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .heading {
+      padding: 120px var(--desktop-padding-inner) var(--desktop-padding-inner);
+    }
+    section,
+    .link-btn {
+      font-size: calc(1rem + 0.2vw);
+    }
+
+    h1 {
+      font-size: calc(2.2rem + 1vw);
+    }
+
+    h2 {
+      font-size: calc(1.5rem + 0.5vw);
+    }
+
+    h3 {
+      font-size: calc(1.17rem + 0.3vw);
+    }
+
+    .heading {
+      h1::after {
+        font-size: calc(1.4rem + 1vw);
+      }
+      .header-barcode {
+        font-size: calc(2rem + 1vw);
+      }
+    }
+  }
+
+  @keyframes cursor-blink {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+</style>
