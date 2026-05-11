@@ -12,14 +12,15 @@ const ILDS = fl.textSync("ILDS", { font: "AnsiShadow" }).trim();
 </header>
 
 <script>
+  import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
   import { animate } from "animejs";
 
   document.addEventListener("navOpen", () => {
     if (document.body.hasAttribute("data-nav-open")) {
       animate(`#logo-container`, {
-        duration: 500,
-        ease: "outElastic(1,2)",
-        top: `+=120`,
+        duration: NAV_DURATION,
+        ease: NAV_EASE,
+        top: `+=${NAV_SLIDE_DIST}`,
       });
     }
   });
@@ -27,9 +28,9 @@ const ILDS = fl.textSync("ILDS", { font: "AnsiShadow" }).trim();
   document.addEventListener("navClose", () => {
     if (!document.body.hasAttribute("data-nav-open")) {
       animate(`#logo-container`, {
-        duration: 500,
-        ease: "outElastic(1,2)",
-        top: `-=120`,
+        duration: NAV_DURATION,
+        ease: NAV_EASE,
+        top: `-=${NAV_SLIDE_DIST}`,
       });
     }
   });

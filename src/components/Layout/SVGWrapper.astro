@@ -23,6 +23,7 @@
   </svg>
 </div>
 <script>
+  import { MOBILE_BREAK, NAV_SLIDE_DIST, NAV_DURATION, NAV_EASE } from "@lib/constants";
   import { animate } from "animejs";
 
   // SVG related code below
@@ -49,10 +50,10 @@
   document.addEventListener("navOpen", () => {
     if (document.body.hasAttribute("data-nav-open")) {
       animate(["#inner-mask-body", "#inner-rect-border"], {
-        duration: 500,
-        ease: "outElastic(1,2)",
-        y: `+=120`,
-        height: `-=120`,
+        duration: NAV_DURATION,
+        ease: NAV_EASE,
+        y: `+=${NAV_SLIDE_DIST}`,
+        height: `-=${NAV_SLIDE_DIST}`,
       });
     }
   });
@@ -60,10 +61,10 @@
   document.addEventListener("navClose", () => {
     if (!document.body.hasAttribute("data-nav-open")) {
       animate(["#inner-mask-body", "#inner-rect-border"], {
-        duration: 500,
-        ease: "outElastic(1,2)",
-        y: `-=120`,
-        height: `+=120`,
+        duration: NAV_DURATION,
+        ease: NAV_EASE,
+        y: `-=${NAV_SLIDE_DIST}`,
+        height: `+=${NAV_SLIDE_DIST}`,
       });
     }
   });
@@ -83,7 +84,7 @@
       r.setAttribute("height", `${vh}`);
     });
 
-    if (vw < 800) {
+    if (vw < MOBILE_BREAK) {
       // Mobile check, based on logo's media query
       innerRects.forEach((r) => {
         r.setAttribute("x", `${GAP}`);

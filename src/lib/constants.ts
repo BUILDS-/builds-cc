@@ -1,0 +1,6 @@
+const MOBILE_BREAK = 800;
+const NAV_SLIDE_DIST = 120;
+const NAV_DURATION = 500;
+const NAV_EASE = "outElastic(1,2)";
+
+export { MOBILE_BREAK, NAV_SLIDE_DIST, NAV_DURATION, NAV_EASE };

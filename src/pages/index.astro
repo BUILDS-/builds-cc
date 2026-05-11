@@ -126,14 +126,19 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
 </Layout>
 
 <script>
+  import { MOBILE_BREAK } from "../lib/constants";
+
   // TODO: Logic here needs a re-write or debouncing
+  const isMobile = () =>
+    window.matchMedia(`(max-width: ${MOBILE_BREAK}px)`).matches;
   window.addEventListener("resize", () => {
     const vw = window.innerWidth;
 
-    if (vw < 800) {
+    if (vw < MOBILE_BREAK) {
       const linkBtns = document.querySelectorAll(".link-btn");
 
       // Guard here, navClose animation should only happen when the nav is actually opened
+      console.log(isMobile);
       if (document.body.hasAttribute("data-nav-open")) {
         linkBtns.forEach((link) => {
           link.addEventListener("click", () => {

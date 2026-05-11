@@ -15,6 +15,7 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
    * in order to reveal MobileNavMenu.
    * */
 
+  import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
   import { animate } from "animejs";
 
   const navOpen = new CustomEvent("navOpen");
@@ -32,9 +33,9 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
   document.addEventListener("navOpen", () => {
     if (document.body.hasAttribute("data-nav-open")) {
       animate("#hamburger", {
-        duration: 500,
-        ease: "outElastic(1,2)",
-        translateY: `120`,
+        duration: NAV_DURATION,
+        ease: NAV_EASE,
+        translateY: `${NAV_SLIDE_DIST}`,
       });
     }
   });
@@ -42,8 +43,8 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
   document.addEventListener("navClose", () => {
     if (!document.body.hasAttribute("data-nav-open")) {
       animate("#hamburger", {
-        duration: 500,
-        ease: "outElastic(1,2)",
+        duration: NAV_DURATION,
+        ease: NAV_EASE,
         translateY: `0`,
       });
     }
