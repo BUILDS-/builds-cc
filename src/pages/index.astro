@@ -126,30 +126,24 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
 </Layout>
 
 <script>
-  import { MOBILE_BREAK } from "../lib/constants";
+  function closeNavMobile() {
+    const $linkBtns = document.querySelectorAll(".link-btn");
+    $linkBtns.forEach(($link) => {
+      $link.addEventListener("click", () => {
+        // Clicking on any link should have a "closing" animation for the mobile nav menu
+        if (document.body.hasAttribute("data-nav-open")) {
+          document.body.removeAttribute("data-nav-open");
+          document.dispatchEvent(new CustomEvent("navClose"));
+        }
+      });
+    });
+  }
 
-  // TODO: Logic here needs a re-write or debouncing
-  const isMobile = () =>
-    window.matchMedia(`(max-width: ${MOBILE_BREAK}px)`).matches;
-  window.addEventListener("resize", () => {
-    const vw = window.innerWidth;
-
-    if (vw < MOBILE_BREAK) {
-      const linkBtns = document.querySelectorAll(".link-btn");
-
-      // Guard here, navClose animation should only happen when the nav is actually opened
-      console.log(isMobile);
-      if (document.body.hasAttribute("data-nav-open")) {
-        linkBtns.forEach((link) => {
-          link.addEventListener("click", () => {
-            document.body.removeAttribute("data-nav-open");
-            document.dispatchEvent(new CustomEvent("navClose"));
-          });
-        });
-      }
-    }
-  });
-  // Clicking on any link should have a "closing" animation for the mobile nav menu
+  // Might not be the best way to do this
+  // Could be better moved into Layout.astro since function
+  // targets all buttons with class ".link-btn" on any page, not only index.
+  closeNavMobile();
+  document.addEventListener("swup:page:view", closeNavMobile);
 </script>
 
 <style>

@@ -24,8 +24,7 @@
   if (!$navMenu) throw new Error("navMenu does not exist somehow");
   const $allLinks = $navMenu.querySelectorAll("li");
   const $highlightBlock = $navMenu.querySelector("#highlight");
-  const isMobile = () =>
-    window.matchMedia(`(max-width: ${MOBILE_BREAK}px)`).matches;
+  const isMobile = () => window.innerWidth <= MOBILE_BREAK;
 
   function animateNav($link: HTMLLIElement) {
     if (!$navMenu) throw new Error("error");
@@ -56,7 +55,8 @@
 
   function toggleNav() {
     if (!isMobile()) return;
-    if (!$navMenu) throw new Error("navMenu does not exist");
+    else if (!$navMenu) throw new Error("navMenu does not exist");
+
     if (document.body.hasAttribute("data-nav-open")) {
       $navMenu.style.opacity = "1";
       $navMenu.style.visibility = "visible";
