@@ -23,21 +23,22 @@
   const $navMenu = document.getElementById("navMenu");
   if (!$navMenu) throw new Error("navMenu does not exist somehow");
   const $allLinks = $navMenu.querySelectorAll("li");
-  const $highlightBlock = $navMenu.querySelector("#highlight");
+  const $highlightBlock = $navMenu.querySelector<HTMLDivElement>("#highlight");
   const isMobile = () => window.innerWidth <= MOBILE_BREAK;
 
   function animateNav($link: HTMLLIElement) {
     if (!$navMenu) throw new Error("error");
     const { x: navX, y: navY } = $navMenu.getBoundingClientRect();
     const { width, height, x, y } = $link.getBoundingClientRect();
-    animate($highlightBlock as HTMLDivElement, {
-      width: width,
-      height: height,
-      x: isMobile() ? x : x - navX,
-      y: isMobile() ? y : y - navY,
-      duration: NAV_DURATION,
-      ease: "out(5.82)",
-    });
+    if ($highlightBlock)
+      animate($highlightBlock, {
+        width: width,
+        height: height,
+        x: isMobile() ? x : x - navX,
+        y: isMobile() ? y : y - navY,
+        duration: NAV_DURATION,
+        ease: "out(5.82)",
+      });
   }
 
   function updateActiveLink() {
@@ -86,8 +87,8 @@
         $navMenu.style.opacity = "";
         $navMenu.style.visibility = "";
       }
-      const $active = $navMenu.querySelector("li.active");
-      if ($active) animateNav($active as HTMLLIElement);
+      const $active = $navMenu.querySelector<HTMLLIElement>("li.active");
+      if ($active) animateNav($active);
     }, 50);
   });
 
