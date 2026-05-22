@@ -1,8 +1,9 @@
 ---
+const { class: className, ...rest } = Astro.props;
 // This one goes to claude, I was going a more round about way using math but svg is much simpler
 ---
 
-<div>
+<div class={className} {...rest}>
   <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
     <line
       x1="0"

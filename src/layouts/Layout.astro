@@ -48,9 +48,6 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
     });
   }
 
-  scrambleTitle();
-  document.addEventListener("swup:page:view", scrambleTitle);
-
   function closeNavMobile() {
     const $linkBtns = document.querySelectorAll(".link-btn");
     $linkBtns.forEach(($link) => {
@@ -64,11 +61,12 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
     });
   }
 
-  // Might not be the best way to do this
-  // Could be better moved into Layout.astro since function
-  // targets all buttons with class ".link-btn" on any page, not only index.
+  scrambleTitle();
   closeNavMobile();
-  document.addEventListener("swup:page:view", closeNavMobile);
+  document.addEventListener("swup:page:view", () => {
+    closeNavMobile();
+    scrambleTitle();
+  });
 </script>
 
 <style is:global>
