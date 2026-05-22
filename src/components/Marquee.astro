@@ -1,16 +1,74 @@
 ---
 interface Props {
-  className: string;
-  direction: "left" | "right";
-  gap: number;
   speed: number;
+  gap: number;
 }
-const { className, ...rest } = Astro.props;
+const { speed, gap } = Astro.props;
 ---
 
-<div class=`${className} marquee` {...rest}>hi</div>
+<div class="marquee" data-speed={speed} data-gap={gap}>
+  <div class="marquee-content"></div>
+</div>
 
-<script></script>
+<script>
+  import { animate, linear } from "animejs";
+
+  const { speed } = Astro.props;
+  const GAP = 20;
+  const quotes = [
+    "lorem ipsum",
+    "Some random quote",
+    "I DON'T GIVE A SHIT ABOUT VILTRUM",
+    "I'm reaching out about your extended cars warranty",
+    "Batman, I -I caught uh I caught a little Pokemon",
+  ];
+
+  const allQuotesEl: HTMLParagraphElement[] = [];
+
+  function copyCount() {
+    let strideWidth = 0;
+    allQuotesEl.forEach(($elm: HTMLParagraphElement) => {
+      strideWidth += $elm.getBoundingClientRect().width + GAP;
+    });
+    console.log(strideWidth);
+    return Math.ceil((window.innerWidth * 2) / strideWidth);
+  }
+
+  function renderInitialText() {
+    const $contentEl =
+      document.querySelector<HTMLDivElement>(".marquee-content");
+
+    quotes.forEach((quote) => {
+      const $quoteEl = document.createElement("p");
+      $quoteEl.classList.add("marquee-text");
+      $quoteEl.innerText = quote;
+      $contentEl?.appendChild($quoteEl);
+      allQuotesEl.push($quoteEl);
+    });
+
+    return $contentEl;
+  }
+
+  function animateElm($elm: HTMLDivElement) {
+    animate($elm, {
+      x: `-= ${speed}`,
+      ease: linear(0, 1),
+      onComplete: () => animateElm($elm),
+    });
+  }
+
+  const $el = renderInitialText();
+  if ($el) animateElm($el);
+  // let count = copyCount() - 1;
+  // while (count > 0) {
+  //   renderInitialText();
+  //   count--;
+  // }
+  document.addEventListener("swup:page:view", () => {
+    const $el = renderInitialText();
+    if ($el) animateElm($el);
+  });
+</script>
 
 <style>
   .marquee {
@@ -18,5 +76,20 @@ const { className, ...rest } = Astro.props;
     width: 100%;
     height: 60px;
     border-bottom: solid 1px var(--color-border);
+    display: flex;
+  }
+
+  .marquee-content {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    padding-left: 20px;
+
+    :global(.marquee-text) {
+      color: red;
+      white-space: nowrap;
+    }
   }
 </style>
