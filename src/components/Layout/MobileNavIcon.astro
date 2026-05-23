@@ -21,8 +21,10 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
   const navOpen = new CustomEvent("navOpen");
   const navClose = new CustomEvent("navClose");
   const $hamburger = document.querySelector<HTMLDivElement>("#hamburger");
+  if ($hamburger == null)
+    throw new Error("Hamburger element is null or undefined");
 
-  $hamburger?.addEventListener("click", () => {
+  $hamburger.addEventListener("click", () => {
     // Toggling an attribute returns true/false as return value
     const openNav = document.body.toggleAttribute("data-nav-open");
     openNav
@@ -32,23 +34,21 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
 
   document.addEventListener("navOpen", () => {
     if (document.body.hasAttribute("data-nav-open")) {
-      if ($hamburger)
-        animate($hamburger, {
-          duration: NAV_DURATION,
-          ease: NAV_EASE,
-          translateY: `${NAV_SLIDE_DIST}`,
-        });
+      animate($hamburger, {
+        duration: NAV_DURATION,
+        ease: NAV_EASE,
+        translateY: `${NAV_SLIDE_DIST}`,
+      });
     }
   });
 
   document.addEventListener("navClose", () => {
     if (!document.body.hasAttribute("data-nav-open")) {
-      if ($hamburger)
-        animate($hamburger, {
-          duration: NAV_DURATION,
-          ease: NAV_EASE,
-          translateY: `0`,
-        });
+      animate($hamburger, {
+        duration: NAV_DURATION,
+        ease: NAV_EASE,
+        translateY: `0`,
+      });
     }
   });
 </script>

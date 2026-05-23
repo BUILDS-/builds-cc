@@ -21,13 +21,13 @@
   import { getCurrentUrl } from "swup";
 
   const $navMenu = document.getElementById("navMenu");
-  if (!$navMenu) throw new Error("navMenu does not exist somehow");
+  if ($navMenu == null) throw new Error("navMenu does not exist somehow");
   const $allLinks = $navMenu.querySelectorAll("li");
   const $highlightBlock = $navMenu.querySelector<HTMLDivElement>("#highlight");
   const isMobile = () => window.innerWidth <= MOBILE_BREAK;
 
   function animateNav($link: HTMLLIElement) {
-    if (!$navMenu) throw new Error("error");
+    if ($navMenu == null) throw new Error("navMenu does not exist");
     const { x: navX, y: navY } = $navMenu.getBoundingClientRect();
     const { width, height, x, y } = $link.getBoundingClientRect();
     if ($highlightBlock)
@@ -56,7 +56,7 @@
 
   function toggleNav() {
     if (!isMobile()) return;
-    else if (!$navMenu) throw new Error("navMenu does not exist");
+    else if ($navMenu == null) throw new Error("navMenu does not exist");
 
     if (document.body.hasAttribute("data-nav-open")) {
       $navMenu.style.opacity = "1";
@@ -88,7 +88,7 @@
         $navMenu.style.visibility = "";
       }
       const $active = $navMenu.querySelector<HTMLLIElement>("li.active");
-      if ($active) animateNav($active);
+      if ($active != null) animateNav($active);
     }, 50);
   });
 
