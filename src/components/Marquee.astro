@@ -4,6 +4,12 @@ interface Props {
   gap: number;
 }
 const { speed, gap } = Astro.props;
+
+// TODO:: Needs to be refactored
+// Should take in an array of quotes and render content with forEach
+//
+// Have static component content for up-coming and on-going state only, instead
+// of declaring quotes inside marquee.
 ---
 
 <marquee-slide class="marquee" data-speed={speed} data-gap={gap}>
