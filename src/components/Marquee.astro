@@ -6,15 +6,13 @@ interface Props {
 const { speed, gap } = Astro.props;
 ---
 
-<div class="marquee" data-speed={speed} data-gap={gap}>
+<marquee-slide class="marquee" data-speed={speed} data-gap={gap}>
   <div class="marquee-content"></div>
-</div>
+</marquee-slide>
 
 <script>
-  import { animate, linear } from "animejs";
+  import { animate, type JSAnimation, linear } from "animejs";
 
-  const { speed } = Astro.props;
-  const GAP = 20;
   const quotes = [
     "lorem ipsum",
     "Some random quote",
@@ -22,56 +20,87 @@ const { speed, gap } = Astro.props;
     "I'm reaching out about your extended cars warranty",
     "Batman, I -I caught uh I caught a little Pokemon",
   ];
-
   const allQuotesEl: HTMLParagraphElement[] = [];
 
-  function copyCount() {
-    let strideWidth = 0;
-    allQuotesEl.forEach(($elm: HTMLParagraphElement) => {
-      strideWidth += $elm.getBoundingClientRect().width + GAP;
-    });
-    console.log(strideWidth);
-    return Math.ceil((window.innerWidth * 2) / strideWidth);
+  class MarqueeSlide extends HTMLElement {
+    #animation: JSAnimation | null = null;
+    #SPEED = 0;
+    #GAP = 0;
+
+    constructor() {
+      super();
+      this.addEventListener("mouseenter", this.pauseAnimation);
+      this.addEventListener("mouseleave", this.resumeAnimation);
+    }
+
+    renderInitialText() {
+      const $contentEl = this.querySelector(".marquee-content");
+      if ($contentEl == null) throw new Error("contentEl does not exist");
+      $contentEl.innerHTML = "";
+
+      quotes.forEach((quote) => {
+        const $quoteEl = document.createElement("p");
+        $quoteEl.classList.add("marquee-text");
+        $quoteEl.innerText = quote;
+        $contentEl.appendChild($quoteEl);
+        allQuotesEl.push($quoteEl);
+      });
+
+      return $contentEl;
+    }
+
+    copyCount() {
+      let strideWidth = 0;
+      allQuotesEl.forEach(($elm: HTMLParagraphElement) => {
+        strideWidth += $elm.getBoundingClientRect().width + this.#GAP;
+      });
+      console.log(strideWidth);
+      return Math.ceil((window.innerWidth * 2) / strideWidth);
+    }
+
+    animateElm($elm: Element) {
+      return animate($elm, {
+        x: `-= ${this.#SPEED}`,
+        ease: linear(0, 1),
+        onComplete: () => {
+          this.#animation = this.animateElm($elm);
+        },
+      });
+    }
+
+    pauseAnimation() {
+      if (this.#animation != null) this.#animation.pause();
+      console.log("pause");
+    }
+
+    resumeAnimation() {
+      console.log("resume");
+      if (this.#animation != null) this.#animation.resume();
+    }
+
+    connectedCallback() {
+      this.#SPEED = Number(this.dataset.speed ?? 20);
+      this.#GAP = Number(this.dataset.gap ?? 20);
+
+      const $el = this.renderInitialText();
+      if ($el) this.#animation = this.animateElm($el);
+      // let count = copyCount() - 1;
+      // while (count > 0) {
+      //   renderInitialText();
+      //   count--;
+      // }
+    }
+
+    disconnectedCallback() {
+      if (this.#animation != null) this.#animation.reset();
+    }
   }
 
-  function renderInitialText() {
-    const $contentEl =
-      document.querySelector<HTMLDivElement>(".marquee-content");
-
-    quotes.forEach((quote) => {
-      const $quoteEl = document.createElement("p");
-      $quoteEl.classList.add("marquee-text");
-      $quoteEl.innerText = quote;
-      $contentEl?.appendChild($quoteEl);
-      allQuotesEl.push($quoteEl);
-    });
-
-    return $contentEl;
-  }
-
-  function animateElm($elm: HTMLDivElement) {
-    animate($elm, {
-      x: `-= ${speed}`,
-      ease: linear(0, 1),
-      onComplete: () => animateElm($elm),
-    });
-  }
-
-  const $el = renderInitialText();
-  if ($el) animateElm($el);
-  // let count = copyCount() - 1;
-  // while (count > 0) {
-  //   renderInitialText();
-  //   count--;
-  // }
-  document.addEventListener("swup:page:view", () => {
-    const $el = renderInitialText();
-    if ($el) animateElm($el);
-  });
+  customElements.define("marquee-slide", MarqueeSlide);
 </script>
 
 <style>
-  .marquee {
+  marquee-slide {
     overflow: hidden;
     width: 100%;
     height: 60px;
@@ -87,8 +116,7 @@ const { speed, gap } = Astro.props;
     gap: 20px;
     padding-left: 20px;
 
-    :global(.marquee-text) {
-      color: red;
+    & :global(.marquee-text) {
       white-space: nowrap;
     }
   }
