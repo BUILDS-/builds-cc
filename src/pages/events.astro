@@ -1,6 +1,14 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Marquee from "@components/Marquee.astro";
+
+const quotes = [
+  "lorem ipsum",
+  "Some random quote",
+  "I DON'T GIVE A SHIT ABOUT VILTRUM",
+  "I'm reaching out about your extended cars warranty",
+  "Batman, I -I caught uh I caught a little Pokemon",
+];
 ---
 
 <Layout>
@@ -8,7 +16,7 @@ import Marquee from "@components/Marquee.astro";
     <h1>EVENTS</h1>
     <h2 class="header-barcode">EVENTS</h2>
   </section>
-  <Marquee speed={10} gap={20} />
+  <Marquee speed={10} gap={20} content={quotes} />
 </Layout>
 
 <script></script>
