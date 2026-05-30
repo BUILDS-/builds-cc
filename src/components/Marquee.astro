@@ -1,27 +1,20 @@
 ---
 interface Props {
   speed: number;
-  gap: number;
   content: string[];
 }
-const { speed = 20, gap = 20, content = [""] } = Astro.props;
-console.log("hi");
-
-// TODO:: Needs to be refactored
-// Should take in an array of quotes and render content with forEach
-//
-// Have static component content for up-coming and on-going state only, instead
-// of declaring quotes inside marquee.
+const { speed = 20, content = [] } = Astro.props;
 ---
 
-<marquee-slide class="marquee" data-speed={speed} data-gap={gap}>
+<marquee-slide class="marquee" data-speed={speed}>
   <div class="marquee-content">
     {content.map((quote) => <p class="marquee-text">{quote}</p>)}
   </div>
 </marquee-slide>
 
 <script>
-  import { animate, type JSAnimation, linear } from "animejs";
+  import { animate, type JSAnimation, linear, utils } from "animejs";
+  const start = Date.now();
 
   class MarqueeSlide extends HTMLElement {
     #animation: JSAnimation | null = null;
@@ -41,51 +34,43 @@ console.log("hi");
         strideWidth += $elm.getBoundingClientRect().width + this.#GAP;
       });
       console.log(strideWidth);
-      return Math.ceil((window.innerWidth * 2) / strideWidth);
+      return Math.ceil((window.innerWidth * 2) / strideWidth) + 1;
     }
 
     animateElm($elm: Element) {
+      // Is a recursive call really a good decision?
+      // Maybe consider CSS only
       return animate($elm, {
-        x: `-= ${this.#SPEED}`,
+        x: `-= ${$elm.getBoundingClientRect().width * 2}`,
         ease: linear(0, 1),
-        onComplete: () => {
-          this.#animation = this.animateElm($elm);
-        },
+        duration: 10000,
+        loop: true,
+        modifier: utils.wrap(-$elm.getBoundingClientRect().width, 0),
+        // onComplete: () => {
+        //   const ms = Date.now() - start;
+        //   console.log(ms / 1000);
+        //   console.log($elm.getBoundingClientRect().x);
+        //   this.#animation = this.animateElm($elm);
+        // },
       });
     }
 
     pauseAnimation() {
-      if (this.#animation != null) this.#animation.pause();
-      console.log("pause");
+      throw new Error("Not yet implemented");
     }
 
     resumeAnimation() {
-      console.log("resume");
-      if (this.#animation != null) this.#animation.resume();
+      throw new Error("Not yet implemented");
     }
 
     connectedCallback() {
       this.#SPEED = Number(this.dataset.speed ?? 20);
-      this.#GAP = Number(this.dataset.gap ?? 20);
 
       const $el = this.querySelector(".marquee-content");
       if ($el != null) {
-        this.#animation = this.animateElm($el);
-        for (const child of $el.children) {
-          if (child instanceof HTMLParagraphElement) {
-            // I will likely regret this approach later but it works for now
-            this.#allQuotesEl.push(child as HTMLParagraphElement);
-          }
-        }
       } else {
         throw new Error(".marquee-content does not exist");
       }
-
-      // let count = copyCount() - 1;
-      // while (count > 0) {
-      //   renderInitialText();
-      //   count--;
-      // }
     }
 
     disconnectedCallback() {
