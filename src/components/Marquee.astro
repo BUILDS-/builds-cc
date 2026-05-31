@@ -7,20 +7,22 @@ const { speed = 20, content = [] } = Astro.props;
 ---
 
 <marquee-slide class="marquee" data-speed={speed}>
-  <div class="marquee-content">
-    {content.map((quote) => <p class="marquee-text">{quote}</p>)}
+  <div class="marquee-track">
+    <div class="marquee-set">
+      {content.map((quote) => <p class="marquee-text">{quote}</p>)}
+    </div>
   </div>
 </marquee-slide>
 
 <script>
-  import { animate, type JSAnimation, linear, utils } from "animejs";
-  const start = Date.now();
+  import { animate, type JSAnimation, linear } from "animejs";
+  import assertExist from "@lib/assertExist.ts";
 
   class MarqueeSlide extends HTMLElement {
-    #animation: JSAnimation | null = null;
-    #allQuotesEl: HTMLParagraphElement[] = [];
+    #animation!: JSAnimation;
+    #track: HTMLDivElement | null = null;
+    #set: HTMLDivElement | null = null;
     #SPEED = 0;
-    #GAP = 0;
 
     constructor() {
       super();
@@ -29,53 +31,49 @@ const { speed = 20, content = [] } = Astro.props;
     }
 
     copyCount() {
-      let strideWidth = 0;
-      this.#allQuotesEl.forEach(($elm: HTMLParagraphElement) => {
-        strideWidth += $elm.getBoundingClientRect().width + this.#GAP;
-      });
-      console.log(strideWidth);
-      return Math.ceil((window.innerWidth * 2) / strideWidth) + 1;
+      const strideWidth = this.#set!.getBoundingClientRect().width;
+      return Math.ceil((window.innerWidth * 2) / strideWidth);
     }
 
-    animateElm($elm: Element) {
-      // Is a recursive call really a good decision?
-      // Maybe consider CSS only
-      return animate($elm, {
-        x: `-= ${$elm.getBoundingClientRect().width * 2}`,
-        ease: linear(0, 1),
-        duration: 10000,
+    animateTrack() {
+      assertExist(this.#set, "#set is null");
+      assertExist(this.#track, "#track is null");
+      const strideWidth = this.#set.getBoundingClientRect().width;
+      console.log(strideWidth);
+
+      return animate(this.#track, {
+        translateX: -strideWidth,
+        duration: (strideWidth / this.#SPEED) * 1000,
         loop: true,
-        modifier: utils.wrap(-$elm.getBoundingClientRect().width, 0),
-        // onComplete: () => {
-        //   const ms = Date.now() - start;
-        //   console.log(ms / 1000);
-        //   console.log($elm.getBoundingClientRect().x);
-        //   this.#animation = this.animateElm($elm);
-        // },
+        ease: linear(0, 1),
       });
     }
 
     pauseAnimation() {
-      throw new Error("Not yet implemented");
+      this.#animation.pause();
     }
 
     resumeAnimation() {
-      throw new Error("Not yet implemented");
+      this.#animation.resume();
     }
 
     connectedCallback() {
+      this.#track = this.querySelector(".marquee-track");
+      this.#set = this.querySelector(".marquee-set");
+      assertExist(this.#track, "#track does not exist");
+      assertExist(this.#set, "$set does not exist");
+
       this.#SPEED = Number(this.dataset.speed ?? 20);
 
-      const $el = this.querySelector(".marquee-content");
-      if ($el != null) {
-      } else {
-        throw new Error(".marquee-content does not exist");
+      for (let i = this.copyCount(); i > 0; i--) {
+        const clone = this.#set.cloneNode(true);
+        this.#track.appendChild(clone);
       }
+
+      this.#animation = this.animateTrack();
     }
 
-    disconnectedCallback() {
-      if (this.#animation != null) this.#animation.reset();
-    }
+    disconnectedCallback() {}
   }
 
   customElements.define("marquee-slide", MarqueeSlide);
@@ -90,16 +88,21 @@ const { speed = 20, content = [] } = Astro.props;
     display: flex;
   }
 
-  .marquee-content {
+  .marquee-track {
     display: flex;
     justify-content: start;
-    align-items: center;
     text-align: center;
-    gap: 20px;
-    padding-left: 20px;
 
     & :global(.marquee-text) {
       white-space: nowrap;
+    }
+
+    .marquee-set {
+      display: flex;
+      align-items: center;
+      padding-left: 20px;
+      gap: 20px;
+      height: 100%;
     }
   }
 </style>
