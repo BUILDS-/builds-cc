@@ -15,6 +15,7 @@ const { speed = 20, content = [] } = Astro.props;
 </marquee-slide>
 
 <script>
+  // TODO: Maybe need an resize observer to redo code inside connectedCallback()?
   import { animate, type JSAnimation, linear } from "animejs";
   import assertExist from "@lib/assertExist.ts";
 
@@ -31,7 +32,8 @@ const { speed = 20, content = [] } = Astro.props;
     }
 
     copyCount() {
-      const strideWidth = this.#set!.getBoundingClientRect().width;
+      assertExist(this.#set, "#set is null");
+      const strideWidth = this.#set.getBoundingClientRect().width;
       return Math.ceil((window.innerWidth * 2) / strideWidth);
     }
 
@@ -44,6 +46,7 @@ const { speed = 20, content = [] } = Astro.props;
       return animate(this.#track, {
         translateX: -strideWidth,
         duration: (strideWidth / this.#SPEED) * 1000,
+        delay: 300,
         loop: true,
         ease: linear(0, 1),
       });
@@ -73,7 +76,9 @@ const { speed = 20, content = [] } = Astro.props;
       this.#animation = this.animateTrack();
     }
 
-    disconnectedCallback() {}
+    disconnectedCallback() {
+      this.#animation.cancel();
+    }
   }
 
   customElements.define("marquee-slide", MarqueeSlide);
@@ -93,16 +98,22 @@ const { speed = 20, content = [] } = Astro.props;
     justify-content: start;
     text-align: center;
 
-    & :global(.marquee-text) {
-      white-space: nowrap;
-    }
-
     .marquee-set {
       display: flex;
       align-items: center;
-      padding-left: 20px;
-      gap: 20px;
+      padding-left: 40px;
+      gap: 40px;
       height: 100%;
+    }
+
+    & :global(.marquee-text) {
+      white-space: nowrap;
+    }
+    & :global(.marquee-text::before) {
+      content: "/// ";
+    }
+    & :global(.marquee-text::after) {
+      content: " ///";
     }
   }
 </style>
