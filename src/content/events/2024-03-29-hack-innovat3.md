@@ -19,11 +19,10 @@ badges:
 date: 2024-03-29T14:30:00-03:00
 link: "https://www.eventbrite.com/e/hack-innovat3-tickets-857358180397"
 linkText: "Register"
-image: "./assets/events/hack-innovat3.jpg"
+image: "../../assets/events/hack-innovat3.jpg"
 instructors:
   - name: "Dominic Maglione"
-    image: "./assets/eboard/dcmag.jpeg"
+    image: "../../assets/eboard/dcmag.jpeg"
   - name: "Phillip Tran"
-    image: "./assets/eboard/ptran.jpeg"
 location: "CDS"
 ---

@@ -13,11 +13,10 @@ badges:
   - label: "Food"
     emoji: "🍕"
 date: 2024-02-23T20:00:00-03:00
-image: "./assets/events/arduino-machine-learning.jpg"
+image: "../../assets/events/arduino-machine-learning.jpg"
 instructors:
   - name: "Dominic Maglione"
-    image: "./assets/eboard/dcmag.jpeg"
+    image: "../../assets/eboard/dcmag.jpeg"
   - name: "Phillip Tran"
-    image: "./assets/eboard/ptran.jpeg"
 location: "CDS 220"
 ---

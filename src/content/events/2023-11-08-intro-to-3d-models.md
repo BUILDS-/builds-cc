@@ -9,9 +9,9 @@ badges:
   - label: "3D Printing"
     emoji: "🖨️"
 date: 2023-11-08T20:00:00-04:00
-image: "./assets/events/intro-to-3d-models.jpg"
+image: "../../assets/events/intro-to-3d-models.jpg"
 instructors:
   - name: "Dominic Maglione"
-    image: "./assets/eboard/dcmag.jpeg"
+    image: "../../assets/eboard/dcmag.jpeg"
 location: "CDS 220"
 ---
