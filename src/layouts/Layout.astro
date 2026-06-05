@@ -41,7 +41,7 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
 
   function scrambleTitle() {
     animate("h1", {
-      innerHTML: scrambleText({ override: "_" }),
+      innerHTML: scrambleText({ override: "_", cursor: "░▒▓█" }),
     });
     animate(".header-barcode", {
       innerHTML: scrambleText({ override: "_" }),
