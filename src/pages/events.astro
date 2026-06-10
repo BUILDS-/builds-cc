@@ -28,18 +28,58 @@ const quotes = [
 
 <script>
   import assertExist from "@lib/assertExist";
-  import { createDraggable, createLayout } from "animejs";
+  import { GAPDesktop } from "@lib/constants";
+  import { createDraggable, createLayout, animate, stagger } from "animejs";
+
+  /*
+   * When using View Transitions such as swup, scripts are only loaded once meaning any
+   * references to an element will become null
+   *
+   * Either use lifecycle hooks to reinitialize/clean up your scripts
+   *
+   * OR
+   *
+   * Consider using web components since they have callbacks to handle this
+   * just like Marquee.astro
+   * */
+
+  /*
+   * Maybe consider not using draggable on mobile,
+   * since viewport is so small, its better to just render them
+   * to viewport size?
+   * */
+
+  /*
+   * Events section should have a minimum height of svg's
+   * height
+   * */
+
+  const eventSectionHeight = window.innerHeight - 4 * GAPDesktop;
 
   // Create root layout
   const $eventSection = document.querySelector<HTMLDivElement>(".club-events");
   assertExist($eventSection, "$eventSection does not exist");
-  const layout = createLayout($eventSection);
+  $eventSection.style.minHeight = `${eventSectionHeight}px`;
+
+  const layout = createLayout($eventSection); // Don't know what to do with this yet
 
   const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
-  $allCards.forEach(($card) => {
-    // Turn all cards into draggable
-    createDraggable($card);
-  });
+
+  function initCard($card: HTMLDivElement, delayValue: number, offset: number) {
+    animate($card, {
+      scale: { from: 0 },
+      delay: 100 + delayValue,
+      x: 10 + offset,
+      y: 10 + offset,
+      opacity: { from: 0.5 },
+      duration: 150,
+      onComplete: () => createDraggable($card),
+    });
+  }
+
+  for (let i = 0; i < $allCards.length; i++) {
+    initCard($allCards[i], i * 120, i * 20);
+  }
 </script>
 
 <style>
@@ -71,8 +111,7 @@ const quotes = [
   }
 
   .club-events {
-    display: grid-lanes;
-    grid-template-columns: 1fr 1fr 1fr;
+    position: relative;
   }
 
   @media (min-width: 800px) {
