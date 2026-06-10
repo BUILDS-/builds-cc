@@ -40,10 +40,7 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
   engine.defaults.frameRate = 120; // 120FPS WEEWOOWEEWOO
 
   function scrambleTitle() {
-    animate("h1", {
-      innerHTML: scrambleText({ override: "_", cursor: "░▒▓█" }),
-    });
-    animate(".header-barcode", {
+    animate(["h1", ".header-barcode"], {
       innerHTML: scrambleText({ override: "_" }),
     });
   }

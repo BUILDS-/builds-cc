@@ -28,6 +28,8 @@
     NAV_SLIDE_DIST,
     NAV_DURATION,
     NAV_EASE,
+    GAP,
+    GAPDesktop,
   } from "@lib/constants";
   import { animate } from "animejs";
 
@@ -40,8 +42,6 @@
   const innerRects = document.querySelectorAll(
     "#inner-mask-body, #inner-rect-border",
   );
-  const GAP = 15;
-  const GAPDesktop = 20;
   let vh = window.innerHeight;
   let vw = window.innerWidth;
 
