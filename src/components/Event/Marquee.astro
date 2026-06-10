@@ -16,6 +16,7 @@ const { speed = 20, content = [] } = Astro.props;
 
 <script>
   // TODO: Maybe need an resize observer to redo code inside connectedCallback()?
+  // TODO: Consider using animatable instead of animate
   import { animate, type JSAnimation, linear } from "animejs";
   import assertExist from "@lib/assertExist.ts";
 
