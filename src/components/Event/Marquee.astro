@@ -17,11 +17,11 @@ const { speed = 20, content = [] } = Astro.props;
 <script>
   // TODO: Maybe need an resize observer to redo code inside connectedCallback()?
   // TODO: Consider using animatable instead of animate
-  import { animate, type JSAnimation, linear } from "animejs";
+  import { waapi, linear, type WAAPIAnimation } from "animejs";
   import assertExist from "@lib/assertExist.ts";
 
   class MarqueeSlide extends HTMLElement {
-    #animation!: JSAnimation;
+    #animation!: WAAPIAnimation;
     #track: HTMLDivElement | null = null;
     #set: HTMLDivElement | null = null;
     #SPEED = 0;
@@ -44,7 +44,7 @@ const { speed = 20, content = [] } = Astro.props;
       const strideWidth = this.#set.getBoundingClientRect().width;
       console.log(strideWidth);
 
-      return animate(this.#track, {
+      return waapi.animate(this.#track, {
         translateX: -strideWidth,
         duration: (strideWidth / this.#SPEED) * 1000,
         delay: 300,
