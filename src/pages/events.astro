@@ -1,10 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Marquee from "@components/Event/Marquee.astro";
-import EventCard from "@components/Event/EventCard.astro";
-import { getCollection } from "astro:content";
-
-const allEvents = await getCollection("clubEvents");
+import EventSection from "@components/Event/EventSection.astro";
 
 const quotes = [
   "╰(▔∀▔)╯",
@@ -21,66 +18,8 @@ const quotes = [
     <h2 class="header-barcode">EVENTS</h2>
   </section>
   <Marquee speed={50} content={quotes} />
-  <section class="club-events">
-    {allEvents.map((event) => <EventCard id={event.id} event={event} />)}
-  </section>
+  <EventSection />
 </Layout>
-
-<script>
-  import assertExist from "@lib/assertExist";
-  import { GAPDesktop } from "@lib/constants";
-  import { createDraggable, createLayout, animate, stagger } from "animejs";
-
-  /*
-   * When using View Transitions such as swup, scripts are only loaded once meaning any
-   * references to an element will become null
-   *
-   * Either use lifecycle hooks to reinitialize/clean up your scripts
-   *
-   * OR
-   *
-   * Consider using web components since they have callbacks to handle this
-   * just like Marquee.astro
-   * */
-
-  /*
-   * Maybe consider not using draggable on mobile,
-   * since viewport is so small, its better to just render them
-   * to viewport size?
-   * */
-
-  /*
-   * Events section should have a minimum height of svg's
-   * height
-   * */
-
-  const eventSectionHeight = window.innerHeight - 4 * GAPDesktop;
-
-  // Create root layout
-  const $eventSection = document.querySelector<HTMLDivElement>(".club-events");
-  assertExist($eventSection, "$eventSection does not exist");
-  $eventSection.style.minHeight = `${eventSectionHeight}px`;
-
-  const layout = createLayout($eventSection); // Don't know what to do with this yet
-
-  const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
-
-  function initCard($card: HTMLDivElement, delayValue: number, offset: number) {
-    animate($card, {
-      scale: { from: 0 },
-      delay: 100 + delayValue,
-      x: 10 + offset,
-      y: 10 + offset,
-      opacity: { from: 0.5 },
-      duration: 150,
-      onComplete: () => createDraggable($card),
-    });
-  }
-
-  for (let i = 0; i < $allCards.length; i++) {
-    initCard($allCards[i], i * 120, i * 20);
-  }
-</script>
 
 <style>
   .heading {
@@ -108,10 +47,6 @@ const quotes = [
       font-family: var(--font-Barcode);
       letter-spacing: 3px;
     }
-  }
-
-  .club-events {
-    position: relative;
   }
 
   @media (min-width: 800px) {

@@ -1,0 +1,94 @@
+---
+import EventCard from "@components/Event/EventCard.astro";
+import { getCollection } from "astro:content";
+
+const allEvents = await getCollection("clubEvents");
+---
+
+<section class="club-events">
+  {allEvents.map((event) => <EventCard id={event.id} event={event} />)}
+</section>
+
+<style>
+  .club-events {
+    position: relative;
+  }
+</style>
+
+<script>
+  import assertExist from "@lib/assertExist";
+  import { GAPDesktop } from "@lib/constants";
+  import {
+    createDraggable,
+    createLayout,
+    animate,
+    type DOMTargetSelector,
+  } from "animejs";
+
+  /*
+   * When using View Transitions such as swup, scripts are only loaded once meaning any
+   * references to an element will become null
+   *
+   * Either use lifecycle hooks to reinitialize/clean up your scripts
+   *
+   * OR
+   *
+   * Consider using web components since they have callbacks to handle this
+   * just like Marquee.astro
+   * */
+
+  /*
+   * Maybe consider not using draggable on mobile,
+   * since viewport is so small, its better to just render them
+   * to viewport size?
+   * */
+
+  /*
+   * Events section should have a minimum height of svg's
+   * height
+   * */
+
+  function initEvents() {
+    const eventSectionHeight = window.innerHeight - 4 * GAPDesktop;
+
+    // Create root layout
+    const $eventSection =
+      document.querySelector<HTMLDivElement>(".club-events");
+    const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
+    assertExist($eventSection, "$eventSection does not exist");
+
+    const layout = createLayout($eventSection); // Don't know what to do with this yet
+
+    $eventSection.style.minHeight = `${eventSectionHeight}px`;
+    animate($allCards, {
+      scale: { from: 0 },
+      delay: (_: Element, i: number) => i * 100,
+      x: (_: Element, i: number) => i * 26 + 40,
+      y: (_: Element, i: number) => i * 26 + 30,
+      opacity: { from: 0.5 },
+      duration: 100,
+      onComplete: () => {
+        $allCards.forEach(($card) => {
+          const $titleBar = $card.querySelector(
+            ".title-bar",
+          ) as DOMTargetSelector;
+          createDraggable($card, {
+            trigger: $titleBar,
+            maxVelocity: 0,
+            container: $eventSection,
+          });
+        });
+      },
+    });
+  }
+
+  document.addEventListener("swup:page:view", (e) => {
+    const swupEvent = e as CustomEvent;
+    if (swupEvent.detail.visit.to.url === "/events") {
+      initEvents();
+      console.log("hi");
+    }
+  });
+
+  initEvents();
+</script>
