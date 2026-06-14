@@ -30,7 +30,7 @@
     if ($navMenu == null) throw new Error("navMenu does not exist");
     const { x: navX, y: navY } = $navMenu.getBoundingClientRect();
     const { width, height, x, y } = $link.getBoundingClientRect();
-    if ($highlightBlock)
+    if ($highlightBlock != null)
       animate($highlightBlock, {
         width: width,
         height: height,

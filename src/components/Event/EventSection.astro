@@ -2,7 +2,9 @@
 import EventCard from "@components/Event/EventCard.astro";
 import { getCollection } from "astro:content";
 
-const allEvents = await getCollection("clubEvents");
+const allEvents = (await getCollection("clubEvents")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
 ---
 
 <section class="club-events">
@@ -12,46 +14,39 @@ const allEvents = await getCollection("clubEvents");
 <style>
   .club-events {
     position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 300px;
   }
 </style>
 
 <script>
   import assertExist from "@lib/assertExist";
   import { GAPDesktop } from "@lib/constants";
-  import {
-    createDraggable,
-    createLayout,
-    animate,
-    type DOMTargetSelector,
-  } from "animejs";
+  import { createLayout, animate, utils } from "animejs";
 
-  /*
-   * When using View Transitions such as swup, scripts are only loaded once meaning any
-   * references to an element will become null
-   *
-   * Either use lifecycle hooks to reinitialize/clean up your scripts
-   *
-   * OR
-   *
-   * Consider using web components since they have callbacks to handle this
-   * just like Marquee.astro
-   * */
+  const allCardsArr = []; // Stores: [[animatable, $card], ...]
+  const eventSectionHeight = window.innerHeight - 4 * GAPDesktop;
 
-  /*
-   * Maybe consider not using draggable on mobile,
-   * since viewport is so small, its better to just render them
-   * to viewport size?
-   * */
+  function cardMouseEnter($card: HTMLDivElement) {
+    animate($card, {
+      y: -20,
+      margin: "0px",
+      ease: "out(3)",
+      duration: 100,
+    });
+  }
 
-  /*
-   * Events section should have a minimum height of svg's
-   * height
-   * */
+  function cardMouseLeave($card: HTMLDivElement) {
+    animate($card, {
+      y: 0,
+      margin: "-1px",
+      ease: "out(3)",
+      duration: 100,
+    });
+  }
 
   function initEvents() {
-    const eventSectionHeight = window.innerHeight - 4 * GAPDesktop;
-
-    // Create root layout
     const $eventSection =
       document.querySelector<HTMLDivElement>(".club-events");
     const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
@@ -59,34 +54,27 @@ const allEvents = await getCollection("clubEvents");
 
     const layout = createLayout($eventSection); // Don't know what to do with this yet
 
-    $eventSection.style.minHeight = `${eventSectionHeight}px`;
-    animate($allCards, {
-      scale: { from: 0 },
-      delay: (_: Element, i: number) => i * 100,
-      x: (_: Element, i: number) => i * 26 + 40,
-      y: (_: Element, i: number) => i * 26 + 30,
-      opacity: { from: 0.5 },
-      duration: 100,
-      onComplete: () => {
-        $allCards.forEach(($card) => {
-          const $titleBar = $card.querySelector(
-            ".title-bar",
-          ) as DOMTargetSelector;
-          createDraggable($card, {
-            trigger: $titleBar,
-            maxVelocity: 0,
-            container: $eventSection,
-          });
-        });
-      },
+    $allCards.forEach(($card) => {
+      // Creates animatables and enables a little hover animation
+      $card.addEventListener("mouseenter", () => cardMouseEnter($card));
+
+      $card.addEventListener("mouseleave", () => cardMouseLeave($card));
     });
+
+    // function animateLayout() {
+    //   layout.update(({ root }) => {
+    //     const items = [...root.querySelectorAll(".event-card")];
+    //     utils.shuffle(items).forEach(($el) => root.appendChild($el));
+    //   });
+    // }
+    // const [$button] = utils.$("#shuffle");
+    // $button.addEventListener("click", animateLayout);
   }
 
   document.addEventListener("swup:page:view", (e) => {
     const swupEvent = e as CustomEvent;
     if (swupEvent.detail.visit.to.url === "/events") {
       initEvents();
-      console.log("hi");
     }
   });
 

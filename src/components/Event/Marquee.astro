@@ -41,7 +41,7 @@ const { speed = 20, content = [] } = Astro.props;
       assertExist(this.#set, "#set is null");
       assertExist(this.#track, "#track is null");
       const strideWidth = this.#set.getBoundingClientRect().width;
-      console.log(strideWidth);
+      // console.log(strideWidth);
 
       return animate(this.#track, {
         translateX: -strideWidth,
