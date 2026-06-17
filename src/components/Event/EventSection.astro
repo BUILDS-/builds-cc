@@ -7,13 +7,16 @@ const allEvents = (await getCollection("clubEvents")).sort(
 );
 ---
 
-<section class="club-events">
+<section class="club-events grid-layout">
   {allEvents.map((event) => <EventCard id={event.id} event={event} />)}
 </section>
 
 <style>
   .club-events {
     position: relative;
+  }
+
+  .club-events[data-layout="grid"] {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-auto-rows: 300px;
@@ -23,10 +26,26 @@ const allEvents = (await getCollection("clubEvents")).sort(
 <script>
   import assertExist from "@lib/assertExist";
   import { GAPDesktop } from "@lib/constants";
-  import { createLayout, animate, utils } from "animejs";
+  import {
+    createLayout,
+    createDraggable,
+    animate,
+    utils,
+    type DOMTargetSelector,
+    Draggable,
+  } from "animejs";
 
-  const allCardsArr = []; // Stores: [[animatable, $card], ...]
-  const eventSectionHeight = window.innerHeight - 4 * GAPDesktop;
+  const allDragable: Draggable[] = []; // Holds all draggable elements, used to disable them later
+
+  /* --- START: Grid related functions --- */
+
+  function initGrid($allCards: NodeListOf<HTMLDivElement>) {
+    $allCards.forEach(($card) => {
+      // Creates animatables and enables a little hover animation
+      $card.addEventListener("mouseenter", () => cardMouseEnter($card));
+      $card.addEventListener("mouseleave", () => cardMouseLeave($card));
+    });
+  }
 
   function cardMouseEnter($card: HTMLDivElement) {
     animate($card, {
@@ -46,29 +65,55 @@ const allEvents = (await getCollection("clubEvents")).sort(
     });
   }
 
+  /* --- END: Grid related functions --- */
+
+  /* --- START: Draggable related functions --- */
+
+  function initDraggables(
+    $allCards: NodeListOf<HTMLDivElement>,
+    $container: HTMLDivElement,
+  ) {
+    // animate($allCards, {
+    //   scale: { from: 0 },
+    //   delay: (_: Element, i: number) => i * 100,
+    //   x: (_: Element, i: number) => i * 26 + 40,
+    //   y: (_: Element, i: number) => i * 26 + 30,
+    //   opacity: { from: 0.5 },
+    //   duration: 100,
+    //   onComplete: () => {},
+    // });
+    $allCards.forEach(($card) => {
+      const $titleBar = $card.querySelector(".title-bar") as DOMTargetSelector;
+      const draggable = createDraggable($card, {
+        trigger: $titleBar,
+        maxVelocity: 0,
+        container: $container,
+      });
+      allDragable.push(draggable);
+    });
+  }
+
+  function cleanDraggables() {
+    allDragable.forEach(($draggable) => {
+      $draggable.revert();
+    });
+    allDragable.length = 0; // clear array
+  }
+
+  /* --- END: Draggable related functions --- */
+
   function initEvents() {
     const $eventSection =
       document.querySelector<HTMLDivElement>(".club-events");
+    assertExist($eventSection, "$eventSection does not exist");
+    const eventSectionHeight = window.innerHeight - 4 * GAPDesktop;
+
     const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
     assertExist($eventSection, "$eventSection does not exist");
 
-    const layout = createLayout($eventSection); // Don't know what to do with this yet
+    const layout = createLayout($eventSection);
 
-    $allCards.forEach(($card) => {
-      // Creates animatables and enables a little hover animation
-      $card.addEventListener("mouseenter", () => cardMouseEnter($card));
-
-      $card.addEventListener("mouseleave", () => cardMouseLeave($card));
-    });
-
-    // function animateLayout() {
-    //   layout.update(({ root }) => {
-    //     const items = [...root.querySelectorAll(".event-card")];
-    //     utils.shuffle(items).forEach(($el) => root.appendChild($el));
-    //   });
-    // }
-    // const [$button] = utils.$("#shuffle");
-    // $button.addEventListener("click", animateLayout);
+    initGrid($allCards);
   }
 
   document.addEventListener("swup:page:view", (e) => {

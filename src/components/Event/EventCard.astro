@@ -19,13 +19,18 @@ const { id, event } = Astro.props;
 </article>
 
 <style>
-  article {
+  .draggable-card {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+  }
+
+  .event-card {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--color-border);
     background-color: black;
     transform-origin: 0 0; /* Necessary to help card look like it renders in from top left*/
-    margin: -1px;
   }
   .title-bar {
     position: relative;
