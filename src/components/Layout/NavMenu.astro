@@ -61,7 +61,7 @@ console.log(url);
 
   function onNavClick(e: PointerEvent) {
     assertExist(e.target, "e.target does not exist");
-    assertExist($highlight, "hi");
+    assertExist($highlight, "$highlight does not exist");
     const target = e.target as HTMLElement;
     const $anchor = target.closest("a");
 
@@ -73,7 +73,7 @@ console.log(url);
   }
 
   function updateActiveLink() {
-    assertExist($highlight, "hi");
+    assertExist($highlight, "$highlight does not exist");
     const url = getCurrentUrl();
     $allLinks.forEach(($link) => {
       const href = $link.getAttribute("href");
@@ -121,8 +121,6 @@ console.log(url);
         $navMenu.style.opacity = "";
         $navMenu.style.visibility = "";
       }
-      // const $active = $navMenu.querySelector<HTMLLIElement>("li.active");
-      // if ($active != null) animateNav($active);
     }, 50);
   });
 
@@ -168,10 +166,6 @@ console.log(url);
     color: var(--color-bg);
   }
 
-  li {
-    padding: 2px;
-  }
-
   a {
     position: relative;
     display: inline-block;
@@ -196,6 +190,7 @@ console.log(url);
     left: 0;
     right: 0;
     bottom: 0;
+    margin: 1px;
     z-index: 1;
   }
 
