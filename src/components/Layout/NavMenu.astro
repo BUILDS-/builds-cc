@@ -1,14 +1,29 @@
+---
+const url = Astro.url.pathname;
+console.log(url);
+---
+
 <nav id="navMenu">
   <ul>
     <li>
-      <a href="/" aria-label="Builds home page">Home</a>
+      <a href="/" aria-label="Builds home page"
+        ><span class="nav-text">Home</span>
+        {url === "/" ? <span class="highlight" /> : ""}
+      </a>
     </li>
     <li>
-      <a href="/events" aria-label="Builds events page">Events</a>
+      <a href="/events" aria-label="Builds events page"
+        ><span class="nav-text">Events</span>
+        {url === "/events" ? <span class="highlight" /> : ""}
+      </a>
     </li>
-    <li><a href="/eboard" aria-label="Builds eboard page">E-Board</a></li>
+    <li>
+      <a href="/eboard" aria-label="Builds eboard page"
+        ><span class="nav-text">E-Board</span>
+        {url === "/eboard" ? <span class="highlight" /> : ""}
+      </a>
+    </li>
   </ul>
-  <div id="highlight"></div>
 </nav>
 
 <script>
@@ -16,47 +31,64 @@
    * Clicking on a link, similar to MobileNavIcon, also dispatches/fires a
    * CustomEvent to notify components to animate the "closing" animation.
    * */
-  import { MOBILE_BREAK, NAV_DURATION } from "@lib/constants";
-  import { animate } from "animejs";
+  import assertExist from "@lib/assertExist";
+  import { MOBILE_BREAK } from "@lib/constants";
+  import { createLayout } from "animejs";
   import { getCurrentUrl } from "swup";
 
-  const $navMenu = document.getElementById("navMenu");
-  if ($navMenu == null) throw new Error("navMenu does not exist somehow");
-  const $allLinks = $navMenu.querySelectorAll("li");
-  const $highlightBlock = $navMenu.querySelector<HTMLDivElement>("#highlight");
   const isMobile = () => window.innerWidth <= MOBILE_BREAK;
 
-  function animateNav($link: HTMLLIElement) {
-    if ($navMenu == null) throw new Error("navMenu does not exist");
-    const { x: navX, y: navY } = $navMenu.getBoundingClientRect();
-    const { width, height, x, y } = $link.getBoundingClientRect();
-    if ($highlightBlock != null)
-      animate($highlightBlock, {
-        width: width,
-        height: height,
-        x: isMobile() ? x : x - navX,
-        y: isMobile() ? y : y - navY,
-        duration: NAV_DURATION,
-        ease: "out(5.82)",
-      });
+  const $navMenu = document.getElementById("navMenu");
+  assertExist($navMenu, "navMenu does not exist");
+
+  const $navUl = $navMenu.querySelector("ul");
+  const $allLinks = $navMenu.querySelectorAll("a");
+
+  const { navLayout, $highlight } = initNavLayout();
+
+  function initNavLayout() {
+    /*
+     * Creates a navLayout object
+     * Grabs the current <span> with class .highlight
+     * */
+    assertExist($navUl, "navUl does not exist");
+    const navLayout = createLayout($navUl, {
+      ease: "out(5.82)",
+    });
+    const $highlight = document.querySelector(".highlight");
+    return { navLayout, $highlight };
+  }
+
+  function onNavClick(e: PointerEvent) {
+    assertExist(e.target, "e.target does not exist");
+    assertExist($highlight, "hi");
+    const target = e.target as HTMLElement;
+    const $anchor = target.closest("a");
+
+    if ($anchor != null) {
+      isMobile()
+        ? $anchor?.appendChild($highlight)
+        : navLayout.update(() => $anchor?.appendChild($highlight));
+    }
   }
 
   function updateActiveLink() {
+    assertExist($highlight, "hi");
     const url = getCurrentUrl();
     $allLinks.forEach(($link) => {
-      const href = $link.children[0].getAttribute("href");
+      const href = $link.getAttribute("href");
       if (href === url) {
-        $link.classList.add("active");
-        animateNav($link);
-      } else {
-        $link.classList.remove("active");
+        isMobile()
+          ? $link.appendChild($highlight)
+          : navLayout.update(() => $link.appendChild($highlight));
       }
     });
   }
 
   function toggleNav() {
+    // Mobile only function
     if (!isMobile()) return;
-    else if ($navMenu == null) throw new Error("navMenu does not exist");
+    assertExist($navMenu, "navMenu does not exist");
 
     if (document.body.hasAttribute("data-nav-open")) {
       $navMenu.style.opacity = "1";
@@ -67,7 +99,8 @@
     }
   }
 
-  updateActiveLink();
+  $navMenu.addEventListener("click", (e) => onNavClick(e));
+
   document.addEventListener("swup:animation:out:start", () => {
     // Animation starts on swup view transition start
     updateActiveLink();
@@ -77,6 +110,7 @@
     updateActiveLink();
   });
 
+  // Window resize debouncing, so we don't animate immediately after a resize event
   let resizeTimer: ReturnType<typeof setTimeout>;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
@@ -87,8 +121,8 @@
         $navMenu.style.opacity = "";
         $navMenu.style.visibility = "";
       }
-      const $active = $navMenu.querySelector<HTMLLIElement>("li.active");
-      if ($active != null) animateNav($active);
+      // const $active = $navMenu.querySelector<HTMLLIElement>("li.active");
+      // if ($active != null) animateNav($active);
     }, 50);
   });
 
@@ -109,50 +143,59 @@
 
 <style>
   nav {
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 0;
-    position: fixed;
+
     width: 100%;
     height: var(--nav-height);
+
     z-index: var(--z-nav);
-    box-sizing: border-box;
+    opacity: 0;
   }
+
   ul {
-    border: 1px solid var(--color-border);
-    text-align: center;
-    list-style: none;
-    height: fit-content;
-    padding: 2px;
+    position: relative;
+    display: flex;
+    padding: 0;
     margin: 0;
 
-    display: flex;
-    flex-direction: row;
+    text-align: center;
+    list-style: none;
 
     background-color: var(--color-text);
     color: var(--color-bg);
   }
+
   li {
-    padding: 5px 30px;
-    position: relative;
-    z-index: 2;
+    padding: 2px;
   }
 
   a {
+    position: relative;
+    display: inline-block;
+    padding: 5px 30px;
     color: inherit;
     text-decoration: none;
   }
 
-  .active {
+  .nav-text {
+    position: relative;
+    z-index: 2;
+  }
+
+  #navMenu li:has(.highlight) {
     color: var(--color-text);
   }
 
-  #highlight {
+  .highlight {
     position: absolute;
     background-color: var(--color-bg);
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 1;
   }
 
