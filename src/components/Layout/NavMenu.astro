@@ -1,39 +1,47 @@
 ---
 const url = Astro.url.pathname;
-console.log(url);
 ---
 
-<nav id="navMenu">
-  <ul>
-    <li>
-      <a href="/" aria-label="Builds home page"
-        ><span class="nav-text">Home</span>
-        {url === "/" ? <span class="highlight" /> : ""}
-      </a>
-    </li>
-    <li>
-      <a href="/events" aria-label="Builds events page"
-        ><span class="nav-text">Events</span>
-        {url === "/events" ? <span class="highlight" /> : ""}
-      </a>
-    </li>
-    <li>
-      <a href="/eboard" aria-label="Builds eboard page"
-        ><span class="nav-text">E-Board</span>
-        {url === "/eboard" ? <span class="highlight" /> : ""}
-      </a>
-    </li>
-  </ul>
-</nav>
+<div id="navMenu">
+  <nav aria-label="Primary">
+    <ul class="nav-ul">
+      <li>
+        <a href="/" aria-label="Builds home page"
+          ><span class="nav-text">Home</span>
+          {url === "/" ? <span class="highlight" /> : ""}
+        </a>
+      </li>
+      <li>
+        <a href="/events" aria-label="Builds events page"
+          ><span class="nav-text">Events</span>
+          {url === "/events" ? <span class="highlight" /> : ""}
+        </a>
+      </li>
+      <li>
+        <a href="/eboard" aria-label="Builds eboard page"
+          ><span class="nav-text">E-Board</span>
+          {url === "/eboard" ? <span class="highlight" /> : ""}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
 
 <script>
   /*
-   * Clicking on a link, similar to MobileNavIcon, also dispatches/fires a
-   * CustomEvent to notify components to animate the "closing" animation.
+   * Wasted a lot of time on this component.
+   *
+   * There is something finnicky going on with padding, line-height
+   * and margin that would cause jitter when animated.
+   *
+   * I don't want to waste more time on something stupid
+   * (that I'm probably responsible for) and will come back
+   * to this much much later
    * */
+
   import assertExist from "@lib/assertExist";
   import { MOBILE_BREAK } from "@lib/constants";
-  import { createLayout } from "animejs";
+  import { createLayout, type DOMTarget } from "animejs";
   import { getCurrentUrl } from "swup";
 
   const isMobile = () => window.innerWidth <= MOBILE_BREAK;
@@ -41,7 +49,7 @@ console.log(url);
   const $navMenu = document.getElementById("navMenu");
   assertExist($navMenu, "navMenu does not exist");
 
-  const $navUl = $navMenu.querySelector("ul");
+  const $navUl = $navMenu.querySelector(".nav-ul");
   const $allLinks = $navMenu.querySelectorAll("a");
 
   const { navLayout, $highlight } = initNavLayout();
@@ -50,10 +58,18 @@ console.log(url);
     /*
      * Creates a navLayout object
      * Grabs the current <span> with class .highlight
+     *
+     * Root is the <nav> (one level above <ul>) so the <ul>/<li> positions
+     * can be animated without the root being forced into absolute layout.
+     * children: ".highlight" limits FLIP targets to the highlight box, which
+     * is the only element that actually changes position between states. This
+     * keeps the <a>/.nav-text spans out of the layout animation so they are
+     * never absolutized/width-locked, which is what caused the text jitter.
      * */
-    assertExist($navUl, "navUl does not exist");
-    const navLayout = createLayout($navUl, {
+    assertExist($navUl, "nav does not exist");
+    const navLayout = createLayout($navUl as DOMTarget, {
       ease: "out(5.82)",
+      children: "span",
     });
     const $highlight = document.querySelector(".highlight");
     return { navLayout, $highlight };
@@ -140,7 +156,7 @@ console.log(url);
 </script>
 
 <style>
-  nav {
+  #navMenu {
     position: fixed;
     display: flex;
     justify-content: center;
@@ -150,12 +166,16 @@ console.log(url);
     height: var(--nav-height);
 
     z-index: var(--z-nav);
+    visibility: hidden;
     opacity: 0;
+
+    font-size: 1.1rem;
   }
 
   ul {
     position: relative;
     display: flex;
+    align-items: center;
     padding: 0;
     margin: 0;
 
@@ -169,7 +189,7 @@ console.log(url);
   a {
     position: relative;
     display: inline-block;
-    padding: 5px 30px;
+    padding: 8px 30px;
     color: inherit;
     text-decoration: none;
   }
@@ -190,20 +210,20 @@ console.log(url);
     left: 0;
     right: 0;
     bottom: 0;
-    margin: 1px;
+    margin: 2px;
     z-index: 1;
   }
 
   @media (min-width: 800px) {
-    nav {
+    #navMenu {
       justify-content: flex-end;
-      align-item: center;
+      align-items: center;
       height: fit-content;
-      margin-top: 10px;
+      margin-top: 15px;
       opacity: 1;
       visibility: visible;
     }
-    ul {
+    nav {
       margin-right: 20px;
     }
   }
