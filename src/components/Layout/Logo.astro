@@ -7,35 +7,43 @@ const ILDS = fl.textSync("ILDS", { font: "AnsiShadow" }).trim();
 ---
 
 <header id="logo-container">
-  <pre class="logo-accent">{BU}</pre>
-  <pre>{ILDS}</pre>
+  <a href="/" aria-label="Builds home page">
+    <pre class="logo-accent">{BU}</pre>
+    <pre>{ILDS}</pre>
+  </a>
 </header>
 
 <script>
   import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
+  import { closeNav } from "@lib/navState";
   import { animate } from "animejs";
 
+  const $header = document.querySelector("header");
+  $header?.addEventListener("click", closeNav);
+
   document.addEventListener("navOpen", () => {
-    if (document.body.hasAttribute("data-nav-open")) {
-      animate(`#logo-container`, {
-        duration: NAV_DURATION,
-        ease: NAV_EASE,
-        top: `+=${NAV_SLIDE_DIST}`,
-      });
-    }
+    animate(`#logo-container`, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      top: `+=${NAV_SLIDE_DIST}`,
+    });
   });
 
   document.addEventListener("navClose", () => {
-    if (!document.body.hasAttribute("data-nav-open")) {
-      animate(`#logo-container`, {
-        duration: NAV_DURATION,
-        ease: NAV_EASE,
-        top: `-=${NAV_SLIDE_DIST}`,
-      });
-    }
+    animate(`#logo-container`, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      top: `-=${NAV_SLIDE_DIST}`,
+    });
   });
 </script>
 <style>
+  a {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+  }
+
   #logo-container {
     position: fixed;
     top: 8px;

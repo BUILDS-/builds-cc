@@ -15,41 +15,32 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
    * in order to reveal MobileNavMenu.
    * */
 
+  import { toggleNav } from "@lib/navState";
+  import assertExist from "@lib/assertExist";
   import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
   import { animate } from "animejs";
 
   const navOpen = new CustomEvent("navOpen");
   const navClose = new CustomEvent("navClose");
   const $hamburger = document.querySelector<HTMLDivElement>("#hamburger");
-  if ($hamburger == null)
-    throw new Error("Hamburger element is null or undefined");
+  assertExist($hamburger, "$hamburger div does not exist");
 
-  $hamburger.addEventListener("click", () => {
-    // Toggling an attribute returns true/false as return value
-    const openNav = document.body.toggleAttribute("data-nav-open");
-    openNav
-      ? document.dispatchEvent(navOpen)
-      : document.dispatchEvent(navClose);
-  });
+  $hamburger.addEventListener("click", toggleNav);
 
   document.addEventListener("navOpen", () => {
-    if (document.body.hasAttribute("data-nav-open")) {
-      animate($hamburger, {
-        duration: NAV_DURATION,
-        ease: NAV_EASE,
-        translateY: `${NAV_SLIDE_DIST}`,
-      });
-    }
+    animate($hamburger, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      translateY: `${NAV_SLIDE_DIST}`,
+    });
   });
 
   document.addEventListener("navClose", () => {
-    if (!document.body.hasAttribute("data-nav-open")) {
-      animate($hamburger, {
-        duration: NAV_DURATION,
-        ease: NAV_EASE,
-        translateY: `0`,
-      });
-    }
+    animate($hamburger, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      translateY: `0`,
+    });
   });
 </script>
 

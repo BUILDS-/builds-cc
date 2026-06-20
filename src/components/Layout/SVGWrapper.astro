@@ -85,25 +85,21 @@
   window.addEventListener("resize", updateSVGWrapper);
 
   document.addEventListener("navOpen", () => {
-    if (document.body.hasAttribute("data-nav-open")) {
-      animate(innerRects, {
-        duration: NAV_DURATION,
-        ease: NAV_EASE,
-        y: `+=${NAV_SLIDE_DIST}`,
-        height: `-=${NAV_SLIDE_DIST}`,
-      });
-    }
+    animate(innerRects, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      y: `+=${NAV_SLIDE_DIST}`,
+      height: `-=${NAV_SLIDE_DIST}`,
+    });
   });
 
   document.addEventListener("navClose", () => {
-    if (!document.body.hasAttribute("data-nav-open")) {
-      animate(innerRects, {
-        duration: NAV_DURATION,
-        ease: NAV_EASE,
-        y: `-=${NAV_SLIDE_DIST}`,
-        height: `+=${NAV_SLIDE_DIST}`,
-      });
-    }
+    animate(innerRects, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      y: `-=${NAV_SLIDE_DIST}`,
+      height: `+=${NAV_SLIDE_DIST}`,
+    });
   });
 </script>
 <style>
