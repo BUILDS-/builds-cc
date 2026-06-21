@@ -1,5 +1,5 @@
 const MOBILE_BREAK = 800;
-const NAV_SLIDE_DIST = 120;
+const NAV_SLIDE_DIST = 70;
 const NAV_DURATION = 500;
 const NAV_EASE = "outElastic(1,2)";
 

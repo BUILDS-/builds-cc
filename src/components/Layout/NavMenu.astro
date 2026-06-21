@@ -15,13 +15,13 @@ console.log(url);
       <li>
         <a href="/events" aria-label="Builds events page"
           ><span class="nav-text">Events</span>
-          {url === "/events" ? <span class="highlight" /> : ""}
+          {url === "/events/" ? <span class="highlight" /> : ""}
         </a>
       </li>
       <li>
         <a href="/eboard" aria-label="Builds eboard page"
           ><span class="nav-text">E-Board</span>
-          {url === "/eboard" ? <span class="highlight" /> : ""}
+          {url === "/eboard/" ? <span class="highlight" /> : ""}
         </a>
       </li>
     </ul>
@@ -164,7 +164,6 @@ console.log(url);
     align-items: center;
 
     width: 100%;
-    height: var(--nav-height);
 
     z-index: var(--z-nav);
     visibility: hidden;
@@ -220,7 +219,6 @@ console.log(url);
       justify-content: flex-end;
       align-items: center;
       height: fit-content;
-      margin-top: 15px;
       opacity: 1;
       visibility: visible;
     }
