@@ -146,10 +146,9 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
   }
 
   main {
-    /* Unfortunate 1px and 6px margin becauase of the existence of scroll bar. */
-    margin: var(--mobile-padding-top) 1px 0px var(--mobile-padding-outer);
+    margin: var(--mobile-padding-top) var(--mobile-padding-outer) 0px;
     @media (min-width: 800px) {
-      margin: var(--desktop-padding-top) 6px 0px var(--desktop-padding-outer);
+      margin: var(--desktop-padding-top) var(--desktop-padding-outer) 0px;
     }
   }
 
