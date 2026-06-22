@@ -62,6 +62,17 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
     closeNavMobile();
     scrambleTitle();
   });
+
+  document.addEventListener("swup:visit:start", () => {
+    animate("h1", {
+      innerHTML: scrambleText({
+        text: "...",
+        settleDuration: 50,
+        revealRate: 50,
+        duration: 1000,
+      }),
+    });
+  });
 </script>
 
 <style is:global>

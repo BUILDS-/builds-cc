@@ -108,8 +108,12 @@ console.log(url);
     assertExist($navMenu, "navMenu does not exist");
 
     if (document.body.hasAttribute("data-nav-open")) {
+      navLayout.record();
       $navMenu.style.opacity = "1";
       $navMenu.style.visibility = "visible";
+      navLayout.animate({
+        duration: 500,
+      });
     } else {
       $navMenu.style.opacity = "0";
       $navMenu.style.visibility = "hidden";
@@ -127,14 +131,20 @@ console.log(url);
     updateActiveLink();
   });
 
-  // Window resize debouncing, so we don't animate immediately after a resize event
+  /* Slightly legacy code.
+   * Was necessary when I used animate().
+   *
+   * But the style clear is still useful in case
+   * someone resizes from mobile -> desktop without refresh
+   * */
   let resizeTimer: ReturnType<typeof setTimeout>;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       if (!isMobile()) {
-        // Styling needs clearing because they have priority over media query
-        // So for media query to show opacity and visibility, this is needed
+        // Initial css has priority over media query css.
+        // So for media query to show `opacity: 1` and `visibility: visible`
+        // this is needed on desktop
         $navMenu.style.opacity = "";
         $navMenu.style.visibility = "";
       }
@@ -223,7 +233,7 @@ console.log(url);
       visibility: visible;
     }
     nav {
-      margin-right: 20px;
+      margin-right: 5px;
     }
   }
 </style>
