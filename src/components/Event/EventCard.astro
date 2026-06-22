@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
-import CloseSVG from "@assets/close.svg";
 interface Props {
   id: string;
   event: CollectionEntry<"clubEvents">;
@@ -16,6 +15,7 @@ const { id, event } = Astro.props;
   </div>
   <Image priority draggable="false" alt="Event Image" src={event.data.image} />
   <h2 class="dialog-title">{event.data.title}</h2>
+  <p class="dialog-description">{event.data.description}</p>
 </article>
 
 <style>
@@ -30,7 +30,6 @@ const { id, event } = Astro.props;
     flex-direction: column;
     border: 1px solid var(--color-border);
     background-color: black;
-    transform-origin: 0 0; /* Necessary to help card look like it renders in from top left*/
   }
   .title-bar {
     position: relative;
@@ -56,7 +55,8 @@ const { id, event } = Astro.props;
     cursor: pointer;
   }
 
-  h2 {
+  .dialog-title,
+  .dialog-description {
     display: none;
   }
 

@@ -1,5 +1,6 @@
 ---
 import EventCard from "@components/Event/EventCard.astro";
+import Button from "@components/Button.astro";
 import { getCollection } from "astro:content";
 
 const allEvents = (await getCollection("clubEvents")).sort(
@@ -7,8 +8,17 @@ const allEvents = (await getCollection("clubEvents")).sort(
 );
 ---
 
-<section class="club-events grid-layout">
-  {allEvents.map((event) => <EventCard id={event.id} event={event} />)}
+<section class="event-section">
+  <div class="controls">
+    <p>// SWITCH LAYOUT //</p>
+    <Button id="grid">Grid</Button>
+    <Button id="drag">Draggable</Button>
+    <br />
+    <p>Add a scramble text here to show current layout</p>
+  </div>
+  <div class="club-events" data-layout="grid">
+    {allEvents.map((event) => <EventCard id={event.id} event={event} />)}
+  </div>
 </section>
 
 <style>
@@ -20,6 +30,33 @@ const allEvents = (await getCollection("clubEvents")).sort(
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-auto-rows: 300px;
+
+    article {
+      transform-origin: bottom center;
+    }
+  }
+
+  .club-events[data-layout="drag"] {
+    article {
+      transform-origin: 0 0; /* Necessary to help card look like it renders in from top left*/
+      position: absolute;
+      width: 300px;
+      height: 300px;
+    }
+  }
+
+  .controls {
+    padding: 20px var(--mobile-padding-inner);
+
+    button {
+      padding: 2px 5px;
+      border: 2px solid;
+    }
+
+    button,
+    p {
+      display: inline-block;
+    }
   }
 </style>
 
@@ -35,15 +72,23 @@ const allEvents = (await getCollection("clubEvents")).sort(
     Draggable,
   } from "animejs";
 
-  const allDragable: Draggable[] = []; // Holds all draggable elements, used to disable them later
+  const allDraggable: Draggable[] = []; // Holds all draggable elements, used to disable them later
+  const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
 
-  /* --- START: Grid related functions --- */
+  /* --- START: Grid functions --- */
 
-  function initGrid($allCards: NodeListOf<HTMLDivElement>) {
+  function initGrid() {
     $allCards.forEach(($card) => {
       // Creates animatables and enables a little hover animation
       $card.addEventListener("mouseenter", () => cardMouseEnter($card));
       $card.addEventListener("mouseleave", () => cardMouseLeave($card));
+    });
+    animate($allCards, {
+      y: { from: "50px" },
+      opacity: { from: 0 },
+      delay: utils.stagger(100),
+      ease: "out(3)",
+      duration: 400,
     });
   }
 
@@ -65,14 +110,11 @@ const allEvents = (await getCollection("clubEvents")).sort(
     });
   }
 
-  /* --- END: Grid related functions --- */
+  /* --- END: Grid functions --- */
 
-  /* --- START: Draggable related functions --- */
+  /* --- START: Draggable functions --- */
 
-  function initDraggables(
-    $allCards: NodeListOf<HTMLDivElement>,
-    $container: HTMLDivElement,
-  ) {
+  function initDraggables($container: HTMLDivElement) {
     // animate($allCards, {
     //   scale: { from: 0 },
     //   delay: (_: Element, i: number) => i * 100,
@@ -89,31 +131,58 @@ const allEvents = (await getCollection("clubEvents")).sort(
         maxVelocity: 0,
         container: $container,
       });
-      allDragable.push(draggable);
+      allDraggable.push(draggable);
     });
   }
 
   function cleanDraggables() {
-    allDragable.forEach(($draggable) => {
+    allDraggable.forEach(($draggable) => {
       $draggable.revert();
     });
-    allDragable.length = 0; // clear array
+    allDraggable.length = 0; // clear array
   }
 
-  /* --- END: Draggable related functions --- */
+  /* --- END: Draggable functions --- */
 
+  function initControls($clubEventsDiv: HTMLDivElement) {
+    const $controlsDiv = document.querySelector(".controls");
+    assertExist($controlsDiv, "$controlsDiv does not exist");
+    assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
+
+    $controlsDiv.addEventListener("click", (e) => {
+      const $target = e.target as HTMLElement;
+      assertExist($target, "$target does not exist");
+      const $button = $target.closest("button");
+
+      if ($button != null) {
+        switch ($button.id) {
+          case "grid":
+            $clubEventsDiv.dataset.layout = "grid";
+            break;
+          case "drag":
+            $clubEventsDiv.dataset.layout = "drag";
+            break;
+          default:
+            console.log("Unreachable state");
+            break;
+        }
+      }
+    });
+  }
+
+  /* --- Page initialization --- */
   function initEvents() {
-    const $eventSection =
+    const $clubEventsDiv =
       document.querySelector<HTMLDivElement>(".club-events");
-    assertExist($eventSection, "$eventSection does not exist");
-    const eventSectionHeight = window.innerHeight - 4 * GAPDesktop;
+    assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
 
-    const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
-    assertExist($eventSection, "$eventSection does not exist");
+    const eventDivHeight = window.innerHeight - 4 * GAPDesktop;
+    $clubEventsDiv.style.height = `${eventDivHeight + 500}px`;
 
-    const layout = createLayout($eventSection);
+    assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
 
-    initGrid($allCards);
+    initGrid();
+    initControls($clubEventsDiv);
   }
 
   document.addEventListener("swup:page:view", (e) => {
