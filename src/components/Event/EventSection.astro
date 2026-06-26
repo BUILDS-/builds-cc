@@ -43,7 +43,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
       width: 300px;
       height: 300px;
       top: 0;
-      left: 0;
+      left: 30px;
     }
   }
 
@@ -69,10 +69,10 @@ const allEvents = (await getCollection("clubEvents")).sort(
     createLayout,
     createDraggable,
     animate,
-    Draggable,
     utils,
     type DOMTargetSelector,
     type AutoLayout,
+    type Draggable,
   } from "animejs";
 
   type Layout = "grid" | "drag";
@@ -114,10 +114,11 @@ const allEvents = (await getCollection("clubEvents")).sort(
                 "teardown should exist at this point, something went wrong",
               );
               teardown();
+              teardown = null;
               allDraggable = [];
               $eventsContainer.dataset.layout = layout;
             },
-            { duration: 200, ease: "out(3)", delay: utils.stagger(30) },
+            { duration: 300, ease: "out(3)", delay: utils.stagger(10) },
           )
           .then(() => {
             if (currLayout !== layout) return; // user must've switched layout
@@ -137,7 +138,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
               $eventsContainer.dataset.layout = layout;
             },
             {
-              duration: 500,
+              duration: 250,
               ease: "out(3)",
             },
           )
@@ -230,7 +231,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
       const d = createDraggable($card, {
         trigger: $tbar,
         container: $eventsContainer,
-        maxVelocity: 0,
+        maxVelocity: 100,
       });
       allDraggable.push(d);
     });
@@ -238,9 +239,9 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
   function offsetAnim($allDraggable: Draggable[]) {
     animate($allDraggable, {
-      x: (_: number, i: number) => i * 26 + 40,
-      y: (_: number, i: number) => i * 26 + 30,
-      delay: utils.stagger(100),
+      x: (_: number, i: number) => i * 26,
+      y: (_: number, i: number) => i * 26,
+      delay: utils.stagger(50),
       ease: "out(3)",
       duration: 400,
     });
