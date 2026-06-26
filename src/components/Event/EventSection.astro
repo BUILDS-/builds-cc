@@ -42,6 +42,8 @@ const allEvents = (await getCollection("clubEvents")).sort(
       position: absolute;
       width: 300px;
       height: 300px;
+      top: 0;
+      left: 0;
     }
   }
 
@@ -67,122 +69,214 @@ const allEvents = (await getCollection("clubEvents")).sort(
     createLayout,
     createDraggable,
     animate,
+    Draggable,
     utils,
     type DOMTargetSelector,
-    Draggable,
+    type AutoLayout,
   } from "animejs";
 
-  const allDraggable: Draggable[] = []; // Holds all draggable elements, used to disable them later
-  const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
+  type Layout = "grid" | "drag";
+  let currLayout: Layout | null = null;
+  let allDraggable: Draggable[] = []; // Holds all draggable elements, used to disable them later
+  let teardown: (() => void) | null = null;
+  let autoLayout: AutoLayout | null = null; // Holds object returned from createLayout()
 
-  /* --- START: Grid functions --- */
+  /* --- Layout Switch --- */
 
-  function initGrid() {
-    $allCards.forEach(($card) => {
-      // Creates animatables and enables a little hover animation
-      $card.addEventListener("mouseenter", () => cardMouseEnter($card));
-      $card.addEventListener("mouseleave", () => cardMouseLeave($card));
+  function switchLayout(
+    $eventsContainer: HTMLDivElement,
+    $allCards: NodeListOf<HTMLDivElement>,
+    layout: Layout,
+  ) {
+    if (currLayout === layout) return;
+    if (currLayout == null) {
+      // no Layout set yet, must be on page load
+      return false;
+    }
+    assertExist(
+      teardown,
+      "teardown should exist at this point, something went wrong",
+    );
+    assertExist(
+      autoLayout,
+      "autoLayout should exist at this point, something went wrong",
+    );
+
+    currLayout = layout;
+
+    switch (layout) {
+      case "grid":
+        autoLayout
+          .update(
+            () => {
+              assertExist(
+                teardown,
+                "teardown should exist at this point, something went wrong",
+              );
+              teardown();
+              allDraggable = [];
+              $eventsContainer.dataset.layout = layout;
+            },
+            { duration: 200, ease: "out(3)", delay: utils.stagger(30) },
+          )
+          .then(() => {
+            if (currLayout !== layout) return; // user must've switched layout
+            teardown = initGrid($allCards);
+          });
+        return;
+      case "drag":
+        autoLayout
+          .update(
+            () => {
+              assertExist(
+                teardown,
+                "teardown should exist at this point, something went wrong",
+              );
+              teardown();
+              teardown = null;
+              $eventsContainer.dataset.layout = layout;
+            },
+            {
+              duration: 500,
+              ease: "out(3)",
+            },
+          )
+          .then(() => {
+            if (currLayout !== layout) return;
+            initDrag($eventsContainer, $allCards);
+            teardown = offsetAnim(allDraggable);
+          });
+        return;
+      default:
+        console.log("wrong state");
+    }
+  }
+
+  function initControls(
+    $eventsContainer: HTMLDivElement,
+    $allCards: NodeListOf<HTMLDivElement>,
+  ) {
+    const $controls = document.querySelector(".controls");
+    assertExist($controls, "$controls does not exist");
+    $controls.addEventListener("click", (e) => {
+      const id = (e.target as HTMLElement).closest("button")?.id;
+      console.log("hi");
+      if (id === "grid" || id === "drag") {
+        switchLayout($eventsContainer, $allCards, id); // id narrows to Layout here
+      }
     });
-    animate($allCards, {
+  }
+
+  /* --- START: Grid Functions --- */
+  function gridIntroAnim($allCards: NodeListOf<HTMLDivElement>) {
+    return animate($allCards, {
       y: { from: "50px" },
       opacity: { from: 0 },
-      delay: utils.stagger(100),
+      delay: utils.stagger(70),
       ease: "out(3)",
       duration: 400,
     });
   }
 
-  function cardMouseEnter($card: HTMLDivElement) {
-    animate($card, {
-      y: -20,
-      margin: "0px",
-      ease: "out(3)",
-      duration: 100,
-    });
-  }
-
-  function cardMouseLeave($card: HTMLDivElement) {
-    animate($card, {
-      y: 0,
-      margin: "-1px",
-      ease: "out(3)",
-      duration: 100,
-    });
-  }
-
-  /* --- END: Grid functions --- */
-
-  /* --- START: Draggable functions --- */
-
-  function initDraggables($container: HTMLDivElement) {
-    // animate($allCards, {
-    //   scale: { from: 0 },
-    //   delay: (_: Element, i: number) => i * 100,
-    //   x: (_: Element, i: number) => i * 26 + 40,
-    //   y: (_: Element, i: number) => i * 26 + 30,
-    //   opacity: { from: 0.5 },
-    //   duration: 100,
-    //   onComplete: () => {},
-    // });
+  function initGrid($allCards: NodeListOf<HTMLDivElement>) {
+    const AC = new AbortController(); // To handle removing EventListeners
     $allCards.forEach(($card) => {
-      const $titleBar = $card.querySelector(".title-bar") as DOMTargetSelector;
-      const draggable = createDraggable($card, {
-        trigger: $titleBar,
-        maxVelocity: 0,
-        container: $container,
+      $card.addEventListener(
+        "mouseenter",
+        () =>
+          animate($card, {
+            y: -20,
+            margin: "0px",
+            ease: "out(3)",
+            duration: 100,
+          }),
+        { signal: AC.signal },
+      );
+      $card.addEventListener(
+        "mouseleave",
+        () =>
+          animate($card, {
+            y: 0,
+            margin: "-1px",
+            ease: "out(3)",
+            duration: 100,
+          }),
+        { signal: AC.signal },
+      );
+    });
+
+    return () => {
+      // Returns a teardown function to clean up
+      AC.abort();
+      $allCards.forEach(($card) => {
+        // Manual reset here instead of revert()
+        // Lazy solution because I dont want to keep record of each animate for each card
+        $card.style.transform = "";
+        $card.style.margin = "";
       });
-      allDraggable.push(draggable);
+    };
+  }
+
+  /* --- END: Grid Functions --- */
+
+  /* --- START: Drag Functions --- */
+  function initDrag(
+    $eventsContainer: HTMLDivElement,
+    $allCards: NodeListOf<HTMLDivElement>,
+  ) {
+    $allCards.forEach(($card) => {
+      const $tbar = $card.querySelector(".title-bar") as DOMTargetSelector;
+      assertExist($tbar, "$tbar does not exist");
+      const d = createDraggable($card, {
+        trigger: $tbar,
+        container: $eventsContainer,
+        maxVelocity: 0,
+      });
+      allDraggable.push(d);
     });
   }
 
-  function cleanDraggables() {
-    allDraggable.forEach(($draggable) => {
-      $draggable.revert();
+  function offsetAnim($allDraggable: Draggable[]) {
+    animate($allDraggable, {
+      x: (_: number, i: number) => i * 26 + 40,
+      y: (_: number, i: number) => i * 26 + 30,
+      delay: utils.stagger(100),
+      ease: "out(3)",
+      duration: 400,
     });
-    allDraggable.length = 0; // clear array
-  }
 
-  /* --- END: Draggable functions --- */
-
-  function initControls($clubEventsDiv: HTMLDivElement) {
-    const $controlsDiv = document.querySelector(".controls");
-    assertExist($controlsDiv, "$controlsDiv does not exist");
-    assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
-
-    $controlsDiv.addEventListener("click", (e) => {
-      const $target = e.target as HTMLElement;
-      assertExist($target, "$target does not exist");
-      const $button = $target.closest("button");
-
-      if ($button != null) {
-        switch ($button.id) {
-          case "grid":
-            $clubEventsDiv.dataset.layout = "grid";
-            break;
-          case "drag":
-            $clubEventsDiv.dataset.layout = "drag";
-            break;
-          default:
-            console.log("Unreachable state");
-            break;
-        }
-      }
-    });
+    return () => {
+      $allDraggable.forEach(($draggable) => {
+        $draggable.revert();
+      });
+    };
   }
 
   /* --- Page initialization --- */
   function initEvents() {
+    teardown?.();
+    allDraggable.forEach((d) => d.revert());
+    allDraggable = [];
+    autoLayout?.revert();
+    currLayout = null;
+
     const $clubEventsDiv =
       document.querySelector<HTMLDivElement>(".club-events");
     assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
 
     const eventDivHeight = window.innerHeight - 4 * GAPDesktop;
+    assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
     $clubEventsDiv.style.height = `${eventDivHeight + 500}px`;
 
-    assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
+    const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
 
-    initGrid();
-    initControls($clubEventsDiv);
+    autoLayout = createLayout($clubEventsDiv, { children: ".event-card, p" });
+
+    initControls($clubEventsDiv, $allCards);
+
+    gridIntroAnim($allCards);
+    currLayout = "grid";
+    teardown = initGrid($allCards);
   }
 
   document.addEventListener("swup:page:view", (e) => {
