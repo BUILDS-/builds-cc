@@ -42,17 +42,17 @@
   const innerRects = document.querySelectorAll(
     "#inner-mask-body, #inner-rect-border",
   );
-  let vh = window.innerHeight;
-  let vw = window.innerWidth;
+  let vh = document.documentElement.clientHeight;
+  let vw = document.documentElement.clientWidth;
 
   const isMobile = () => window.innerWidth <= MOBILE_BREAK;
 
   function updateSVGWrapper() {
-    vh = window.innerHeight;
-    vw = window.innerWidth;
+    vh = document.documentElement.clientHeight;
+    vw = document.documentElement.clientWidth;
     // console.log(`width: ${vw}`);
     // console.log(`height: ${vh}`);
-    //
+
     if ($svgFrame == null) throw new Error("svgFrame does not exist");
     $svgFrame.setAttribute("width", `${vw}`);
     $svgFrame.setAttribute("height", `${vh}`);
