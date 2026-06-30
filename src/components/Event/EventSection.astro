@@ -5,7 +5,7 @@ import { getCollection } from "astro:content";
 
 const allEvents = (await getCollection("clubEvents")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
+); // Sorts event from newest -> oldest
 ---
 
 <section class="event-section">
@@ -13,8 +13,6 @@ const allEvents = (await getCollection("clubEvents")).sort(
     <p>// SWITCH LAYOUT //</p>
     <Button id="grid">Grid</Button>
     <Button id="drag">Draggable</Button>
-    <br />
-    <p>Add a scramble text here to show current layout</p>
   </div>
   <div class="club-events" data-layout="grid">
     {allEvents.map((event) => <EventCard id={event.id} event={event} />)}
@@ -28,17 +26,30 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
   .club-events[data-layout="grid"] {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     grid-auto-rows: 300px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @media (min-width: 1400px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
 
     article {
       transform-origin: bottom center;
+      opacity: 0;
     }
   }
 
   .club-events[data-layout="drag"] {
     article {
-      transform-origin: 0 0; /* Necessary to help card look like it renders in from top left*/
+      transform-origin: 0 0;
       position: absolute;
       width: 300px;
       height: 300px;
@@ -49,6 +60,9 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
   .controls {
     padding: 20px var(--mobile-padding-inner);
+    @media (min-width: 800px) {
+      padding: 20px var(--desktop-padding-inner);
+    }
 
     button {
       padding: 2px 5px;
@@ -70,33 +84,40 @@ const allEvents = (await getCollection("clubEvents")).sort(
     createDraggable,
     animate,
     utils,
+    linear,
     type DOMTargetSelector,
     type AutoLayout,
     type Draggable,
   } from "animejs";
 
+  // lowk dunno if it's a good idea to initialize as null
   type Layout = "grid" | "drag";
   let currLayout: Layout | null = null;
   let allDraggable: Draggable[] = []; // Holds all draggable elements, used to disable them later
   let teardown: (() => void) | null = null;
   let autoLayout: AutoLayout | null = null; // Holds object returned from createLayout()
 
-  /* --- Layout Switch --- */
+  /* --- Layout Switch Controls --- */
+
+  function reverseDOM($eventsContainer: HTMLDivElement) {
+    const frag = document.createDocumentFragment();
+    const children = Array.from($eventsContainer.children);
+    for (let i = children.length - 1; i >= 0; i--) {
+      frag.appendChild(children[i]);
+    }
+    $eventsContainer.appendChild(frag);
+  }
 
   function switchLayout(
     $eventsContainer: HTMLDivElement,
     $allCards: NodeListOf<HTMLDivElement>,
     layout: Layout,
   ) {
-    if (currLayout === layout) return;
+    if (currLayout === layout) return; // Why switch if we on the same layout alr
     if (currLayout == null) {
       // no Layout set yet, must be on page load
       return false;
     }
-    assertExist(
-      teardown,
-      "teardown should exist at this point, something went wrong",
-    );
     assertExist(
       autoLayout,
       "autoLayout should exist at this point, something went wrong",
@@ -109,6 +130,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
         autoLayout
           .update(
             () => {
+              reverseDOM($eventsContainer);
               assertExist(
                 teardown,
                 "teardown should exist at this point, something went wrong",
@@ -129,6 +151,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
         autoLayout
           .update(
             () => {
+              reverseDOM($eventsContainer);
               assertExist(
                 teardown,
                 "teardown should exist at this point, something went wrong",
@@ -161,7 +184,6 @@ const allEvents = (await getCollection("clubEvents")).sort(
     assertExist($controls, "$controls does not exist");
     $controls.addEventListener("click", (e) => {
       const id = (e.target as HTMLElement).closest("button")?.id;
-      console.log("hi");
       if (id === "grid" || id === "drag") {
         switchLayout($eventsContainer, $allCards, id); // id narrows to Layout here
       }
@@ -170,6 +192,8 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
   /* --- START: Grid Functions --- */
   function gridIntroAnim($allCards: NodeListOf<HTMLDivElement>) {
+    // Plays only once on page load
+    $allCards.forEach(($card) => ($card.style.opacity = "1"));
     return animate($allCards, {
       y: { from: "50px" },
       opacity: { from: 0 },
@@ -187,7 +211,6 @@ const allEvents = (await getCollection("clubEvents")).sort(
         () =>
           animate($card, {
             y: -20,
-            margin: "0px",
             ease: "out(3)",
             duration: 100,
           }),
@@ -198,7 +221,6 @@ const allEvents = (await getCollection("clubEvents")).sort(
         () =>
           animate($card, {
             y: 0,
-            margin: "-1px",
             ease: "out(3)",
             duration: 100,
           }),
@@ -207,17 +229,17 @@ const allEvents = (await getCollection("clubEvents")).sort(
     });
 
     return () => {
-      // Returns a teardown function to clean up
+      // Returns a teardown function to clean up for later
       AC.abort();
       $allCards.forEach(($card) => {
         // Manual reset here instead of revert()
-        // Lazy solution because I dont want to keep record of each animate for each card
+        // Lazy solution because I dont want to keep record of each animate object for each card
+        // Regardless I think animate objects are garbage collected after they are complete?
         $card.style.transform = "";
         $card.style.margin = "";
       });
     };
   }
-
   /* --- END: Grid Functions --- */
 
   /* --- START: Drag Functions --- */
@@ -242,8 +264,8 @@ const allEvents = (await getCollection("clubEvents")).sort(
       x: (_: number, i: number) => i * 26,
       y: (_: number, i: number) => i * 26,
       delay: utils.stagger(50),
-      ease: "out(3)",
-      duration: 400,
+      ease: linear(0, 1),
+      duration: 100,
     });
 
     return () => {
@@ -252,26 +274,36 @@ const allEvents = (await getCollection("clubEvents")).sort(
       });
     };
   }
+  /* --- END: Drag Functions --- */
 
   /* --- Page initialization --- */
   function initEvents() {
+    // In the case user navigated away in drag mode, tear it all down.
     teardown?.();
-    allDraggable.forEach((d) => d.revert());
+    allDraggable.forEach((d) => {
+      // console.log(`draggable: ${d}`);
+      d.revert();
+    });
     allDraggable = [];
     autoLayout?.revert();
     currLayout = null;
+
+    const $dialog = document.createElement("dialog");
+    $dialog.id = "layout-dialog";
+    document.body.appendChild($dialog);
 
     const $clubEventsDiv =
       document.querySelector<HTMLDivElement>(".club-events");
     assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
 
-    const eventDivHeight = window.innerHeight - 4 * GAPDesktop;
-    assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
-    $clubEventsDiv.style.height = `${eventDivHeight + 500}px`;
+    const naturalHeight = $clubEventsDiv.getBoundingClientRect().height;
+    $clubEventsDiv.style.height = `${naturalHeight}px`;
 
     const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
 
-    autoLayout = createLayout($clubEventsDiv, { children: ".event-card, p" });
+    autoLayout = createLayout($clubEventsDiv, {
+      children: ".event-card, p, img",
+    });
 
     initControls($clubEventsDiv, $allCards);
 

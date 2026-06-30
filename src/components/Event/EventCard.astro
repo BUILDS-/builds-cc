@@ -7,13 +7,26 @@ interface Props {
 }
 
 const { id, event } = Astro.props;
+
+const date = event.data.date
+  // turns date into YYYY/MM/DAY format
+  .toISOString()
+  .replace("-", "/")
+  .split("T")[0]
+  .replace("-", "/");
 ---
 
 <article id={id} class="event-card">
   <div class="title-bar">
     <p class="window-title">{event.data.title}</p>
+    <p>{date}</p>
   </div>
-  <Image priority draggable="false" alt="Event Image" src={event.data.image} />
+  <Image
+    priority
+    draggable="false"
+    alt={event.data.title}
+    src={event.data.image}
+  />
   <h2 class="dialog-title">{event.data.title}</h2>
   <p class="dialog-description">{event.data.description}</p>
 </article>
@@ -39,11 +52,9 @@ const { id, event } = Astro.props;
     align-items: center;
     border-bottom: 1px solid var(--color-border);
     /* cursor: grab; */
-  }
 
-  .window-title {
     font-size: 0.9rem;
-    margin-left: 10px;
+    padding: 0px 10px;
   }
 
   img {
