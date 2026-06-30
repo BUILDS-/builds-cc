@@ -168,14 +168,16 @@ console.log(url);
 
 <style>
   #navMenu {
-    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
 
+    position: fixed;
+    top: 25px;
+    z-index: var(--z-nav);
+
     width: 100%;
 
-    z-index: var(--z-nav);
     visibility: hidden;
     opacity: 0;
 
@@ -231,9 +233,9 @@ console.log(url);
       height: fit-content;
       opacity: 1;
       visibility: visible;
-    }
-    nav {
-      margin-right: var(--desktop-padding-outer);
+
+      top: var(--desktop-padding-outer);
+      right: var(--desktop-padding-outer);
     }
   }
 </style>

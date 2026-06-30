@@ -56,8 +56,14 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
     });
   }
 
+  function resetScroll() {
+    // just scrolls to top without animation
+    document.querySelector<HTMLElement>("main.app")?.scrollTo(0, 0);
+  }
+
   scrambleTitle();
   closeNavMobile();
+  document.addEventListener("swup:content:replace", resetScroll);
   document.addEventListener("swup:page:view", () => {
     closeNavMobile();
     scrambleTitle();
@@ -133,25 +139,31 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
 
   html,
   body {
+    height: 100svh;
     width: 100%;
     margin: 0;
     background-color: var(--color-bg);
     color: var(--color-text);
-  }
-
-  html {
-    overflow-y: scroll;
-    overscroll-behavior-y: none;
+    overflow: hidden;
   }
 
   main {
-    margin: var(--mobile-padding-top) var(--mobile-padding-outer)
+    box-sizing: border-box;
+    height: 100svh;
+    padding: var(--mobile-padding-top) var(--mobile-padding-outer)
       var(--mobile-padding-outer);
+    overflow-y: scroll;
+    overscroll-behavior-y: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::webkit-scrollbar {
+      display: none;
+    }
+
     @media (min-width: 800px) {
-      margin: var(--desktop-padding-top) var(--desktop-padding-outer)
+      padding: var(--desktop-padding-top) var(--desktop-padding-outer)
         var(--desktop-padding-outer);
     }
   }
-
-  /* SVG specific stylings */
 </style>

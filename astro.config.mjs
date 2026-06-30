@@ -4,7 +4,7 @@ import swup from "@swup/astro";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [swup()],
+  integrations: [swup({ smoothScrolling: false })],
   fonts: [
     {
       provider: fontProviders.local(),
