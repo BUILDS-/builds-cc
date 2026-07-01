@@ -108,6 +108,7 @@ console.log(url);
     assertExist($navMenu, "navMenu does not exist");
 
     if (document.body.hasAttribute("data-nav-open")) {
+      // using .record() then .animate() is just a manual version of using .update()
       navLayout.record();
       $navMenu.style.opacity = "1";
       $navMenu.style.visibility = "visible";
