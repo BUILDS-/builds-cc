@@ -68,23 +68,26 @@ const allEvents = (await getCollection("clubEvents")).sort(
     article {
       transform-origin: 0 0;
       position: absolute;
-      width: 300px;
-      height: 300px;
+      width: 350px;
+      height: 350px;
       top: 0;
       left: 30px;
     }
   }
 
-  #layout-dialog {
+  /* The dialog is created at runtime via document.createElement, so it does not
+     carry Astro's scoped data-cid attribute. All #layout-dialog rules 
+     must be :global to actually match it. */
+  :global(#layout-dialog) {
     display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 1000;
+    z-index: var(--z-modal);
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100dvh;
+    width: 100svw;
+    height: 100svh;
     max-width: 100%;
     max-height: 100%;
     border: none;
@@ -92,27 +95,36 @@ const allEvents = (await getCollection("clubEvents")).sort(
     pointer-events: none;
 
     --overlay-alpha: 100%;
-    overflow: hidden;
 
+    /* julian sir... what is color-mix? */
     background-color: color-mix(
       in srgb,
-      var(--hex-black-1),
+      var(--color-black-1),
       transparent var(--overlay-alpha)
     );
   }
-  #layout-dialog::backdrop {
+  :global(#layout-dialog)::backdrop {
     background: transparent;
   }
 
-  #layout-dialog[open] {
+  :global(#layout-dialog[open]) {
     --overlay-alpha: 40%;
     pointer-events: auto;
+  }
+
+  :global(.event-card.is-open) {
+    visibility: hidden;
+  }
+  :global(#layout-dialog .event-card) {
+    visibility: hidden;
+  }
+  :global(#layout-dialog[open] .event-card) {
+    visibility: visible;
   }
 </style>
 
 <script>
   import assertExist from "@lib/assertExist";
-  import { GAPDesktop } from "@lib/constants";
   import {
     createLayout,
     createDraggable,
@@ -125,6 +137,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
   } from "animejs";
 
   // TODO: Reminder that disable drag on mobile, grid only
+  // Completely disable grid hover on mobile as well, useless there.
 
   // lowk dunno if it's a good idea to initialize as null
   type Layout = "grid" | "drag";
@@ -314,43 +327,125 @@ const allEvents = (await getCollection("clubEvents")).sort(
   /* --- END: Drag Functions --- */
 
   /* --- START: Dialog functions ---*/
-  function initModal($eventsContainer: HTMLDivElement) {
-    const $dialog = document.createElement("dialog");
-    $dialog.id = "layout-dialog";
-    document.body.appendChild($dialog);
-    dialogLayout = createLayout($dialog, {
-      children: ["img", "p", "h2"],
-    });
-    $eventsContainer.addEventListener("click", (e) => {
-      const $target = e.target as HTMLElement;
-      const $imgEl = $target.closest("img");
-      if ($imgEl !== null) {
-        console.log(openModal());
-      }
-    });
-  }
+  /*
+   * NOTE: This section is AI assisted
+   *
+   * I also referenced Animejs's talented author Julian Garnier's codepen ALOT here,
+   * https://codepen.io/juliangarnier/pen/PwzmxwR
+   *
+   * If you visit this pen you will see lots of similar code,
+   * because I YOINKED that shi :)
+   * */
 
-  function openModal() {
-    return false;
+  let $dialog: HTMLDialogElement | null = null;
+  let modalTeardown: (() => void) | null = null;
+  let $openCard: HTMLElement | null = null;
+
+  function openModal($card: HTMLElement) {
+    assertExist($dialog, "$dialog does not exist");
+    assertExist(dialogLayout, "dialogLayout does not exist");
+
+    const $clone = document.createElement("div");
+    $clone.className = $card.className;
+    const layoutId = $card.dataset.layoutId;
+    if (layoutId) $clone.dataset.layoutId = layoutId;
+
+    $clone.innerHTML = $card.innerHTML;
+    $clone.removeAttribute("style");
+    $clone.querySelectorAll("*").forEach(($el) => $el.removeAttribute("style"));
+
+    $dialog.innerHTML = "";
+    $dialog.appendChild($clone);
+
+    $openCard = $card;
+
+    dialogLayout.update(() => {
+      $card.classList.add("is-open");
+      $dialog!.showModal();
+    });
   }
 
   function closeModal() {
-    return false;
+    if (!$dialog || !dialogLayout || !$openCard) return;
+    const $card = $openCard;
+    dialogLayout.update(() => {
+      $card.classList.remove("is-open");
+      $dialog!.close();
+      // preventScroll avoids a jump that would break the closing animation.
+      $card.focus({ preventScroll: true });
+    });
+    $openCard = null;
   }
 
+  function initModal($eventsContainer: HTMLDivElement) {
+    // Reuse an existing dialog across swup navigations instead of stacking new ones.
+    let $existing = document.querySelector<HTMLDialogElement>("#layout-dialog");
+    if (!$existing) {
+      $existing = document.createElement("dialog");
+      $existing.id = "layout-dialog";
+      document.body.appendChild($existing);
+    }
+    $dialog = $existing;
+    dialogLayout = createLayout($dialog, {
+      children: [".event-card", ".title-bar", ".title-bar p", "img"],
+      properties: ["--overlay-alpha"],
+      duration: 350,
+    });
+
+    const onContainerClick = (e: MouseEvent) => {
+      const $img = (e.target as HTMLElement).closest("img");
+      if ($img !== null) {
+        const $card = $img.closest<HTMLElement>(".event-card");
+        if ($card !== null) openModal($card);
+      }
+    };
+    const onDialogClick = (e: MouseEvent) => {
+      const $target = e.target as HTMLElement;
+      if ($target.closest(".close-overlay") || $target === $dialog) {
+        closeModal();
+      }
+    };
+    const onCancel = (e: Event) => {
+      e.preventDefault(); // let the layout animation run instead of an instant close
+      closeModal();
+    };
+
+    $eventsContainer.addEventListener("click", onContainerClick);
+    $dialog.addEventListener("click", onDialogClick);
+    $dialog.addEventListener("cancel", onCancel);
+
+    modalTeardown = () => {
+      $eventsContainer.removeEventListener("click", onContainerClick);
+      $dialog?.removeEventListener("click", onDialogClick);
+      $dialog?.removeEventListener("cancel", onCancel);
+    };
+  }
   /* --- END: Dialog functions ---*/
 
   /* --- Page initialization --- */
   function initEvents() {
     // In the case user navigated away in drag mode, tear it all down.
     teardown?.();
+    teardown = null;
     allDraggable.forEach((d) => {
       // console.log(`draggable: ${d}`);
       d.revert();
     });
     allDraggable = [];
     autoLayout?.revert();
+    autoLayout = null;
     currLayout = null;
+
+    // TEAR IT ALL DOWN
+    modalTeardown?.();
+    dialogLayout?.revert();
+    dialogLayout = null;
+    $openCard = null;
+    if ($dialog) {
+      if ($dialog.open) $dialog.close();
+      $dialog.remove();
+      $dialog = null;
+    }
 
     const $clubEventsDiv =
       document.querySelector<HTMLDivElement>(".club-events");
