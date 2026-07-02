@@ -1,6 +1,7 @@
 ---
 import EventCard from "@components/Event/EventCard.astro";
 import Button from "@components/Button.astro";
+import { isMobile }
 import { getCollection } from "astro:content";
 
 const allEvents = (await getCollection("clubEvents")).sort(
@@ -190,7 +191,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
               allDraggable = [];
               $eventsContainer.dataset.layout = layout;
             },
-            { duration: 300, ease: "out(3)", delay: utils.stagger(10) },
+            { duration: 300, ease: "out(3)" },
           )
           .then(() => {
             if (currLayout !== layout) return; // user must've switched layout
@@ -359,22 +360,44 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
     $openCard = $card;
 
-    dialogLayout.update(() => {
-      $card.classList.add("is-open");
-      $dialog!.showModal();
-    });
+    dialogLayout
+      .update(() => {
+        $card.classList.add("is-open");
+        $dialog!.showModal();
+      })
+      .then(() => {
+        const $info = $dialog!.querySelector(".dialog-info-wrapper");
+        if ($info) {
+          animate($info, {
+            opacity: 1,
+            y: { from: "8px" },
+            duration: 150,
+            ease: "out(3)",
+          });
+        }
+      });
   }
 
   function closeModal() {
     if (!$dialog || !dialogLayout || !$openCard) return;
     const $card = $openCard;
-    dialogLayout.update(() => {
-      $card.classList.remove("is-open");
-      $dialog!.close();
-      // preventScroll avoids a jump that would break the closing animation.
-      $card.focus({ preventScroll: true });
-    });
-    $openCard = null;
+    const $info = $dialog!.querySelector(".dialog-info-wrapper");
+    if ($info) {
+      animate($info, {
+        opacity: [1, 0],
+        y: [0, 8],
+        duration: 100,
+        ease: "out(3)",
+      }).then(() => {
+          dialogLayout!.update(() => { // Please forgive the assertions I am getting lazy a little
+          $dialog!.close();
+          // preventScroll avoids a jump that would break the closing animation.
+          $card.focus({ preventScroll: true });
+          $card.classList.remove("is-open");
+        });
+        $openCard = null;
+      });
+    }
   }
 
   function initModal($eventsContainer: HTMLDivElement) {
@@ -387,7 +410,13 @@ const allEvents = (await getCollection("clubEvents")).sort(
     }
     $dialog = $existing;
     dialogLayout = createLayout($dialog, {
-      children: [".event-card", ".title-bar", ".title-bar p", "img"],
+      children: [
+        ".event-card",
+        ".title-bar",
+        ".title-bar p",
+        "img",
+        ".dialog-info-wrapper",
+      ],
       properties: ["--overlay-alpha"],
       duration: 350,
     });

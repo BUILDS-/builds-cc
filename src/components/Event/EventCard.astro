@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import Button from "@components/Button.astro";
 import type { CollectionEntry } from "astro:content";
 interface Props {
   id: string;
@@ -25,7 +26,7 @@ const time = date.toLocaleTimeString("en-us", { timeStyle: "short" });
 // an asset path (e.g. "../../assets/.../foo.svg"). Path values aren't run
 // through Astro's image pipeline, so we render the label only for those and
 // avoid a broken glyph. A real emoji glyph won't contain a slash or extension.
-const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
+const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); // Unsure if this is really needed, should just enforce emoji not actual files
 ---
 
 <article id={id} class="event-card">
@@ -51,9 +52,7 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
         <ul class="dialog-badges">
           {badges.map((badge) => (
             <li class="badge">
-              {!isPathLike(badge.emoji) && (
-                <span class="badge-emoji">{badge.emoji}</span>
-              )}
+              <span class="badge-emoji">{badge.emoji}</span>
               <span class="badge-label">{badge.label}</span>
             </li>
           ))}
@@ -67,12 +66,12 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
       instructors.length > 0 && (
         <div class="dialog-instructors">
           <p class="meta-label">// INSTRUCTORS //</p>
-          <ul class="lead-list">
+          <ul class="instructor-list">
             {instructors.map((person) => (
-              <li class="lead">
+              <li class="instructor">
                 {person.image && (
                   <Image
-                    class="lead-avatar"
+                    class="instructor-avatar"
                     draggable="false"
                     alt={person.name}
                     src={person.image}
@@ -80,7 +79,7 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
                     height={32}
                   />
                 )}
-                <span class="lead-name">{person.name}</span>
+                <span class="instructor-name">{person.name}</span>
               </li>
             ))}
           </ul>
@@ -90,8 +89,8 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
 
     {
       link && (
-        <a class="dialog-btn" href={link} target="_blank" rel="noreferrer">
-          {linkText ?? "Learn More"}
+        <a class="dialog-link" href={link} target="_blank" rel="noreferrer">
+          <Button class="dialog-btn">{linkText ?? "Learn More"}</Button>
         </a>
       )
     }
@@ -129,17 +128,17 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
 
   .dialog-info-wrapper {
     display: none;
+    opacity: 0;
   }
 
-  /* These live inside .dialog-info-wrapper (hidden in grid view) and are only
-     revealed inside #layout-dialog. Grid view never renders them, but scoping
-     the reset here keeps the cascade predictable. */
   .dialog-badges,
-  .lead-list {
+  .instructor-list {
     list-style: none;
     margin: 0;
     padding: 0;
   }
+
+  /* TODO: Consider breaking each section into small components maybe, this crap too long */
 
   :global(#layout-dialog .event-card) {
     display: flex;
@@ -183,14 +182,6 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
     font-size: 1rem;
     line-height: 1.4;
     overflow-y: auto;
-
-    opacity: 0;
-    transition: opacity 200ms ease-out;
-  }
-
-  :global(#layout-dialog[open] .event-card .dialog-info-wrapper) {
-    opacity: 1;
-    transition: opacity 250ms ease-out 150ms;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -234,7 +225,7 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 2px 8px;
+    padding: 2px 4px;
     border: 1px solid var(--color-border);
     font-family: var(--font-ZxProto);
     font-size: 0.78rem;
@@ -255,62 +246,34 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s);
     flex-direction: column;
     gap: 6px;
   }
-  :global(#layout-dialog .event-card .lead-list) {
+  :global(#layout-dialog .event-card .instructor-list) {
     display: flex;
     flex-wrap: wrap;
     gap: 10px 16px;
   }
-  :global(#layout-dialog .event-card .lead) {
+  :global(#layout-dialog .event-card .instructor) {
     display: inline-flex;
     align-items: center;
     gap: 8px;
   }
-  :global(#layout-dialog .event-card .lead-avatar) {
+  :global(#layout-dialog .event-card .instructor-avatar) {
     width: 32px;
     height: 32px;
     object-fit: cover;
     border: 1px solid var(--color-border);
     display: block;
   }
-  :global(#layout-dialog .event-card .lead-name) {
+  :global(#layout-dialog .event-card .instructor-name) {
     font-family: var(--font-ZxProto);
     font-size: 0.85rem;
   }
 
-  /* --- Button styling here re-uses styling from Button.astro --- */
-  :global(#layout-dialog .event-card .dialog-btn) {
+  :global(#layout-dialog .event-card .dialog-link) {
     align-self: flex-start;
     margin-top: 2px;
-    border: 3px solid var(--color-papaya-white);
-    background-color: var(--color-papaya-white);
-    color: black;
-    padding: 3px 15px;
-    text-decoration: none;
-    font-family: var(--font-Atkinson);
-    font-size: 1rem;
-    cursor: pointer;
-    transition:
-      border-color 100ms,
-      color 100ms,
-      transform 100ms;
   }
-  @media (hover: hover) {
-    :global(#layout-dialog .event-card .dialog-btn:hover) {
-      border-color: var(--color-accent);
-      color: var(--color-accent);
-      transform: translateX(3px) translateY(-3px);
-      transition:
-        border-color 170ms,
-        color 170ms,
-        transform 170ms;
-    }
-  }
-  :global(#layout-dialog .event-card .dialog-btn:active) {
-    border-color: var(--color-accent);
-    transform: translateX(-2px) translateY(2px);
-    transition:
-      border-color 100ms,
-      transform 100ms;
+  :global(#layout-dialog .event-card .dialog-btn) {
+    padding: 3px 10px;
   }
 
   .noselect {
