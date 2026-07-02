@@ -36,17 +36,6 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); 
   </div>
   <Image priority draggable="false" alt={title} src={event.data.image} />
   <div class="dialog-info-wrapper">
-    <div class="dialog-meta">
-      <div class="meta-row">
-        <p class="meta-label">// DATE //</p>
-        <p class="meta-value">{`${day} @ ${time}`}</p>
-      </div>
-      <div class="meta-row">
-        <p class="meta-label">// LOCATION //</p>
-        <p class="meta-value">{location}</p>
-      </div>
-    </div>
-
     {
       badges.length > 0 && (
         <ul class="dialog-badges">
@@ -60,7 +49,19 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); 
       )
     }
 
-    <p class="dialog-description">{description}</p>
+    <div class="meta-row">
+      <p class="meta-label">// DATE //</p>
+      <p class="meta-value">{`${day} @ ${time}`}</p>
+    </div>
+    <div class="meta-row">
+      <p class="meta-label">// LOCATION //</p>
+      <p class="meta-value">{location}</p>
+    </div>
+
+    <diu class="meta-row">
+      <p class="meta-label">// EVENT DESCRIPTION //</p>
+      <p class="dialog-description">{description}</p>
+    </diu>
 
     {
       instructors.length > 0 && (
