@@ -1,7 +1,6 @@
 ---
 import EventCard from "@components/Event/EventCard.astro";
 import Button from "@components/Button.astro";
-import { isMobile }
 import { getCollection } from "astro:content";
 
 const allEvents = (await getCollection("clubEvents")).sort(
@@ -389,7 +388,8 @@ const allEvents = (await getCollection("clubEvents")).sort(
         duration: 100,
         ease: "out(3)",
       }).then(() => {
-          dialogLayout!.update(() => { // Please forgive the assertions I am getting lazy a little
+        dialogLayout!.update(() => {
+          // Please forgive the assertions I am getting lazy a little
           $dialog!.close();
           // preventScroll avoids a jump that would break the closing animation.
           $card.focus({ preventScroll: true });
