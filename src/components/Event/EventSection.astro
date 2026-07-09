@@ -139,6 +139,9 @@ const allEvents = (await getCollection("clubEvents")).sort(
   // TODO: Reminder that disable drag on mobile, grid only
   // Completely disable grid hover on mobile as well, useless there.
 
+  // TODO: Reminder to use smaller image sizes, golly it lags the crap out of anything
+  // other than chromium
+
   // lowk dunno if it's a good idea to initialize as null
   type Layout = "grid" | "drag";
   let currLayout: Layout | null = null;

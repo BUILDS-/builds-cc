@@ -24,13 +24,13 @@
 </div>
 <script>
   import {
-    MOBILE_BREAK,
     NAV_SLIDE_DIST,
     NAV_DURATION,
     NAV_EASE,
     GAP,
     GAPDesktop,
   } from "@lib/constants";
+  import isMobile from "@lib/isMobile";
   import { animate } from "animejs";
 
   // SVG related code below
@@ -44,8 +44,6 @@
   );
   let vh = document.documentElement.clientHeight;
   let vw = document.documentElement.clientWidth;
-
-  const isMobile = () => window.innerWidth <= MOBILE_BREAK;
 
   function updateSVGWrapper() {
     vh = document.documentElement.clientHeight;

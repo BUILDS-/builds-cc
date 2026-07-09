@@ -41,11 +41,9 @@ console.log(url);
    * */
 
   import assertExist from "@lib/assertExist";
-  import { MOBILE_BREAK } from "@lib/constants";
+  import isMobile from "@lib/isMobile";
   import { createLayout, type DOMTarget } from "animejs";
   import { getCurrentUrl } from "swup";
-
-  const isMobile = () => window.innerWidth <= MOBILE_BREAK;
 
   const $navMenu = document.getElementById("navMenu");
   assertExist($navMenu, "navMenu does not exist");
