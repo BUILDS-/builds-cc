@@ -28,4 +28,24 @@ const clubEvents = defineCollection({
     }),
 });
 
-export const collections = { clubEvents };
+const eBoard = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./src/content/eboard" }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      role: z.string(),
+      image: image().optional(),
+      position: z.number(),
+      linkedin: z.url().optional(),
+      github: z.url().optional(),
+    }),
+});
+
+const formerEBoard = defineCollection({
+  loader: glob({ pattern: "*.md", base: ".src/content/alumni/eboard" }),
+});
+const founders = defineCollection({
+  loader: glob({ pattern: "*.md", base: ".src/content/alumni/founders" }),
+});
+
+export const collections = { clubEvents, eBoard };
