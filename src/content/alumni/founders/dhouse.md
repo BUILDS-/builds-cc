@@ -1,5 +1,5 @@
 ---
 name: "David House"
 role: "Founding President"
-postion: 0
+position: 0
 ---
