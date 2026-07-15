@@ -42,10 +42,30 @@ const eBoard = defineCollection({
 });
 
 const formerEBoard = defineCollection({
-  loader: glob({ pattern: "*.md", base: ".src/content/alumni/eboard" }),
-});
-const founders = defineCollection({
-  loader: glob({ pattern: "*.md", base: ".src/content/alumni/founders" }),
+  loader: glob({ pattern: "*.md", base: "./src/content/alumni/eboard" }),
+  schema: () =>
+    z.object({
+      name: z.string(),
+      roles: z.array(
+        z.object({
+          role: z.string(),
+          yearsActive: z.string(),
+        }),
+      ),
+      linkedin: z.url().optional(),
+      github: z.url().optional(),
+      website: z.url().optional(),
+    }),
 });
 
-export const collections = { clubEvents, eBoard };
+const founders = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./src/content/alumni/founders" }),
+  schema: () =>
+    z.object({
+      name: z.string(),
+      role: z.string(),
+      position: z.number(),
+    }),
+});
+
+export const collections = { clubEvents, eBoard, formerEBoard, founders };
