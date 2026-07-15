@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "@layouts/Layout.astro";
+import Heading from "@components/Heading.astro";
 import Button from "@components/Button.astro";
 import cardOne from "@assets/card_1.webp";
 import cardTwo from "@assets/card_2.webp";
@@ -9,10 +10,11 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
 ---
 
 <Layout>
-  <section class="heading">
-    <h1>BU INFORMATION LAB & DESIGN SPACE</h1>
-    <h2 class="header-barcode">BUILDS</h2>
-  </section>
+  <Heading
+    title="BU INFORMATION LAB & DESIGN SPACE"
+    barcode="BUILDS"
+    border={false}
+  />
 
   <!-- This grid wrapper is currently unused -->
   <section class="hero">
@@ -123,10 +125,6 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
 </Layout>
 
 <style>
-  h1 {
-    font-size: 2.2rem;
-  }
-
   .text-barcode {
     font-family: var(--font-Barcode);
     letter-spacing: 3px;
@@ -136,33 +134,6 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
 
   .accent {
     color: var(--color-accent);
-  }
-
-  .heading {
-    padding: 60px var(--mobile-padding-inner) 20px var(--mobile-padding-inner);
-
-    span {
-      color: var(--color-accent);
-    }
-
-    h1::after {
-      margin-left: 8px;
-      content: "\00258c";
-      font-size: 1.4rem;
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-      /* For the folks who didn't opt in reduced motion */
-      h1::after {
-        animation: cursor-blink 1s step-start 1s infinite backwards;
-      }
-    }
-    .header-barcode {
-      margin: 0.8rem 0 1.5rem 0.1rem;
-      font-size: 2rem;
-      font-family: var(--font-Barcode);
-      letter-spacing: 3px;
-    }
   }
 
   .hero {
@@ -244,10 +215,6 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
       font-size: calc(1rem + 1vw);
     }
 
-    .heading {
-      padding: 100px var(--desktop-padding-inner) var(--desktop-padding-inner);
-    }
-
     .hero {
       padding: 0 var(--desktop-padding-inner) var(--desktop-padding-inner);
       .loc {
@@ -292,9 +259,6 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
   }
 
   @media (min-width: 1100px) {
-    .heading {
-      padding: 120px var(--desktop-padding-inner) var(--desktop-padding-inner);
-    }
     section,
     .link-btn {
       font-size: calc(1rem + 0.2vw);
@@ -310,15 +274,6 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
 
     h3 {
       font-size: calc(1.17rem + 0.3vw);
-    }
-
-    .heading {
-      h1::after {
-        font-size: calc(1.4rem + 1vw);
-      }
-      .header-barcode {
-        font-size: calc(2rem + 1vw);
-      }
     }
 
     .cards-container {
