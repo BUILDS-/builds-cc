@@ -1,78 +1,38 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Heading from "@components/Heading.astro";
+import Member from "@components/Eboard/Member.astro";
+import FormerMember from "@components/Eboard/FormerMember.astro";
+import Founder from "@components/Eboard/Founder.astro";
+import EBoardSection from "@components/Eboard/EBoardSection.astro";
 import { getCollection } from "astro:content";
 
-const eBoard = await getCollection("eBoard");
+const eBoard = (await getCollection("eBoard")).sort(
+  (a, b) => a.data.position - b.data.position,
+);
 const formerEBoard = await getCollection("formerEBoard");
-const founders = await getCollection("founders");
+const founders = (await getCollection("founders")).sort(
+  (a, b) => a.data.position - b.data.position,
+);
 ---
 
 <Layout>
   <Heading title="E-BOARD" barcode="E-BOARD" />
-  <section class="eboard-section">
-    <h2>CURRENT</h2>
+  <EBoardSection title="CURRENT">
     <div>
-      {eBoard.map((member) => <article>{member.data.name}</article>)}
+      {eBoard.map((member) => <Member member={member} />)}
     </div>
-    <h3 class="text-barcode">CURRENT</h3>
-  </section>
+  </EBoardSection>
 
-  <section class="eboard-section">
-    <h2>FORMER</h2>
+  <EBoardSection title="FORMER">
     <div>
-      {formerEBoard.map((member) => <article>{member.data.name}</article>)}
+      {formerEBoard.map((member) => <FormerMember member={member} />)}
     </div>
-    <h3 class="text-barcode">FORMER</h3>
-  </section>
+  </EBoardSection>
 
-  <section class="eboard-section">
-    <h2>FOUNDERS</h2>
+  <EBoardSection title="FOUNDERS">
     <div>
-      {founders.map((member) => <article>{member.data.name}</article>)}
+      {founders.map((member) => <Founder member={member} />)}
     </div>
-    <h3 class="text-barcode">FOUNDERS</h3>
-  </section>
+  </EBoardSection>
 </Layout>
-
-<style>
-  .text-barcode {
-    font-family: var(--font-Barcode);
-    letter-spacing: 3px;
-    margin: 0;
-    text-align: end;
-  }
-
-  .eboard-section {
-    padding: var(--mobile-padding-inner);
-    border-bottom: 1px solid var(--color-border);
-
-    h2 {
-      margin-bottom: 1rem;
-    }
-
-    ul {
-      padding-left: var(--mobile-padding-inner);
-    }
-  }
-
-  @media (min-width: 800px) {
-    .text-barcode {
-      font-size: calc(1rem + 1vw);
-    }
-
-    .eboard-section {
-      padding: var(--desktop-padding-inner);
-    }
-  }
-
-  @media (min-width: 1100px) {
-    h2 {
-      font-size: calc(1.5rem + 0.5vw);
-    }
-
-    h3 {
-      font-size: calc(1.17rem + 0.3vw);
-    }
-  }
-</style>

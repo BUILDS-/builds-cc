@@ -79,6 +79,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
      carry Astro's scoped data-cid attribute. All #layout-dialog rules 
      must be :global to actually match it. */
   :global(#layout-dialog) {
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -125,6 +126,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
 <script>
   import assertExist from "@lib/assertExist";
+  import isMobile from "@lib/isMobile";
   import {
     createLayout,
     createDraggable,
@@ -135,9 +137,6 @@ const allEvents = (await getCollection("clubEvents")).sort(
     type AutoLayout,
     type Draggable,
   } from "animejs";
-
-  // TODO: Reminder that disable drag on mobile, grid only
-  // Completely disable grid hover on mobile as well, useless there.
 
   // TODO: Reminder to use smaller image sizes, golly it lags the crap out of anything
   // other than chromium
@@ -153,6 +152,9 @@ const allEvents = (await getCollection("clubEvents")).sort(
   /* --- Layout Switch Controls --- */
 
   function reverseDOM($eventsContainer: HTMLDivElement) {
+    // A neat DOM feature with fragment
+    // Prevents browser from re-rendering when you append each card
+    // Only 1 render with fragement
     const frag = document.createDocumentFragment();
     const children = Array.from($eventsContainer.children);
     for (let i = children.length - 1; i >= 0; i--) {
@@ -235,12 +237,17 @@ const allEvents = (await getCollection("clubEvents")).sort(
   ) {
     const $controls = document.querySelector(".controls");
     assertExist($controls, "$controls does not exist");
-    $controls.addEventListener("click", (e) => {
-      const id = (e.target as HTMLElement).closest("button")?.id;
-      if (id === "grid" || id === "drag") {
-        switchLayout($eventsContainer, $allCards, id); // id narrows to Layout here
-      }
-    });
+    if (isMobile()) {
+      // If we're on mobile completely remove the controls
+      $controls.remove();
+    } else {
+      $controls.addEventListener("click", (e) => {
+        const id = (e.target as HTMLElement).closest("button")?.id;
+        if (id === "grid" || id === "drag") {
+          switchLayout($eventsContainer, $allCards, id); // id narrows to Layout here
+        }
+      });
+    }
   }
 
   /* --- START: Grid Functions --- */
@@ -314,6 +321,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
   function offsetAnim($allDraggable: Draggable[]) {
     animate($allDraggable, {
+      // Ignoring type error because I can
       x: (_: number, i: number) => i * 26,
       y: (_: number, i: number) => i * 26,
       delay: utils.stagger(50),

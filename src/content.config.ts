@@ -38,6 +38,7 @@ const eBoard = defineCollection({
       position: z.number(),
       linkedin: z.url().optional(),
       github: z.url().optional(),
+      website: z.url().optional(),
     }),
 });
 
