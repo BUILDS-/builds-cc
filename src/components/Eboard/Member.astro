@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import MissingSVG from "@assets/eboard/missing.svg";
+
+interface Props {
+  member: CollectionEntry<"eBoard">;
+}
+
+const { member } = Astro.props;
+const id = member.id;
+const { name, role, image, linkedin, github, website } = member.data;
+
+const links: { label: string; href: string }[] = [];
+if (linkedin) links.push({ label: "Linkedin", href: linkedin });
+if (github) links.push({ label: "Github", href: github });
+if (website) links.push({ label: "Website", href: website });
+---
+
+<article id={id}>
+  {
+    image ? (
+      <Image src={image} alt={name} width={150} height={150} />
+    ) : (
+      <MissingSVG width={150} height={150} />
+    )
+  }
+  <p>{name}</p>
+  <p>{role}</p>
+  {links.map((link) => <a href={link.href}>{link.label}</a>)}
+</article>

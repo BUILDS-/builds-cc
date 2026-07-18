@@ -1,0 +1,51 @@
+---
+const { title } = Astro.props;
+---
+
+<section class="eboard-section">
+  <h2>{title}</h2>
+  <slot />
+  <h3 class="text-barcode">{title}</h3>
+</section>
+
+<style>
+  .text-barcode {
+    font-family: var(--font-Barcode);
+    letter-spacing: 3px;
+    margin: 0;
+    text-align: end;
+  }
+
+  .eboard-section {
+    padding: var(--mobile-padding-inner);
+    border-bottom: 1px solid var(--color-border);
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      padding-left: var(--mobile-padding-inner);
+    }
+  }
+
+  @media (min-width: 800px) {
+    .text-barcode {
+      font-size: calc(1rem + 1vw);
+    }
+
+    .eboard-section {
+      padding: var(--desktop-padding-inner);
+    }
+  }
+
+  @media (min-width: 1100px) {
+    h2 {
+      font-size: calc(1.5rem + 0.5vw);
+    }
+
+    h3 {
+      font-size: calc(1.17rem + 0.3vw);
+    }
+  }
+</style>

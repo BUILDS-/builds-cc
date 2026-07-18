@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  member: CollectionEntry<"formerEBoard">;
+}
+
+const { member } = Astro.props;
+const id = member.id;
+const { name, roles, linkedin, github, website } = member.data;
+
+const links: { label: string; href: string }[] = [];
+if (linkedin) links.push({ label: "Linkedin", href: linkedin });
+if (github) links.push({ label: "Github", href: github });
+if (website) links.push({ label: "Website", href: website });
+---
+
+<article id={id}>
+  <p>{name}</p>
+  {roles.map((r) => <p>{r.role} ({r.yearsActive})</p>)}
+  {links.map((link) => <a href={link.href}>{link.label}</a>)}
+</article>

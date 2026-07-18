@@ -1,0 +1,16 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  member: CollectionEntry<"founders">;
+}
+
+const { member } = Astro.props;
+const id = member.id;
+const { name, role } = member.data;
+---
+
+<article id={id}>
+  <p>{name}</p>
+  <p>{role}</p>
+</article>
