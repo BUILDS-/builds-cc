@@ -192,13 +192,6 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); 
     }
   }
 
-  :global(#layout-dialog .event-card .meta-label) {
-    font-family: var(--font-ZxProto);
-    font-size: 0.72rem;
-    letter-spacing: 0.5px;
-    color: var(--color-white-3);
-  }
-
   /* --- Metadata rows (date / location) --- */
   :global(#layout-dialog .event-card .dialog-meta) {
     display: flex;
@@ -209,6 +202,12 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); 
     display: flex;
     flex-direction: column;
     gap: 2px;
+  }
+  :global(#layout-dialog .event-card .meta-label) {
+    font-family: var(--font-ZxProto);
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    color: var(--color-white-3);
   }
   :global(#layout-dialog .event-card .meta-value) {
     font-family: var(--font-ZxProto);

@@ -2,6 +2,9 @@
 import type { CollectionEntry } from "astro:content";
 import { Image } from "astro:assets";
 import MissingSVG from "@assets/eboard/missing.svg";
+import LinkedinSVG from "@assets/Linkedin.svg";
+import GithubSVG from "@assets/Github.svg";
+import WebSVG from "@assets/Web.svg";
 
 interface Props {
   member: CollectionEntry<"eBoard">;
@@ -11,21 +14,108 @@ const { member } = Astro.props;
 const id = member.id;
 const { name, role, image, linkedin, github, website } = member.data;
 
-const links: { label: string; href: string }[] = [];
-if (linkedin) links.push({ label: "Linkedin", href: linkedin });
-if (github) links.push({ label: "Github", href: github });
-if (website) links.push({ label: "Website", href: website });
+const links: { label: string; href: string; Icon: typeof LinkedinSVG }[] = [];
+if (linkedin)
+  links.push({ label: "Linkedin", href: linkedin, Icon: LinkedinSVG });
+if (github) links.push({ label: "Github", href: github, Icon: GithubSVG });
+if (website) links.push({ label: "Website", href: website, Icon: WebSVG });
 ---
 
 <article id={id}>
   {
     image ? (
-      <Image src={image} alt={name} width={150} height={150} />
+      <Image
+        class="member-img"
+        src={image}
+        alt={name}
+        width={200}
+        height={200}
+      />
     ) : (
-      <MissingSVG width={150} height={150} />
+      <MissingSVG class="member-img" width={200} height={200} />
     )
   }
-  <p>{name}</p>
-  <p>{role}</p>
-  {links.map((link) => <a href={link.href}>{link.label}</a>)}
+  <div class="meta">
+    <div class="meta-row">
+      <p class="meta-label">// NAME //</p>
+      <p class="meta-value meta-name">{name}</p>
+    </div>
+    <div class="meta-row">
+      <p class="meta-label">// ROLE //</p>
+      <p class="meta-value">{role}</p>
+    </div>
+    {
+      links.length > 0 && (
+        <div class="meta-row">
+          <p class="meta-label">// LINKS //</p>
+          <p class="meta-value links">
+            {links.map((link) => (
+              <a href={link.href} aria-label={link.label}>
+                <link.Icon class="link-icon" width={28} height={28} />
+              </a>
+            ))}
+          </p>
+        </div>
+      )
+    }
+  </div>
 </article>
+
+<style>
+  article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    font-size: 1rem;
+    line-height: 1.4;
+    overflow-y: auto;
+  }
+
+  .member-img {
+    width: 100%;
+    height: auto;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 0 14px 16px;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-family: var(--font-ZxProto);
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    color: var(--color-white-3);
+  }
+
+  .meta-value {
+    font-family: var(--font-Atkinson);
+    font-size: 0.9rem;
+    color: var(--color-papaya-white);
+  }
+
+  .meta-name {
+    font-size: 1.3rem;
+  }
+
+  .links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .link-icon {
+    display: block;
+    color: var(--color-papaya-white);
+  }
+</style>

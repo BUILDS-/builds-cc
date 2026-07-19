@@ -10,7 +10,13 @@ import { getCollection } from "astro:content";
 const eBoard = (await getCollection("eBoard")).sort(
   (a, b) => a.data.position - b.data.position,
 );
-const formerEBoard = await getCollection("formerEBoard");
+const formerEBoard = (await getCollection("formerEBoard")).sort((a, b) => {
+  if (!a.data.roles || !b.data.roles) return -99;
+  return (
+    Number(b.data.roles[0].yearsActive.split("-")[1]) -
+    Number(a.data.roles[0].yearsActive.split("-")[1])
+  );
+});
 const founders = (await getCollection("founders")).sort(
   (a, b) => a.data.position - b.data.position,
 );
@@ -19,20 +25,14 @@ const founders = (await getCollection("founders")).sort(
 <Layout>
   <Heading title="E-BOARD" barcode="E-BOARD" />
   <EBoardSection title="CURRENT">
-    <div>
-      {eBoard.map((member) => <Member member={member} />)}
-    </div>
+    {eBoard.map((member) => <Member member={member} />)}
   </EBoardSection>
 
   <EBoardSection title="FORMER">
-    <div>
-      {formerEBoard.map((member) => <FormerMember member={member} />)}
-    </div>
+    {formerEBoard.map((member) => <FormerMember member={member} />)}
   </EBoardSection>
 
   <EBoardSection title="FOUNDERS">
-    <div>
-      {founders.map((member) => <Founder member={member} />)}
-    </div>
+    {founders.map((member) => <Founder member={member} />)}
   </EBoardSection>
 </Layout>

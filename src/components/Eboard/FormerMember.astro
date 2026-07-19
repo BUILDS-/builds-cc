@@ -1,5 +1,8 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import LinkedinSVG from "@assets/Linkedin.svg";
+import GithubSVG from "@assets/Github.svg";
+import WebSVG from "@assets/Web.svg";
 
 interface Props {
   member: CollectionEntry<"formerEBoard">;
@@ -9,14 +12,96 @@ const { member } = Astro.props;
 const id = member.id;
 const { name, roles, linkedin, github, website } = member.data;
 
-const links: { label: string; href: string }[] = [];
-if (linkedin) links.push({ label: "Linkedin", href: linkedin });
-if (github) links.push({ label: "Github", href: github });
-if (website) links.push({ label: "Website", href: website });
+const links: { label: string; href: string; Icon: typeof LinkedinSVG }[] = [];
+if (linkedin)
+  links.push({ label: "Linkedin", href: linkedin, Icon: LinkedinSVG });
+if (github) links.push({ label: "Github", href: github, Icon: GithubSVG });
+if (website) links.push({ label: "Website", href: website, Icon: WebSVG });
 ---
 
 <article id={id}>
-  <p>{name}</p>
-  {roles.map((r) => <p>{r.role} ({r.yearsActive})</p>)}
-  {links.map((link) => <a href={link.href}>{link.label}</a>)}
+  <div class="meta">
+    <div class="meta-row">
+      <p class="meta-label" id="member-name">// NAME //</p>
+      <p class="meta-value meta-name">{name}</p>
+    </div>
+    <div class="meta-row">
+      <p class="meta-label">// ROLES //</p>
+      {
+        roles.map((r) => (
+          <p class="meta-value">
+            {r.role} ({r.yearsActive})
+          </p>
+        ))
+      }
+    </div>
+    {
+      links.length > 0 && (
+        <div class="meta-row">
+          <p class="meta-label">// LINKS //</p>
+          <p class="meta-value links">
+            {links.map((link) => (
+              <a href={link.href} aria-label={link.label}>
+                <link.Icon class="link-icon" width={28} height={28} />
+              </a>
+            ))}
+          </p>
+        </div>
+      )
+    }
+  </div>
 </article>
+
+<style>
+  article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    font-size: 1rem;
+    line-height: 1.4;
+    overflow-y: auto;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 16px 14px;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-family: var(--font-ZxProto);
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    color: var(--color-white-3);
+  }
+
+  .meta-value {
+    font-family: var(--font-Atkinson);
+    font-size: 0.9rem;
+    color: var(--color-papaya-white);
+  }
+
+  .meta-name {
+    font-size: 1.3rem;
+  }
+
+  .links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .link-icon {
+    display: block;
+    color: var(--color-papaya-white);
+  }
+</style>

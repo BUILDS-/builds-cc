@@ -11,6 +11,56 @@ const { name, role } = member.data;
 ---
 
 <article id={id}>
-  <p>{name}</p>
-  <p>{role}</p>
+  <div class="meta">
+    <div class="meta-row">
+      <p class="meta-label">// NAME //</p>
+      <p class="meta-value meta-name">{name}</p>
+    </div>
+    <div class="meta-row">
+      <p class="meta-label">// ROLE //</p>
+      <p class="meta-value">{role}</p>
+    </div>
+  </div>
 </article>
+
+<style>
+  article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    font-size: 1rem;
+    line-height: 1.4;
+    overflow-y: auto;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 16px 14px;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-family: var(--font-ZxProto);
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    color: var(--color-white-3);
+  }
+
+  .meta-value {
+    font-family: var(--font-Atkinson);
+    font-size: 0.9rem;
+    color: var(--color-papaya-white);
+  }
+  .meta-name {
+    font-size: 1.3rem;
+  }
+</style>
