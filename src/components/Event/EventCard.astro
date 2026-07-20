@@ -193,11 +193,6 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); 
   }
 
   /* --- Metadata rows (date / location) --- */
-  :global(#layout-dialog .event-card .dialog-meta) {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
   :global(#layout-dialog .event-card .meta-row) {
     display: flex;
     flex-direction: column;
@@ -276,12 +271,12 @@ const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); 
     padding: 3px 10px;
   }
 
-  .noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none;
-  }
+  /* .noselect { */
+  /*   -webkit-touch-callout: none; /* iOS Safari */ */
+  /*   -webkit-user-select: none; /* Safari */ */
+  /*   -khtml-user-select: none; /* Konqueror HTML */ */
+  /*   -moz-user-select: none; /* Old versions of Firefox */ */
+  /*   -ms-user-select: none; /* Internet Explorer/Edge */ */
+  /*   user-select: none; */
+  /* } */
 </style>
