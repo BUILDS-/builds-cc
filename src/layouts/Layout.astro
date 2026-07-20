@@ -13,10 +13,7 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
     <Font cssVariable="--font-Barcode" />
     <Font cssVariable="--font-Atkinson" />
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
@@ -131,6 +128,7 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
 
     --nav-height: 120px;
 
+    /* Please forgive me for using magic numbers I regret doing this */
     --z-svg: 69;
     --z-nav: 400;
     --z-logo: 420;
@@ -157,10 +155,6 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
     overscroll-behavior-y: none;
     scrollbar-width: none;
     -ms-overflow-style: none;
-
-    &::webkit-scrollbar {
-      display: none;
-    }
 
     @media (min-width: 800px) {
       padding: var(--desktop-padding-top) var(--desktop-padding-outer)
