@@ -6,15 +6,49 @@ import LinkedinSVG from "@assets/Linkedin.svg";
 import GithubSVG from "@assets/Github.svg";
 import WebSVG from "@assets/Web.svg";
 
+/*
+ * Tbh this component is quite ugly because the MD files itself
+ * doesn't have the greatest structure.
+ *
+ * Like role/roles just shouldn't be a thing to begin with,
+ * and stick to only roles.
+ *
+ * Also originally 3 separate components but I used AI to consolidate into 1.
+ * Please forgive me ╮(︶︿︶)╭
+ * */
+
 interface Props {
-  member: CollectionEntry<"eBoard">;
+  member:
+    | CollectionEntry<"eBoard">
+    | CollectionEntry<"formerEBoard">
+    | CollectionEntry<"founders">;
 }
 
 const { member } = Astro.props;
 const id = member.id;
-const { name, role, image, linkedin, github, website } = member.data;
 
-const links: { label: string; href: string; Icon: typeof LinkedinSVG }[] = [];
+let image;
+let role;
+let roles;
+let linkedin;
+let github;
+let website;
+
+const { name } = member.data;
+
+switch (member.collection) {
+  case "eBoard":
+    ({ role, image, linkedin, github, website } = member.data);
+    break;
+  case "formerEBoard":
+    ({ roles, linkedin, github, website } = member.data);
+    break;
+  case "founders":
+    ({ role } = member.data);
+    break;
+}
+
+const links = [];
 if (linkedin)
   links.push({ label: "Linkedin", href: linkedin, Icon: LinkedinSVG });
 if (github) links.push({ label: "Github", href: github, Icon: GithubSVG });
@@ -23,27 +57,42 @@ if (website) links.push({ label: "Website", href: website, Icon: WebSVG });
 
 <article id={id}>
   {
-    image ? (
-      <Image
-        class="member-img"
-        src={image}
-        alt={name}
-        width={200}
-        height={200}
-      />
-    ) : (
-      <MissingSVG class="member-img" width={200} height={200} />
-    )
+    member.collection === "eBoard" &&
+      (image ? (
+        <Image
+          class="member-img"
+          src={image}
+          alt={name}
+          width={200}
+          height={200}
+        />
+      ) : (
+        <MissingSVG class="member-img" width={200} height={200} />
+      ))
   }
   <div class="meta">
     <div class="meta-row">
       <p class="meta-label">// NAME //</p>
       <p class="meta-value meta-name">{name}</p>
     </div>
-    <div class="meta-row">
-      <p class="meta-label">// ROLE //</p>
-      <p class="meta-value">{role}</p>
-    </div>
+    {
+      member.collection === "formerEBoard" ? (
+        <div class="meta-row">
+          <p class="meta-label">// ROLES //</p>
+          {roles &&
+            roles.map((r) => (
+              <p class="meta-value">
+                {r.role} ({r.yearsActive})
+              </p>
+            ))}
+        </div>
+      ) : (
+        <div class="meta-row">
+          <p class="meta-label">// ROLE //</p>
+          <p class="meta-value">{role}</p>
+        </div>
+      )
+    }
     {
       links.length > 0 && (
         <div class="meta-row">

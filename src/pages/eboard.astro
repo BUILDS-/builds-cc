@@ -2,8 +2,6 @@
 import Layout from "@layouts/Layout.astro";
 import Heading from "@components/Heading.astro";
 import Member from "@components/Eboard/Member.astro";
-import FormerMember from "@components/Eboard/FormerMember.astro";
-import Founder from "@components/Eboard/Founder.astro";
 import EBoardSection from "@components/Eboard/EBoardSection.astro";
 import { getCollection } from "astro:content";
 
@@ -29,10 +27,10 @@ const founders = (await getCollection("founders")).sort(
   </EBoardSection>
 
   <EBoardSection title="FORMER">
-    {formerEBoard.map((member) => <FormerMember member={member} />)}
+    {formerEBoard.map((member) => <Member member={member} />)}
   </EBoardSection>
 
   <EBoardSection title="FOUNDERS">
-    {founders.map((member) => <Founder member={member} />)}
+    {founders.map((member) => <Member member={member} />)}
   </EBoardSection>
 </Layout>
