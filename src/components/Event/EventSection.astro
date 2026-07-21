@@ -46,15 +46,15 @@ const allEvents = (await getCollection("clubEvents")).sort(
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     grid-auto-rows: 300px;
 
-    @media (min-width: 768px) {
+    @media (min-width: 800px) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: 1100px) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    @media (min-width: 1400px) {
+    @media (min-width: 1500px) {
       grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
     }
 
@@ -138,8 +138,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
     type Draggable,
   } from "animejs";
 
-  // TODO: Reminder to use smaller image sizes, golly it lags the crap out of anything
-  // other than chromium
+  // For the sake of load speed AND the performance of this page use small image sizes PLS
 
   // lowk dunno if it's a good idea to initialize as null
   type Layout = "grid" | "drag";
