@@ -58,12 +58,7 @@ const url = Astro.url.pathname;
      * Creates a navLayout object
      * Grabs the current <span> with class .highlight
      *
-     * Root is the <nav> (one level above <ul>) so the <ul>/<li> positions
-     * can be animated without the root being forced into absolute layout.
-     * children: ".highlight" limits FLIP targets to the highlight box, which
-     * is the only element that actually changes position between states. This
-     * keeps the <a>/.nav-text spans out of the layout animation so they are
-     * never absolutized/width-locked, which is what caused the text jitter.
+     * Weird jitter bug on .higlight or something, still needs investigating
      * */
     assertExist($navUl, "nav does not exist");
     const navLayout = createLayout($navUl as DOMTarget, {

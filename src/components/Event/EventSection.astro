@@ -1,6 +1,5 @@
 ---
 import EventCard from "@components/Event/EventCard.astro";
-import Button from "@components/Button.astro";
 import { getCollection } from "astro:content";
 
 const allEvents = (await getCollection("clubEvents")).sort(
@@ -11,8 +10,15 @@ const allEvents = (await getCollection("clubEvents")).sort(
 <section class="event-section">
   <div class="controls">
     <p>// SWITCH LAYOUT //</p>
-    <Button id="grid">Grid</Button>
-    <Button id="drag">Draggable</Button>
+    <div class="layout-switch">
+      <button id="grid">
+        <span class="switch-text">Grid</span>
+        <span class="switch-highlight"></span>
+      </button>
+      <button id="drag">
+        <span class="switch-text">Draggable</span>
+      </button>
+    </div>
   </div>
   <div class="club-events" data-layout="grid">
     {allEvents.map((event) => <EventCard id={event.id} event={event} />)}
@@ -21,20 +27,58 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
 <style>
   .controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     padding: 20px var(--mobile-padding-inner);
     @media (min-width: 800px) {
       padding: 20px var(--desktop-padding-inner);
     }
 
-    button {
-      padding: 2px 5px;
-      border: 2px solid;
-    }
-
-    button,
     p {
-      display: inline-block;
+      margin: 0;
     }
+  }
+
+  .layout-switch {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .layout-switch button {
+    position: relative;
+    display: inline-block;
+    padding: 3px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    font-family: var(--font-Atkinson);
+    font-size: 1rem;
+  }
+
+  .switch-text {
+    position: relative;
+    z-index: 2;
+  }
+
+  .layout-switch button:has(.switch-highlight) {
+    color: var(--color-text);
+  }
+
+  .switch-highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 2px;
+    z-index: 1;
+    background-color: var(--color-bg);
   }
 
   .club-events {
@@ -138,6 +182,8 @@ const allEvents = (await getCollection("clubEvents")).sort(
     type Draggable,
   } from "animejs";
 
+  // TODO: This component needs a cleanup + split tbh
+
   // For the sake of load speed AND the performance of this page use small image sizes PLS
 
   // lowk dunno if it's a good idea to initialize as null
@@ -147,8 +193,21 @@ const allEvents = (await getCollection("clubEvents")).sort(
   let teardown: (() => void) | null = null;
   let autoLayout: AutoLayout | null = null; // Holds object returned from createLayout()
   let dialogLayout: AutoLayout | null = null;
+  let switchLayout_obj: AutoLayout | null = null; // Drives the sliding highlight between buttons
+  let $switchHighlight: HTMLElement | null = null;
 
   /* --- Layout Switch Controls --- */
+
+  function initSwitchHighlight() {
+    // Same idea as NavMenu's initNavLayout:
+    const $layoutSwitch = document.querySelector<HTMLElement>(".layout-switch");
+    assertExist($layoutSwitch, "$layoutSwitch does not exist");
+    switchLayout_obj = createLayout($layoutSwitch, {
+      ease: "out(5.82)",
+      children: "span",
+    });
+    $switchHighlight = document.querySelector<HTMLElement>(".switch-highlight");
+  }
 
   function reverseDOM($eventsContainer: HTMLDivElement) {
     // A neat DOM feature with fragment
@@ -226,7 +285,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
           });
         return;
       default:
-        console.log("wrong state");
+        throw new Error("Impossible state");
     }
   }
 
@@ -241,9 +300,12 @@ const allEvents = (await getCollection("clubEvents")).sort(
       $controls.remove();
     } else {
       $controls.addEventListener("click", (e) => {
-        const id = (e.target as HTMLElement).closest("button")?.id;
-        if (id === "grid" || id === "drag") {
-          switchLayout($eventsContainer, $allCards, id); // id narrows to Layout here
+        const $btn = (e.target as HTMLElement).closest("button");
+        const layout = $btn?.id;
+        if (layout === "grid" || layout === "drag") {
+          // Slide the highlight into the clicked button (NavMenu pattern)
+          switchLayout_obj?.update(() => $btn!.appendChild($switchHighlight!));
+          switchLayout($eventsContainer, $allCards, layout);
         }
       });
     }
@@ -343,8 +405,9 @@ const allEvents = (await getCollection("clubEvents")).sort(
    * I also referenced Animejs's talented author Julian Garnier's codepen ALOT here,
    * https://codepen.io/juliangarnier/pen/PwzmxwR
    *
-   * If you visit this pen you will see lots of similar code,
-   * because I YOINKED that shi :)
+   * I of course wrote (YOINKED) it all myself  :)
+   *
+   * Jokes aside Julian's pen was invaluable to this section of code
    * */
 
   let $dialog: HTMLDialogElement | null = null;
@@ -372,6 +435,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
     dialogLayout
       .update(() => {
         $card.classList.add("is-open");
+        // showModal is a HTMLDialogElement method builtin to the browser
         $dialog!.showModal();
       })
       .then(() => {
@@ -473,6 +537,9 @@ const allEvents = (await getCollection("clubEvents")).sort(
     allDraggable = [];
     autoLayout?.revert();
     autoLayout = null;
+    switchLayout_obj?.revert();
+    switchLayout_obj = null;
+    $switchHighlight = null;
     currLayout = null;
 
     // TEAR IT ALL DOWN
@@ -502,6 +569,10 @@ const allEvents = (await getCollection("clubEvents")).sort(
     initModal($clubEventsDiv);
 
     initControls($clubEventsDiv, $allCards);
+
+    // .controls is removed on mobile, so only wire the highlight on desktop.
+    // The .switch-highlight span starts inside #grid, matching the initial grid layout.
+    if (!isMobile()) initSwitchHighlight();
 
     gridIntroAnim($allCards);
     currLayout = "grid";

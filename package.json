@@ -1,7 +1,15 @@
 {
-  "name": "red-radiation",
+  "name": "builds.cc",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.9.0",
+  "author": "Tiger Liu",
+  "contributors": [
+    "Philip Tran",
+    "Tiger Liu",
+    "Rafay Adnan",
+    "Ben Gonzalez",
+    "Layne Pierce"
+  ],
   "engines": {
     "node": ">=22.12.0"
   },

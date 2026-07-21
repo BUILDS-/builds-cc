@@ -15,7 +15,6 @@ const { speed = 20, content = [] } = Astro.props;
 </marquee-slide>
 
 <script>
-  // TODO: Maybe need an resize observer to redo code inside connectedCallback()?
   import { animate, type JSAnimation, linear } from "animejs";
   import assertExist from "@lib/assertExist.ts";
 

@@ -18,7 +18,14 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
 
   <!-- This grid wrapper is currently unused -->
   <section class="hero">
-    <div class="loc">@ 665 Commonwealth Ave | Room 220</div>
+    <div class="loc">
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://maps.app.goo.gl/44buZMaQaLFjPLcc8"
+        >@ 665 Commonwealth Ave | Room 220</a
+      >
+    </div>
     <p>
       An inclusive group of students, artists, hackers, and organizers who
       believe in the do-it-yourself attitude and hacker ethic.
@@ -34,6 +41,12 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
       <a href="/events"><Button class="link-btn">Our Events</Button></a>
       <a target="_blank" rel="noopener noreferrer" href=""
         ><Button class="link-btn">Join our Discord!</Button></a
+      >
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://builds.us14.list-manage.com/subscribe?u=48eeff7657509db01b37d0c9b&id=c7c2160530"
+        ><Button class="link-btn">Mailing List</Button></a
       >
     </div>
   </section>
@@ -145,16 +158,21 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
     }
 
     .loc {
-      text-align: center;
-      color: var(--color-black-2);
       background-color: var(--color-papaya-white);
-      padding: 0.2rem;
       margin-bottom: 20px;
+
+      a {
+        text-align: center;
+        color: var(--color-black-2);
+      }
     }
 
     .button-container {
       display: flex;
-      justify-content: space-around;
+      justify-content: start;
+      flex-wrap: wrap;
+      column-gap: 2rem;
+      row-gap: 1rem;
 
       a {
         text-decoration: none;
