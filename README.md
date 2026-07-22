@@ -4,7 +4,7 @@ Install dependencies and run development server: (bun/npm/pnpm/yarn)
 
 ```shell
 bun i
-bun run develop
+bun dev
 ```
 
 The site is now running at <localhost:4321>.
