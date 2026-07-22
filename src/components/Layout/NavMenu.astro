@@ -1,0 +1,235 @@
+---
+const url = Astro.url.pathname;
+// console.log(url);
+---
+
+<div id="navMenu">
+  <nav aria-label="Primary">
+    <ul class="nav-ul">
+      <li>
+        <a href="/" aria-label="Builds home page"
+          ><span class="nav-text">Home</span>
+          {url === "/" ? <span class="highlight" /> : ""}
+        </a>
+      </li>
+      <li>
+        <a href="/events" aria-label="Builds events page"
+          ><span class="nav-text">Events</span>
+          {url === "/events/" ? <span class="highlight" /> : ""}
+        </a>
+      </li>
+      <li>
+        <a href="/eboard" aria-label="Builds eboard page"
+          ><span class="nav-text">E-Board</span>
+          {url === "/eboard/" ? <span class="highlight" /> : ""}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  /*
+   * Wasted a lot of time on this component.
+   *
+   * There is something finnicky going on with padding, line-height
+   * and margin that would cause jitter when animated.
+   *
+   * I don't want to waste more time on something stupid
+   * (that I'm probably responsible for) and will come back
+   * to this much much later
+   * */
+
+  import assertExist from "@lib/assertExist";
+  import isMobile from "@lib/isMobile";
+  import { createLayout, type DOMTarget } from "animejs";
+  import { getCurrentUrl } from "swup";
+
+  const $navMenu = document.getElementById("navMenu");
+  assertExist($navMenu, "navMenu does not exist");
+
+  const $navUl = $navMenu.querySelector(".nav-ul");
+  const $allLinks = $navMenu.querySelectorAll("a");
+
+  const { navLayout, $highlight } = initNavLayout();
+
+  function initNavLayout() {
+    /*
+     * Creates a navLayout object
+     * Grabs the current <span> with class .highlight
+     *
+     * Weird jitter bug on .higlight or something, still needs investigating
+     * */
+    assertExist($navUl, "nav does not exist");
+    const navLayout = createLayout($navUl as DOMTarget, {
+      ease: "out(5.82)",
+      children: "span",
+    });
+    const $highlight = document.querySelector(".highlight");
+    return { navLayout, $highlight };
+  }
+
+  function onNavClick(e: PointerEvent) {
+    assertExist(e.target, "e.target does not exist");
+    assertExist($highlight, "$highlight does not exist");
+    const target = e.target as HTMLElement;
+    const $anchor = target.closest("a");
+
+    if ($anchor != null) {
+      isMobile()
+        ? $anchor?.appendChild($highlight)
+        : navLayout.update(() => $anchor?.appendChild($highlight));
+    }
+  }
+
+  function updateActiveLink() {
+    assertExist($highlight, "$highlight does not exist");
+    const url = getCurrentUrl();
+    $allLinks.forEach(($link) => {
+      const href = $link.getAttribute("href");
+      if (href === url) {
+        isMobile()
+          ? $link.appendChild($highlight)
+          : navLayout.update(() => $link.appendChild($highlight));
+      }
+    });
+  }
+
+  function toggleNav() {
+    // Mobile only function
+    if (!isMobile()) return;
+    assertExist($navMenu, "navMenu does not exist");
+
+    if (document.body.hasAttribute("data-nav-open")) {
+      // using .record() then .animate() is just a manual version of using .update()
+      navLayout.record();
+      $navMenu.style.opacity = "1";
+      $navMenu.style.visibility = "visible";
+      navLayout.animate({
+        duration: 500,
+      });
+    } else {
+      $navMenu.style.opacity = "0";
+      $navMenu.style.visibility = "hidden";
+    }
+  }
+
+  $navMenu.addEventListener("click", (e) => onNavClick(e));
+
+  document.addEventListener("swup:animation:out:start", () => {
+    // Animation starts on swup view transition start
+    updateActiveLink();
+  });
+  document.addEventListener("swup:history:popstate", () => {
+    // Animation when forward/back are pressed in a browser
+    updateActiveLink();
+  });
+
+  /* Slightly legacy code.
+   * Was necessary when I used animate().
+   *
+   * But the style clear is still useful in case
+   * someone resizes from mobile -> desktop without refresh
+   * */
+  let resizeTimer: ReturnType<typeof setTimeout>;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (!isMobile()) {
+        // Initial css has priority over media query css.
+        // So for media query to show `opacity: 1` and `visibility: visible`
+        // this is needed on desktop
+        $navMenu.style.opacity = "";
+        $navMenu.style.visibility = "";
+      }
+    }, 50);
+  });
+
+  // Below are code responsible for navOpen and navClose events
+  // which should only happen on mobile screen sizes
+
+  $allLinks.forEach(($link) => {
+    $link.addEventListener("click", () => {
+      if (!isMobile()) return;
+      document.body.removeAttribute("data-nav-open");
+      document.dispatchEvent(new CustomEvent("navClose"));
+    });
+  });
+
+  document.addEventListener("navOpen", toggleNav);
+  document.addEventListener("navClose", toggleNav);
+</script>
+
+<style>
+  #navMenu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: fixed;
+    top: 25px;
+    z-index: var(--z-nav);
+
+    width: 100%;
+
+    visibility: hidden;
+    opacity: 0;
+
+    font-size: 1.1rem;
+  }
+
+  ul {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+
+    text-align: center;
+    list-style: none;
+
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  a {
+    position: relative;
+    display: inline-block;
+    padding: 8px 30px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .nav-text {
+    position: relative;
+    z-index: 2;
+  }
+
+  #navMenu li:has(.highlight) {
+    color: var(--color-text);
+  }
+
+  .highlight {
+    position: absolute;
+    background-color: var(--color-bg);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 2px;
+    z-index: 1;
+  }
+
+  @media (min-width: 800px) {
+    #navMenu {
+      justify-content: flex-end;
+      align-items: center;
+      height: fit-content;
+      opacity: 1;
+      visibility: visible;
+
+      top: var(--desktop-padding-outer);
+      right: var(--desktop-padding-outer);
+    }
+  }
+</style>

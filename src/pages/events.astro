@@ -1,0 +1,21 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Heading from "@components/Heading.astro";
+import Marquee from "@components/Event/Marquee.astro";
+import EventSection from "@components/Event/EventSection.astro";
+
+const quotes = [
+  "╰(▔∀▔)╯",
+  "New events once in a blue moon...",
+  "Click on an event card to get more details!",
+  "In 'draggable' mode, you can drag a card by it's title",
+  "Don't forget to join our discord!",
+  "Is AGI here yet?",
+];
+---
+
+<Layout>
+  <Heading title="EVENTS" barcode="EVENTS" delay="600ms" />
+  <Marquee speed={50} content={quotes} />
+  <EventSection />
+</Layout>

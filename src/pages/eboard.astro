@@ -1,0 +1,36 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Heading from "@components/Heading.astro";
+import Member from "@components/Eboard/Member.astro";
+import EBoardSection from "@components/Eboard/EBoardSection.astro";
+import { getCollection } from "astro:content";
+
+const eBoard = (await getCollection("eBoard")).sort(
+  (a, b) => a.data.position - b.data.position,
+);
+const formerEBoard = (await getCollection("formerEBoard")).sort((a, b) => {
+  if (!a.data.roles || !b.data.roles) return -99;
+  return (
+    Number(b.data.roles[0].yearsActive.split("-")[1]) -
+    Number(a.data.roles[0].yearsActive.split("-")[1])
+  );
+});
+const founders = (await getCollection("founders")).sort(
+  (a, b) => a.data.position - b.data.position,
+);
+---
+
+<Layout>
+  <Heading title="E-BOARD" barcode="E-BOARD" />
+  <EBoardSection title="CURRENT">
+    {eBoard.map((member) => <Member member={member} />)}
+  </EBoardSection>
+
+  <EBoardSection title="FORMER">
+    {formerEBoard.map((member) => <Member member={member} />)}
+  </EBoardSection>
+
+  <EBoardSection title="FOUNDERS">
+    {founders.map((member) => <Member member={member} />)}
+  </EBoardSection>
+</Layout>

@@ -1,0 +1,78 @@
+---
+import fl from "figlet";
+import AnsiShadow from "figlet/fonts/ANSI Shadow";
+fl.parseFont("AnsiShadow", AnsiShadow); // load font
+const BU = fl.textSync("BU", { font: "AnsiShadow" }).trim();
+const ILDS = fl.textSync("ILDS", { font: "AnsiShadow" }).trim();
+import BuildsSVG from "@assets/BUILDS-Cropped.svg";
+---
+
+<header id="logo-container">
+  <a href="/" aria-label="Builds home page">
+    <BuildsSVG width="315" height="78" />
+  </a>
+</header>
+
+<script>
+  import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
+  import { closeNav } from "@lib/navState";
+  import { animate } from "animejs";
+
+  const $header = document.querySelector("header");
+  $header?.addEventListener("click", closeNav);
+
+  document.addEventListener("navOpen", () => {
+    animate(`#logo-container`, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      top: `+=${NAV_SLIDE_DIST}`,
+    });
+  });
+
+  document.addEventListener("navClose", () => {
+    animate(`#logo-container`, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      top: `-=${NAV_SLIDE_DIST}`,
+    });
+  });
+</script>
+<style>
+  a {
+    display: block;
+  }
+
+  #logo-container {
+    position: fixed;
+    top: 8px;
+    left: 50%;
+    transform: translatex(-50%);
+
+    width: fit-content;
+    height: 50px;
+
+    white-space: nowrap;
+    text-align: center;
+    background-color: var(--color-bg);
+    z-index: var(--z-logo);
+
+    svg {
+      width: 200px;
+      height: 50px;
+    }
+  }
+
+  @media (min-width: 800px) {
+    #logo-container {
+      top: 18px;
+      left: 40px;
+      transform: none;
+      height: 87px;
+
+      svg {
+        width: 350px;
+        height: 87px;
+      }
+    }
+  }
+</style>

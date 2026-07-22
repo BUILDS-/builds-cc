@@ -1,0 +1,165 @@
+---
+import { Font } from "astro:assets";
+import Logo from "@components/Layout/Logo.astro";
+import MobileNavIcon from "@components/Layout/MobileNavIcon.astro";
+import NavMenu from "@components/Layout/NavMenu.astro";
+import SVGWrapper from "@components/Layout/SVGWrapper.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Font cssVariable="--font-ZxProto" />
+    <Font cssVariable="--font-Barcode" />
+    <Font cssVariable="--font-Atkinson" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>BUILDS.cc</title>
+  </head>
+  <body>
+    <NavMenu />
+    <MobileNavIcon />
+    <Logo />
+    <SVGWrapper />
+    <main class="app" id="swup">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<script>
+  import { animate, scrambleText } from "animejs";
+  // engine.defaults.frameRate = 120;
+
+  function scrambleTitle() {
+    animate(["h1", ".header-barcode"], {
+      innerHTML: scrambleText({ override: "_" }),
+    });
+  }
+
+  function closeNavMobile() {
+    const $linkBtns = document.querySelectorAll(".link-btn");
+    $linkBtns.forEach(($link) => {
+      $link.addEventListener("click", () => {
+        // Clicking on any link should have a "closing" animation for the mobile nav menu
+        if (document.body.hasAttribute("data-nav-open")) {
+          document.body.removeAttribute("data-nav-open");
+          document.dispatchEvent(new CustomEvent("navClose"));
+        }
+      });
+    });
+  }
+
+  function resetScroll() {
+    // just scrolls to top without animation
+    document.querySelector<HTMLElement>("main.app")?.scrollTo(0, 0);
+  }
+
+  scrambleTitle();
+  closeNavMobile();
+  document.addEventListener("swup:content:replace", resetScroll);
+  document.addEventListener("swup:page:view", () => {
+    closeNavMobile();
+    scrambleTitle();
+  });
+
+  document.addEventListener("swup:visit:start", () => {
+    animate("h1", {
+      innerHTML: scrambleText({
+        text: "...",
+        settleDuration: 50,
+        revealRate: 50,
+        duration: 1000,
+      }),
+    });
+  });
+</script>
+
+<style is:global>
+  body {
+    font-family: var(--font-Atkinson);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-ZxProto);
+  }
+
+  h1,
+  h2,
+  p {
+    margin: 0;
+  }
+</style>
+
+<style>
+  :root {
+    /* Lots of these colors are unused but keeping them for testing purposes */
+    --color-white-1: #fff;
+    --color-white-2: #f3f3ff;
+    --color-white-3: #a4a4a4;
+    --color-black-1: #000;
+    --color-black-2: #101016;
+    --color-black-3: #565656;
+
+    --color-dark-orange: #ff8c00;
+    --color-seagrass: #65a98f;
+    --color-rust-brown: #a93400;
+    --color-papaya-white: #fff4db;
+
+    --color-bg: var(--color-black-1);
+    --color-text: var(--color-papaya-white);
+    --color-border: var(--color-white-3);
+    --color-accent: red;
+
+    --mobile-padding-top: 30px;
+    --mobile-padding-outer: 15px;
+    --mobile-padding-inner: 15px;
+
+    --desktop-padding-top: 60px;
+    --desktop-padding-outer: 20px;
+    --desktop-padding-inner: 30px;
+
+    --nav-height: 120px;
+
+    /* Please forgive me for using magic numbers I regret doing this */
+    --z-svg: 69;
+    --z-nav: 400;
+    --z-logo: 420;
+    --z-hamburger: 2000;
+    --z-modal: 3000;
+  }
+
+  html,
+  body {
+    height: 100svh;
+    width: 100%;
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    overflow: hidden;
+  }
+
+  main {
+    box-sizing: border-box;
+    height: 100svh;
+    padding: var(--mobile-padding-top) var(--mobile-padding-outer)
+      var(--mobile-padding-outer);
+    overflow-y: scroll;
+    overscroll-behavior-y: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    @media (min-width: 800px) {
+      padding: var(--desktop-padding-top) var(--desktop-padding-outer)
+        var(--desktop-padding-outer);
+    }
+  }
+</style>

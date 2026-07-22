@@ -1,0 +1,578 @@
+---
+import EventCard from "@components/Event/EventCard.astro";
+import { getCollection } from "astro:content";
+
+const allEvents = (await getCollection("clubEvents")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+); // Sorts event from newest -> oldest
+---
+
+<section class="event-section">
+  <div class="controls">
+    <p>// SWITCH LAYOUT //</p>
+    <div class="layout-switch">
+      <button id="grid">
+        <span class="switch-text">Grid</span>
+        <span class="switch-highlight"></span>
+      </button>
+      <button id="drag">
+        <span class="switch-text">Draggable</span>
+      </button>
+    </div>
+  </div>
+  <div class="club-events" data-layout="grid">
+    {allEvents.map((event) => <EventCard id={event.id} event={event} />)}
+  </div>
+</section>
+
+<style>
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px var(--mobile-padding-inner);
+    @media (min-width: 800px) {
+      padding: 20px var(--desktop-padding-inner);
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .layout-switch {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .layout-switch button {
+    position: relative;
+    display: inline-block;
+    padding: 3px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    font-family: var(--font-Atkinson);
+    font-size: 1rem;
+  }
+
+  .switch-text {
+    position: relative;
+    z-index: 2;
+  }
+
+  .layout-switch button:has(.switch-highlight) {
+    color: var(--color-text);
+  }
+
+  .switch-highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 2px;
+    z-index: 1;
+    background-color: var(--color-bg);
+  }
+
+  .club-events {
+    position: relative;
+  }
+
+  .club-events[data-layout="grid"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(325px, 1fr));
+    grid-auto-rows: 300px;
+
+    article {
+      transform-origin: bottom center;
+      opacity: 0;
+    }
+  }
+
+  .club-events[data-layout="drag"] {
+    article {
+      transform-origin: 0 0;
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      top: 0;
+      left: 30px;
+    }
+  }
+
+  /* The dialog is created at runtime via document.createElement, so it does not
+     carry Astro's scoped data-cid attribute. All #layout-dialog rules 
+     must be :global to actually match it. */
+  :global(#layout-dialog) {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: var(--z-modal);
+    top: 0;
+    left: 0;
+    width: 100svw;
+    height: 100svh;
+    max-width: 100%;
+    max-height: 100%;
+    border: none;
+    background: transparent;
+    pointer-events: none;
+
+    --overlay-alpha: 100%;
+
+    /* julian sir... what is color-mix? */
+    background-color: color-mix(
+      in srgb,
+      var(--color-black-1),
+      transparent var(--overlay-alpha)
+    );
+  }
+  :global(#layout-dialog)::backdrop {
+    background: transparent;
+  }
+
+  :global(#layout-dialog[open]) {
+    --overlay-alpha: 40%;
+    pointer-events: auto;
+  }
+
+  :global(.event-card.is-open) {
+    visibility: hidden;
+  }
+  :global(#layout-dialog .event-card) {
+    visibility: hidden;
+  }
+  :global(#layout-dialog[open] .event-card) {
+    visibility: visible;
+  }
+</style>
+
+<script>
+  import assertExist from "@lib/assertExist";
+  import isMobile from "@lib/isMobile";
+  import {
+    createLayout,
+    createDraggable,
+    animate,
+    utils,
+    linear,
+    type DOMTargetSelector,
+    type AutoLayout,
+    type Draggable,
+  } from "animejs";
+
+  // TODO: This component needs a cleanup + split tbh
+
+  // For the sake of load speed AND the performance of this page use small image sizes PLS
+
+  // lowk dunno if it's a good idea to initialize as null
+  type Layout = "grid" | "drag";
+  let currLayout: Layout | null = null;
+  let allDraggable: Draggable[] = []; // Holds all draggable elements, used to disable them later
+  let teardown: (() => void) | null = null;
+  let autoLayout: AutoLayout | null = null; // Holds object returned from createLayout()
+  let dialogLayout: AutoLayout | null = null;
+  let switchLayout_obj: AutoLayout | null = null; // Drives the sliding highlight between buttons
+  let $switchHighlight: HTMLElement | null = null;
+
+  /* --- Layout Switch Controls --- */
+
+  function initSwitchHighlight() {
+    // Same idea as NavMenu's initNavLayout:
+    const $layoutSwitch = document.querySelector<HTMLElement>(".layout-switch");
+    assertExist($layoutSwitch, "$layoutSwitch does not exist");
+    switchLayout_obj = createLayout($layoutSwitch, {
+      ease: "out(5.82)",
+      children: "span",
+    });
+    $switchHighlight = document.querySelector<HTMLElement>(".switch-highlight");
+  }
+
+  function reverseDOM($eventsContainer: HTMLDivElement) {
+    // A neat DOM feature with fragment
+    // Prevents browser from re-rendering when you append each card
+    // Only 1 render with fragement
+    const frag = document.createDocumentFragment();
+    const children = Array.from($eventsContainer.children);
+    for (let i = children.length - 1; i >= 0; i--) {
+      frag.appendChild(children[i]);
+    }
+    $eventsContainer.appendChild(frag);
+  }
+
+  function switchLayout(
+    $eventsContainer: HTMLDivElement,
+    $allCards: NodeListOf<HTMLDivElement>,
+    layout: Layout,
+  ) {
+    if (currLayout === layout) return; // Why switch if we on the same layout alr
+    if (currLayout == null) {
+      // no Layout set yet, must be on page load
+      return false;
+    }
+    assertExist(
+      autoLayout,
+      "autoLayout should exist at this point, something went wrong",
+    );
+
+    currLayout = layout;
+
+    switch (layout) {
+      case "grid":
+        autoLayout
+          .update(
+            () => {
+              reverseDOM($eventsContainer);
+              assertExist(
+                teardown,
+                "teardown should exist at this point, something went wrong",
+              );
+              teardown();
+              teardown = null;
+              allDraggable = [];
+              $eventsContainer.dataset.layout = layout;
+            },
+            { duration: 300, ease: "out(3)" },
+          )
+          .then(() => {
+            if (currLayout !== layout) return; // user must've switched layout
+            teardown = initGrid($allCards);
+          });
+        return;
+      case "drag":
+        autoLayout
+          .update(
+            () => {
+              reverseDOM($eventsContainer);
+              assertExist(
+                teardown,
+                "teardown should exist at this point, something went wrong",
+              );
+              teardown();
+              teardown = null;
+              $eventsContainer.dataset.layout = layout;
+            },
+            {
+              duration: 250,
+              ease: "out(3)",
+            },
+          )
+          .then(() => {
+            if (currLayout !== layout) return;
+            initDrag($eventsContainer, $allCards);
+            teardown = offsetAnim(allDraggable);
+          });
+        return;
+      default:
+        throw new Error("Impossible state");
+    }
+  }
+
+  function initControls(
+    $eventsContainer: HTMLDivElement,
+    $allCards: NodeListOf<HTMLDivElement>,
+  ) {
+    const $controls = document.querySelector(".controls");
+    assertExist($controls, "$controls does not exist");
+    if (isMobile()) {
+      // If we're on mobile completely remove the controls
+      $controls.remove();
+    } else {
+      $controls.addEventListener("click", (e) => {
+        const $btn = (e.target as HTMLElement).closest("button");
+        const layout = $btn?.id;
+        if (layout === "grid" || layout === "drag") {
+          // Slide the highlight into the clicked button (NavMenu pattern)
+          switchLayout_obj?.update(() => $btn!.appendChild($switchHighlight!));
+          switchLayout($eventsContainer, $allCards, layout);
+        }
+      });
+    }
+  }
+
+  /* --- START: Grid Functions --- */
+  function gridIntroAnim($allCards: NodeListOf<HTMLDivElement>) {
+    // Plays only once on page load
+    $allCards.forEach(($card) => ($card.style.opacity = "1"));
+    return animate($allCards, {
+      y: { from: "50px" },
+      opacity: { from: 0 },
+      delay: utils.stagger(70),
+      ease: "out(3)",
+      duration: 400,
+    });
+  }
+
+  function initGrid($allCards: NodeListOf<HTMLDivElement>) {
+    const AC = new AbortController(); // To handle removing EventListeners
+    $allCards.forEach(($card) => {
+      $card.addEventListener(
+        "mouseenter",
+        () =>
+          animate($card, {
+            y: -20,
+            ease: "out(3)",
+            duration: 100,
+          }),
+        { signal: AC.signal },
+      );
+      $card.addEventListener(
+        "mouseleave",
+        () =>
+          animate($card, {
+            y: 0,
+            ease: "out(3)",
+            duration: 100,
+          }),
+        { signal: AC.signal },
+      );
+    });
+
+    return () => {
+      // Returns a teardown function to clean up for later
+      AC.abort();
+      $allCards.forEach(($card) => {
+        // Manual reset here instead of revert()
+        // Lazy solution because I dont want to keep record of each animate object for each card
+        // Regardless I think animate objects are garbage collected after they are complete?
+        $card.style.transform = "";
+        $card.style.margin = "";
+      });
+    };
+  }
+  /* --- END: Grid Functions --- */
+
+  /* --- START: Drag Functions --- */
+  function initDrag(
+    $eventsContainer: HTMLDivElement,
+    $allCards: NodeListOf<HTMLDivElement>,
+  ) {
+    $allCards.forEach(($card) => {
+      const $tbar = $card.querySelector(".title-bar") as DOMTargetSelector;
+      assertExist($tbar, "$tbar does not exist");
+      const d = createDraggable($card, {
+        trigger: $tbar,
+        container: $eventsContainer,
+        maxVelocity: 100,
+      });
+      allDraggable.push(d);
+    });
+  }
+
+  function offsetAnim($allDraggable: Draggable[]) {
+    animate($allDraggable, {
+      // Ignoring type error because I can
+      x: (_: number, i: number) => i * 26,
+      y: (_: number, i: number) => i * 26,
+      delay: utils.stagger(50),
+      ease: linear(0, 1),
+      duration: 100,
+    });
+
+    return () => {
+      $allDraggable.forEach(($draggable) => {
+        $draggable.revert();
+      });
+    };
+  }
+  /* --- END: Drag Functions --- */
+
+  /* --- START: Dialog functions ---*/
+  /*
+   * NOTE: This section is AI assisted
+   *
+   * I also referenced Animejs's talented author Julian Garnier's codepen ALOT here,
+   * https://codepen.io/juliangarnier/pen/PwzmxwR
+   *
+   * I of course wrote (YOINKED) it all myself  :)
+   *
+   * Jokes aside Julian's pen was invaluable to this section of code
+   * */
+
+  let $dialog: HTMLDialogElement | null = null;
+  let modalTeardown: (() => void) | null = null;
+  let $openCard: HTMLElement | null = null;
+
+  function openModal($card: HTMLElement) {
+    assertExist($dialog, "$dialog does not exist");
+    assertExist(dialogLayout, "dialogLayout does not exist");
+
+    const $clone = document.createElement("div");
+    $clone.className = $card.className;
+    const layoutId = $card.dataset.layoutId;
+    if (layoutId) $clone.dataset.layoutId = layoutId;
+
+    $clone.innerHTML = $card.innerHTML;
+    $clone.removeAttribute("style");
+    $clone.querySelectorAll("*").forEach(($el) => $el.removeAttribute("style"));
+
+    $dialog.innerHTML = "";
+    $dialog.appendChild($clone);
+
+    $openCard = $card;
+
+    dialogLayout
+      .update(() => {
+        $card.classList.add("is-open");
+        // showModal is a HTMLDialogElement method builtin to the browser
+        $dialog!.showModal();
+      })
+      .then(() => {
+        const $info = $dialog!.querySelector(".dialog-info-wrapper");
+        if ($info) {
+          animate($info, {
+            opacity: 1,
+            y: { from: "8px" },
+            duration: 150,
+            ease: "out(3)",
+          });
+        }
+      });
+  }
+
+  function closeModal() {
+    if (!$dialog || !dialogLayout || !$openCard) return;
+    const $card = $openCard;
+    const $info = $dialog!.querySelector(".dialog-info-wrapper");
+    if ($info) {
+      animate($info, {
+        opacity: [1, 0],
+        y: [0, 8],
+        duration: 100,
+        ease: "out(3)",
+      }).then(() => {
+        dialogLayout!.update(() => {
+          // Please forgive the assertions I am getting lazy a little
+          $dialog!.close();
+          // preventScroll avoids a jump that would break the closing animation.
+          $card.focus({ preventScroll: true });
+          $card.classList.remove("is-open");
+        });
+        $openCard = null;
+      });
+    }
+  }
+
+  function initModal($eventsContainer: HTMLDivElement) {
+    // Reuse an existing dialog across swup navigations instead of stacking new ones.
+    let $existing = document.querySelector<HTMLDialogElement>("#layout-dialog");
+    if (!$existing) {
+      $existing = document.createElement("dialog");
+      $existing.id = "layout-dialog";
+      document.body.appendChild($existing);
+    }
+    $dialog = $existing;
+    dialogLayout = createLayout($dialog, {
+      children: [
+        ".event-card",
+        ".title-bar",
+        ".title-bar p",
+        "img",
+        ".dialog-info-wrapper",
+      ],
+      properties: ["--overlay-alpha"],
+      duration: 350,
+    });
+
+    const onContainerClick = (e: MouseEvent) => {
+      const $img = (e.target as HTMLElement).closest("img");
+      if ($img !== null) {
+        const $card = $img.closest<HTMLElement>(".event-card");
+        if ($card !== null) openModal($card);
+      }
+    };
+    const onDialogClick = (e: MouseEvent) => {
+      const $target = e.target as HTMLElement;
+      if ($target.closest(".close-overlay") || $target === $dialog) {
+        closeModal();
+      }
+    };
+    const onCancel = (e: Event) => {
+      e.preventDefault(); // let the layout animation run instead of an instant close
+      closeModal();
+    };
+
+    $eventsContainer.addEventListener("click", onContainerClick);
+    $dialog.addEventListener("click", onDialogClick);
+    $dialog.addEventListener("cancel", onCancel);
+
+    modalTeardown = () => {
+      $eventsContainer.removeEventListener("click", onContainerClick);
+      $dialog?.removeEventListener("click", onDialogClick);
+      $dialog?.removeEventListener("cancel", onCancel);
+    };
+  }
+  /* --- END: Dialog functions ---*/
+
+  /* --- Page initialization --- */
+  function initEvents() {
+    // In the case user navigated away in drag mode, tear it all down.
+    teardown?.();
+    teardown = null;
+    allDraggable.forEach((d) => {
+      // console.log(`draggable: ${d}`);
+      d.revert();
+    });
+    allDraggable = [];
+    autoLayout?.revert();
+    autoLayout = null;
+    switchLayout_obj?.revert();
+    switchLayout_obj = null;
+    $switchHighlight = null;
+    currLayout = null;
+
+    // TEAR IT ALL DOWN
+    modalTeardown?.();
+    dialogLayout?.revert();
+    dialogLayout = null;
+    $openCard = null;
+    if ($dialog) {
+      if ($dialog.open) $dialog.close();
+      $dialog.remove();
+      $dialog = null;
+    }
+
+    const $clubEventsDiv =
+      document.querySelector<HTMLDivElement>(".club-events");
+    assertExist($clubEventsDiv, "$clubEventsDiv does not exist");
+
+    const naturalHeight = $clubEventsDiv.getBoundingClientRect().height;
+    $clubEventsDiv.style.height = `${naturalHeight}px`;
+
+    const $allCards = document.querySelectorAll<HTMLDivElement>(".event-card");
+
+    autoLayout = createLayout($clubEventsDiv, {
+      children: [".event-card", "p", "img"],
+    });
+
+    initModal($clubEventsDiv);
+
+    initControls($clubEventsDiv, $allCards);
+
+    // .controls is removed on mobile, so only wire the highlight on desktop.
+    // The .switch-highlight span starts inside #grid, matching the initial grid layout.
+    if (!isMobile()) initSwitchHighlight();
+
+    gridIntroAnim($allCards);
+    currLayout = "grid";
+    teardown = initGrid($allCards);
+  }
+
+  document.addEventListener("swup:page:view", (e) => {
+    const swupEvent = e as CustomEvent;
+    if (swupEvent.detail.visit.to.url === "/events") {
+      initEvents();
+    }
+  });
+
+  initEvents();
+</script>

@@ -1,0 +1,121 @@
+<div class="svg-wrapper" data-js="outer-frame" style="opacity: 1;">
+  <!-- svg should have z-index lower than logo -->
+  <svg fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <mask id="mask">
+        <rect id="outer-mask-bg" x="0" y="0" fill="white"></rect>
+        <rect id="inner-mask-body" class="rect-radius" fill="black"></rect>
+      </mask>
+    </defs>
+    <rect
+      id="outer-rect-bg"
+      class="rect-bg"
+      x="0"
+      y="0"
+      fill="var(--color-bg)"
+      mask="url(#mask)"></rect>
+    <rect
+      id="inner-rect-border"
+      class="rect-radius"
+      stroke-width="1"
+      stroke="var(--color-border)"
+      vector-effect="non-scaling-stroke"></rect>
+  </svg>
+</div>
+<script>
+  import {
+    NAV_SLIDE_DIST,
+    NAV_DURATION,
+    NAV_EASE,
+    GAP,
+    GAPDesktop,
+  } from "@lib/constants";
+  import isMobile from "@lib/isMobile";
+  import { animate } from "animejs";
+
+  // SVG related code below
+
+  const $svgFrame = document.querySelector('[data-js="outer-frame"] svg');
+  const outerRects = document.querySelectorAll(
+    "#outer-mask-bg, #outer-rect-bg",
+  );
+  const innerRects = document.querySelectorAll(
+    "#inner-mask-body, #inner-rect-border",
+  );
+  let vh = document.documentElement.clientHeight;
+  let vw = document.documentElement.clientWidth;
+
+  function updateSVGWrapper() {
+    vh = document.documentElement.clientHeight;
+    vw = document.documentElement.clientWidth;
+    // console.log(`width: ${vw}`);
+    // console.log(`height: ${vh}`);
+
+    if ($svgFrame == null) throw new Error("svgFrame does not exist");
+    $svgFrame.setAttribute("width", `${vw}`);
+    $svgFrame.setAttribute("height", `${vh}`);
+    $svgFrame.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
+
+    outerRects.forEach((r) => {
+      r.setAttribute("width", `${vw}`);
+      r.setAttribute("height", `${vh}`);
+    });
+
+    if (isMobile()) {
+      // Mobile check, based on logo's media query
+      innerRects.forEach((r) => {
+        r.setAttribute("x", `${GAP}`);
+        r.setAttribute("y", `${GAP * 2}`);
+        r.setAttribute("width", `${vw - 2 * GAP}`);
+        r.setAttribute("height", `${vh - 3 * GAP}`);
+      });
+    } else {
+      innerRects.forEach((r) => {
+        r.setAttribute("x", `${GAPDesktop}`);
+        r.setAttribute("y", `${GAPDesktop * 3}`);
+        r.setAttribute("width", `${vw - 2 * GAPDesktop}`);
+        r.setAttribute("height", `${vh - 4 * GAPDesktop}`);
+      });
+    }
+  }
+
+  updateSVGWrapper(); // Initial call to draw SVG
+  window.addEventListener("resize", updateSVGWrapper);
+
+  document.addEventListener("navOpen", () => {
+    animate(innerRects, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      y: `+=${NAV_SLIDE_DIST}`,
+      height: `-=${NAV_SLIDE_DIST}`,
+    });
+  });
+
+  document.addEventListener("navClose", () => {
+    animate(innerRects, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      y: `-=${NAV_SLIDE_DIST}`,
+      height: `+=${NAV_SLIDE_DIST}`,
+    });
+  });
+</script>
+<style>
+  .svg-wrapper {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: var(--z-svg);
+  }
+
+  .svg-wrapper svg {
+    display: block;
+  }
+
+  .svg-wrapper rect {
+    transform-origin: center;
+  }
+</style>

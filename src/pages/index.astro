@@ -1,0 +1,321 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@layouts/Layout.astro";
+import Heading from "@components/Heading.astro";
+import Button from "@components/Button.astro";
+import cardOne from "@assets/card_1.webp";
+import cardTwo from "@assets/card_2.webp";
+import cardThree from "@assets/card_3.webp";
+import PlaceholderBlock from "@components/PlaceholderBlock.astro";
+---
+
+<Layout>
+  <Heading
+    title="BU INFORMATION LAB & DESIGN SPACE"
+    barcode="BUILDS"
+    border={false}
+  />
+
+  <!-- This grid wrapper is currently unused -->
+  <section class="hero">
+    <div class="loc">
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://maps.app.goo.gl/44buZMaQaLFjPLcc8"
+        >@ 665 Commonwealth Ave | Room 220</a
+      >
+    </div>
+    <p>
+      An inclusive group of students, artists, hackers, and organizers who
+      believe in the do-it-yourself attitude and hacker ethic.
+    </p>
+    <p>
+      Come join our community, hang out, and be in good company! We'll welcome
+      you with open arms regardless of what you know and who you are! Our
+      hackerspace is open at all hours of the day. We are dedicated to providing
+      every member with the tools and resources they need to pursue their
+      passions.
+    </p>
+    <div class="button-container">
+      <a href="/events"><Button class="link-btn">Our Events</Button></a>
+      <a target="_blank" rel="noopener noreferrer" href=""
+        ><Button class="link-btn">Join our Discord!</Button></a
+      >
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://builds.us14.list-manage.com/subscribe?u=48eeff7657509db01b37d0c9b&id=c7c2160530"
+        ><Button class="link-btn">Mailing List</Button></a
+      >
+    </div>
+  </section>
+  <section class="cards-container">
+    <article class="desc-card">
+      <Image src={cardOne} alt="Builds lab plaque" loading="eager" />
+      <div class="desc-container">
+        <h3 class="desc-text">Enjoy Our Hackerspace</h3>
+        <p>
+          Our hackerspace is open whenever CDS is open. Come in and work on your
+          projects, or just hang out and chat with other members. Our amazing
+          community is incredibly knowledgeable!
+        </p>
+      </div>
+    </article>
+    <PlaceholderBlock class="placeholder-1" />
+    <article class="desc-card">
+      <Image src={cardTwo} alt="Builds safety hard hat" loading="eager" />
+      <div class="desc-container">
+        <h3 class="desc-text">Pursue Personal Projects</h3>
+        <p>
+          We provide everything you need to bring your ideas to life. We have a
+          variety of tools and equipment available for use, including a 3D
+          printer, soldering irons, power tools, computers, and more.
+        </p>
+      </div>
+    </article>
+    <article class="desc-card">
+      <Image src={cardThree} alt="Builds room" loading="eager" />
+      <div class="desc-container">
+        <h3 class="desc-text">Attend Events</h3>
+        <p>
+          We host events as well. Learn some new technologies during our
+          workshop events, gain academic and professional knowledge during our
+          speaker events, etc.
+        </p>
+      </div>
+    </article>
+  </section>
+
+  <section class="hacking-desc">
+    <h2>What is <span class="accent">Hacking?</span></h2>
+    <p>
+      The idea of hacking is learning and building upon existing ideas and
+      reinventing systems.
+    </p>
+    <br />
+    <p>
+      Think of hacking as the opportunity to take things apart, fix, or improve
+      upon those ideas or systems to learn and understand how they work.
+    </p>
+    <br />
+    <p>
+      No matter who you are, you can create art and something inspiring on a
+      computer, electronics, and anything that you put your mind to.
+    </p>
+    <br />
+    <p>
+      If you feel strongly about an idea or want to learn about something, show
+      your enthusiasm, be bold, and you’ll find people who share your passion of
+      discovery and learning here at BUILDS!
+    </p>
+    <br />
+    <h3>The Philosophy of the Hacker Ethic</h3>
+    <ul>
+      <li>Figure things out</li>
+      <li>Improve what already exists</li>
+      <li>Share your knowledge</li>
+      <li>Mistrust authority</li>
+      <li>Promote decentralization</li>
+    </ul>
+    <h3 class="text-barcode">HACKING</h3>
+  </section>
+
+  <section class="contacts">
+    <PlaceholderBlock class="placeholder-2" />
+    <div class="contact-card">
+      <h3 class="accent">Contact Us</h3>
+      <p>
+        665 Commonwealth Ave
+        <br /> Room 220
+        <br /> Boston, MA 02215
+      </p>
+      <br />
+      <p>builds@bu.edu</p>
+      <p class="text-barcode">CONTACTS</p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .text-barcode {
+    font-family: var(--font-Barcode);
+    letter-spacing: 3px;
+    margin: 0;
+    text-align: end;
+  }
+
+  .accent {
+    color: var(--color-accent);
+  }
+
+  .hero {
+    padding: 0 var(--mobile-padding-inner) 20px var(--mobile-padding-inner);
+    border-bottom: 1px solid var(--color-border);
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    .loc {
+      background-color: var(--color-papaya-white);
+      padding: 0.2rem;
+      margin-bottom: 20px;
+      a {
+        text-align: center;
+        color: var(--color-black-2);
+      }
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: start;
+      flex-wrap: wrap;
+      column-gap: 2rem;
+      row-gap: 1rem;
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    }
+  }
+
+  .cards-container {
+    display: grid;
+
+    img {
+      object-fit: cover;
+      height: 300px;
+      width: 100%;
+    }
+
+    .desc-card {
+      border-bottom: 1px solid var(--color-border);
+
+      .desc-container {
+        padding: 0 var(--mobile-padding-inner) var(--mobile-padding-inner);
+      }
+      h3 {
+        color: var(--color-accent);
+      }
+    }
+
+    .placeholder-1 {
+      display: none;
+    }
+  }
+
+  .hacking-desc {
+    padding: var(--mobile-padding-inner);
+    border-bottom: 1px solid var(--color-border);
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      padding-left: var(--mobile-padding-inner);
+    }
+  }
+
+  .contacts {
+    display: grid;
+    grid-template-rows: 100px 1fr;
+
+    .contact-card {
+      padding: 0 var(--mobile-padding-inner) var(--mobile-padding-inner);
+    }
+  }
+
+  @media (min-width: 800px) {
+    .text-barcode {
+      font-size: calc(1rem + 1vw);
+    }
+
+    .hero {
+      padding: 0 var(--desktop-padding-inner) var(--desktop-padding-inner);
+      .loc {
+        max-width: fit-content;
+        padding: 0.2rem 0.5rem;
+      }
+
+      .button-container {
+        gap: 5rem;
+        justify-content: start;
+      }
+
+      p {
+        max-width: 700px;
+      }
+    }
+
+    .cards-container {
+      grid-template-columns: 1fr 1fr;
+      .desc-card {
+        border-right: 1px solid var(--color-border);
+
+        .desc-container {
+          padding: 0 var(--desktop-padding-inner) var(--desktop-padding-inner);
+        }
+      }
+      .placeholder-1 {
+        display: block;
+      }
+    }
+
+    .hacking-desc {
+      padding: var(--desktop-padding-inner);
+    }
+
+    .contacts {
+      grid-template-rows: 180px 1fr;
+      .contact-card {
+        padding: 0px var(--desktop-padding-inner) var(--desktop-padding-inner);
+      }
+    }
+  }
+
+  @media (min-width: 1100px) {
+    section,
+    .link-btn {
+      font-size: calc(1rem + 0.2vw);
+    }
+
+    h1 {
+      font-size: calc(2.2rem + 1vw);
+    }
+
+    h2 {
+      font-size: calc(1.5rem + 0.5vw);
+    }
+
+    h3 {
+      font-size: calc(1.17rem + 0.3vw);
+    }
+
+    .cards-container {
+      grid-template-columns: 1fr 1fr 1fr;
+      .placeholder-1 {
+        display: none;
+      }
+    }
+
+    .contacts {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: fit-content(200px);
+
+      .placeholder-2 {
+        border-right: 1px solid var(--color-border);
+      }
+    }
+  }
+
+  @media (min-width: 1500px) {
+    .cards-container {
+      img {
+        height: 450px;
+      }
+    }
+  }
+</style>

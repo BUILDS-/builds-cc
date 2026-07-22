@@ -1,17 +1,17 @@
 # BUILDS.cc
 
-Install dependencies and run development server:
+Install dependencies and run development server: (bun/npm/pnpm/yarn)
 
 ```shell
-npm i
-npm run develop
+bun i
+bun dev
 ```
 
-The site is now running at http://localhost:8000.
+The site is now running at <localhost:4321>.
 
 ## Adding New Events
 
-You can add new events using a markdown file in the `src/events/` directory. The filename should be in the format `YYYY-MM-DD-event-name.md`. The file should have the following format:
+You can add new events using a markdown file in the `src/content/events/` directory. The filename should be in the format `YYYY-MM-DD-event-name.md`. The file should have the following format:
 
 ```markdown
 ---
@@ -35,4 +35,4 @@ location: "Location"
 
 You can add any necessary image assets to the `src/assets/events/` directory. The image path in the markdown file should be relative to the `src/` directory.
 
-Remember to run all images through https://tinypng.com/ before adding them to the site. This will reduce the file size and improve load times.
+Remember to run all images through <https://tinypng.com/> before adding them to the site. This will reduce the file size and improve load times.

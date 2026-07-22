@@ -1,0 +1,69 @@
+---
+import HamburgerIconSVG from "@assets/hamburger-menu.svg";
+---
+
+<div id="hamburger">
+  <HamburgerIconSVG />
+</div>
+
+<script>
+  /*
+   * A data attribute is toggled when this icon is clicked,
+   * simutaneously fires/dispatches a CustomEvent with data toggled boolean custom data.
+   *
+   * Components that needs to be animated listens for this CustomEvent,
+   * in order to reveal MobileNavMenu.
+   * */
+
+  import { toggleNav } from "@lib/navState";
+  import assertExist from "@lib/assertExist";
+  import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
+  import { animate } from "animejs";
+
+  const navOpen = new CustomEvent("navOpen");
+  const navClose = new CustomEvent("navClose");
+  const $hamburger = document.querySelector<HTMLDivElement>("#hamburger");
+  assertExist($hamburger, "$hamburger div does not exist");
+
+  $hamburger.addEventListener("click", toggleNav);
+
+  document.addEventListener("navOpen", () => {
+    animate($hamburger, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      translateY: `${NAV_SLIDE_DIST}`,
+    });
+  });
+
+  document.addEventListener("navClose", () => {
+    animate($hamburger, {
+      duration: NAV_DURATION,
+      ease: NAV_EASE,
+      translateY: `0`,
+    });
+  });
+</script>
+
+<style>
+  div {
+    position: fixed;
+    width: 35px;
+    height: 35px;
+    top: var(--mobile-padding-top);
+    right: var(--mobile-padding-outer);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    z-index: var(--z-hamburger);
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  @media (min-width: 800px) {
+    div {
+      display: none;
+    }
+  }
+</style>

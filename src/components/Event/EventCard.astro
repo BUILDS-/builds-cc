@@ -1,0 +1,286 @@
+---
+import { Image } from "astro:assets";
+import Button from "@components/Button.astro";
+import type { CollectionEntry } from "astro:content";
+interface Props {
+  id: string;
+  event: CollectionEntry<"clubEvents">;
+}
+
+const { id, event } = Astro.props;
+
+const { title, description, location, instructors, badges, link, linkText } =
+  event.data;
+
+const date = event.data.date;
+const day = date
+  // turns date into YYYY/MM/DAY format
+  .toISOString()
+  .replace("-", "/")
+  .split("T")[0]
+  .replace("-", "/");
+
+const time = date.toLocaleTimeString("en-us", { timeStyle: "short" });
+
+// The `emoji` field is a plain string: sometimes a real emoji glyph, sometimes
+// an asset path (e.g. "../../assets/.../foo.svg"). Path values aren't run
+// through Astro's image pipeline, so we render the label only for those and
+// avoid a broken glyph. A real emoji glyph won't contain a slash or extension.
+const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); // Unsure if this is really needed, should just enforce emoji not actual files
+---
+
+<article id={id} class="event-card">
+  <div class="title-bar">
+    <p class="window-title">{title}</p>
+    <p>{day}</p>
+  </div>
+  <Image priority draggable="false" alt={title} src={event.data.image} />
+  <div class="dialog-info-wrapper">
+    {
+      badges.length > 0 && (
+        <ul class="dialog-badges">
+          {badges.map((badge) => (
+            <li class="badge">
+              <span class="badge-emoji">{badge.emoji}</span>
+              <span class="badge-label">{badge.label}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div class="meta-row">
+      <p class="meta-label">// DATE //</p>
+      <p class="meta-value">{`${day} @ ${time}`}</p>
+    </div>
+    <div class="meta-row">
+      <p class="meta-label">// LOCATION //</p>
+      <p class="meta-value">{location}</p>
+    </div>
+
+    <div class="meta-row">
+      <p class="meta-label">// EVENT DESCRIPTION //</p>
+      <p class="dialog-description">{description}</p>
+    </div>
+
+    {
+      instructors.length > 0 && (
+        <div class="dialog-instructors">
+          <p class="meta-label">// INSTRUCTORS //</p>
+          <ul class="instructor-list">
+            {instructors.map((person) => (
+              <li class="instructor">
+                {person.image && (
+                  <Image
+                    class="instructor-avatar"
+                    draggable="false"
+                    alt={person.name}
+                    src={person.image}
+                    width={32}
+                    height={32}
+                  />
+                )}
+                <span class="instructor-name">{person.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+
+    {
+      link && (
+        <a class="dialog-link" href={link} target="_blank" rel="noreferrer">
+          <Button class="dialog-btn">{linkText ?? "Learn More"}</Button>
+        </a>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .event-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    background-color: black;
+  }
+  .title-bar {
+    position: relative;
+    min-height: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+    /* cursor: grab; */
+
+    font-size: 0.9rem;
+    padding: 0px 10px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    overflow: hidden; /* Somehow instead of clipping, forces the image to fit? */
+    cursor: pointer;
+  }
+
+  .dialog-info-wrapper {
+    display: none;
+    opacity: 0;
+  }
+
+  .dialog-badges,
+  .instructor-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* TODO: Consider breaking each section into small components maybe, this crap too long */
+
+  :global(#layout-dialog .event-card) {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    max-height: 85dvh;
+    overflow: hidden;
+    cursor: default;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-black-1);
+    color: var(--color-papaya-white);
+  }
+
+  :global(#layout-dialog .event-card .title-bar) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 25px;
+    padding: 0 10px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  :global(#layout-dialog .event-card img) {
+    width: 100%;
+    height: 100%;
+    max-height: 200px;
+    display: block;
+    object-fit: contain;
+    flex: 0 0 auto;
+    display: block;
+    cursor: default;
+    border-bottom: 1px solid var(--color-border);
+
+    @media (min-width: 800px) {
+      max-height: 350px;
+    }
+  }
+
+  :global(#layout-dialog .event-card .dialog-info-wrapper) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px 14px 16px;
+    font-size: 1rem;
+    line-height: 1.4;
+    overflow-y: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(#layout-dialog .event-card .dialog-info-wrapper),
+    :global(#layout-dialog[open] .event-card .dialog-info-wrapper) {
+      transition: none;
+    }
+  }
+
+  /* --- Metadata rows (date / location) --- */
+  :global(#layout-dialog .event-card .meta-row) {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  :global(#layout-dialog .event-card .meta-label) {
+    font-family: var(--font-ZxProto);
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    color: var(--color-white-3);
+  }
+  :global(#layout-dialog .event-card .meta-value) {
+    font-family: var(--font-Atkinson);
+    font-size: 0.9rem;
+    color: var(--color-papaya-white);
+  }
+
+  /* --- Badges --- */
+  :global(#layout-dialog .event-card .dialog-badges) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  :global(#layout-dialog .event-card .badge) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 4px;
+    border: 1px solid var(--color-border);
+    font-family: var(--font-ZxProto);
+    font-size: 0.78rem;
+    line-height: 1.6;
+  }
+  :global(#layout-dialog .event-card .badge-emoji) {
+    font-family: var(--font-Atkinson);
+  }
+
+  /* --- Description --- */
+  :global(#layout-dialog .event-card .dialog-description) {
+    font-family: var(--font-Atkinson);
+  }
+
+  /* --- Instructors --- */
+  :global(#layout-dialog .event-card .dialog-instructors) {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  :global(#layout-dialog .event-card .instructor-list) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+  :global(#layout-dialog .event-card .instructor) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  :global(#layout-dialog .event-card .instructor-avatar) {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border: 1px solid var(--color-border);
+    display: block;
+  }
+  :global(#layout-dialog .event-card .instructor-name) {
+    font-family: var(--font-ZxProto);
+    font-size: 0.85rem;
+  }
+
+  :global(#layout-dialog .event-card .dialog-link) {
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+  :global(#layout-dialog .event-card .dialog-btn) {
+    padding: 3px 10px;
+  }
+
+  /* .noselect { */
+  /*   -webkit-touch-callout: none; /* iOS Safari */ */
+  /*   -webkit-user-select: none; /* Safari */ */
+  /*   -khtml-user-select: none; /* Konqueror HTML */ */
+  /*   -moz-user-select: none; /* Old versions of Firefox */ */
+  /*   -ms-user-select: none; /* Internet Explorer/Edge */ */
+  /*   user-select: none; */
+  /* } */
+</style>
