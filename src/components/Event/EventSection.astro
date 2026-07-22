@@ -569,7 +569,10 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
   document.addEventListener("swup:page:view", (e) => {
     const swupEvent = e as CustomEvent;
-    if (swupEvent.detail.visit.to.url === "/events") {
+    // Cloudflare Pages 308-redirects /events -> /events/, so swup may report
+    // the trailing-slash form. Normalize before comparing so both match.
+    const toUrl = swupEvent.detail.visit.to.url.replace(/\/+$/, "");
+    if (toUrl === "/events") {
       initEvents();
     }
   });
