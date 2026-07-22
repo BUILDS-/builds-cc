@@ -11,7 +11,7 @@ The site is now running at <localhost:4321>.
 
 ## Adding New Events
 
-You can add new events using a markdown file in the `src/events/` directory. The filename should be in the format `YYYY-MM-DD-event-name.md`. The file should have the following format:
+You can add new events using a markdown file in the `src/content/events/` directory. The filename should be in the format `YYYY-MM-DD-event-name.md`. The file should have the following format:
 
 ```markdown
 ---
