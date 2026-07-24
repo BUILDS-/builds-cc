@@ -99,7 +99,12 @@ if (website) links.push({ label: "Website", href: website, Icon: WebSVG });
           <p class="meta-label">// LINKS //</p>
           <p class="meta-value links">
             {links.map((link) => (
-              <a href={link.href} aria-label={link.label}>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={link.href}
+                aria-label={link.label}
+              >
                 <link.Icon class="link-icon" width={28} height={28} />
               </a>
             ))}

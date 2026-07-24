@@ -89,7 +89,7 @@ const time = date.toLocaleTimeString("en-us", { timeStyle: "short", timeZone: TI
 
     {
       link && (
-        <a class="dialog-link" href={link} target="_blank" rel="noreferrer">
+        <a class="dialog-link" href={link} target="_blank" rel="noopener noreferrer">
           <Button class="dialog-btn">{linkText ?? "Learn More"}</Button>
         </a>
       )
