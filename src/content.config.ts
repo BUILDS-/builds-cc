@@ -47,12 +47,14 @@ const formerEBoard = defineCollection({
   schema: () =>
     z.object({
       name: z.string(),
-      roles: z.array(
-        z.object({
-          role: z.string(),
-          yearsActive: z.string(),
-        }),
-      ),
+      roles: z
+        .array(
+          z.object({
+            role: z.string(),
+            yearsActive: z.string(),
+          }),
+        )
+        .min(1),
       linkedin: z.url().optional(),
       github: z.url().optional(),
       website: z.url().optional(),
