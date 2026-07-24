@@ -12,21 +12,20 @@ const { id, event } = Astro.props;
 const { title, description, location, instructors, badges, link, linkText } =
   event.data;
 
+const TIMEZONE = "America/New_York";
 const date = event.data.date;
-const day = date
-  // turns date into YYYY/MM/DAY format
-  .toISOString()
-  .replace("-", "/")
-  .split("T")[0]
-  .replace("-", "/");
 
-const time = date.toLocaleTimeString("en-us", { timeStyle: "short" });
+// Using en-CA gives a YYYY-MM-DD ordering, but change it if you like
+const day = new Intl.DateTimeFormat("en-CA", {
+  timeZone: TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(date)
+  .replaceAll("-", "/");
 
-// The `emoji` field is a plain string: sometimes a real emoji glyph, sometimes
-// an asset path (e.g. "../../assets/.../foo.svg"). Path values aren't run
-// through Astro's image pipeline, so we render the label only for those and
-// avoid a broken glyph. A real emoji glyph won't contain a slash or extension.
-const isPathLike = (s: string) => /[\\/]|\.(svg|png|jpe?g|webp|gif)$/i.test(s); // Unsure if this is really needed, should just enforce emoji not actual files
+const time = date.toLocaleTimeString("en-us", { timeStyle: "short", timeZone: TIMEZONE });
+
 ---
 
 <article id={id} class="event-card">
