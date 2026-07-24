@@ -20,8 +20,6 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
   import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
   import { animate } from "animejs";
 
-  const navOpen = new CustomEvent("navOpen");
-  const navClose = new CustomEvent("navClose");
   const $hamburger = document.querySelector<HTMLDivElement>("#hamburger");
   assertExist($hamburger, "$hamburger div does not exist");
 

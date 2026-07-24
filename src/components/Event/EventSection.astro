@@ -165,6 +165,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
     animate,
     utils,
     linear,
+    stagger,
     type DOMTargetSelector,
     type AutoLayout,
     type Draggable,
@@ -370,9 +371,8 @@ const allEvents = (await getCollection("clubEvents")).sort(
 
   function offsetAnim($allDraggable: Draggable[]) {
     animate($allDraggable, {
-      // Ignoring type error because I can
-      x: (_: number, i: number) => i * 26,
-      y: (_: number, i: number) => i * 26,
+      x: stagger(26),
+      y: stagger(26),
       delay: utils.stagger(50),
       ease: linear(0, 1),
       duration: 100,
