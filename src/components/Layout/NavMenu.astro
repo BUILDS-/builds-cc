@@ -41,6 +41,7 @@ const url = Astro.url.pathname;
    * */
 
   import assertExist from "@lib/assertExist";
+  import { debounce } from "@lib/fp";
   import isMobile from "@lib/isMobile";
   import { createLayout, type DOMTarget } from "animejs";
   import { getCurrentUrl } from "swup";
@@ -125,25 +126,17 @@ const url = Astro.url.pathname;
     updateActiveLink();
   });
 
-  /* Slightly legacy code.
-   * Was necessary when I used animate().
-   *
-   * But the style clear is still useful in case
-   * someone resizes from mobile -> desktop without refresh
-   * */
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      if (!isMobile()) {
-        // Initial css has priority over media query css.
-        // So for media query to show `opacity: 1` and `visibility: visible`
-        // this is needed on desktop
-        $navMenu.style.opacity = "";
-        $navMenu.style.visibility = "";
-      }
-    }, 50);
-  });
+  function clearNavStyles() {
+    assertExist($navMenu, "$navMenu does not exist inside clearNavStyles()");
+    if (!isMobile()) {
+      // Initial css has priority over media query css.
+      // So for media query to show `opacity: 1` and `visibility: visible`
+      // this is needed on desktop
+      $navMenu.style.opacity = "";
+      $navMenu.style.visibility = "";
+    }
+  }
+  window.addEventListener("resize", debounce(clearNavStyles, 50));
 
   // Below are code responsible for navOpen and navClose events
   // which should only happen on mobile screen sizes
