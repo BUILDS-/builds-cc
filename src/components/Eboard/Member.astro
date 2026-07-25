@@ -1,98 +1,134 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { assertNever } from "@lib/fp";
 import { Image } from "astro:assets";
 import MissingSVG from "@assets/eboard/missing.svg";
 import LinkedinSVG from "@assets/Linkedin.svg";
 import GithubSVG from "@assets/Github.svg";
 import WebSVG from "@assets/Web.svg";
+import type { SvgComponent } from "astro/types";
 
-/*
- * Tbh this component is quite ugly because the MD files itself
- * doesn't have the greatest structure.
- *
- * Like role/roles just shouldn't be a thing to begin with,
- * and stick to only roles.
- *
- * Also originally 3 separate components but I used AI to consolidate into 1.
- * Please forgive me ╮(︶︿︶)╭
- * */
+type MemberType =
+  | CollectionEntry<"eBoard">
+  | CollectionEntry<"formerEBoard">
+  | CollectionEntry<"founders">;
+
+type MemberView = Readonly<{
+  name: string;
+  hasPhoto: boolean;
+  /*
+   * only current eBoard members have photos.
+   *
+   * This is pretty strict and may cause headache if people
+   * wanted older members to have photos as well.
+   *
+   * Though I doubt that will happen at this point
+   */
+  image: CollectionEntry<"eBoard">["data"]["image"] | null;
+  roles: readonly Readonly<{ role: string; yearsActive: string | null }>[];
+  linkedin: string | null;
+  github: string | null;
+  website: string | null;
+}>;
+
+type LinkIcons = {
+  linkedin: SvgComponent;
+  github: SvgComponent;
+  website: SvgComponent;
+};
+
+function memberView(member: MemberType): MemberView {
+  const { name } = member.data;
+  switch (member.collection) {
+    case "eBoard": {
+      const { role, image, linkedin, github, website } = member.data;
+      return {
+        name,
+        hasPhoto: true,
+        image: image ?? null,
+        roles: [{ role, yearsActive: null }],
+        linkedin: linkedin ?? null,
+        github: github ?? null,
+        website: website ?? null,
+      };
+    }
+    case "formerEBoard": {
+      const { roles, linkedin, github, website } = member.data;
+      return {
+        name,
+        hasPhoto: false,
+        image: null,
+        roles,
+        linkedin: linkedin ?? null,
+        github: github ?? null,
+        website: website ?? null,
+      };
+    }
+    case "founders":
+      return {
+        name,
+        hasPhoto: false,
+        image: null,
+        roles: [{ role: member.data.role, yearsActive: null }],
+        linkedin: null,
+        github: null,
+        website: null,
+      };
+    default:
+      return assertNever(member);
+  }
+}
+
+function allLinks(view: MemberView, linkIcons: LinkIcons) {
+  return [
+    { label: "Linkedin", href: view.linkedin, Icon: linkIcons.linkedin },
+    { label: "Github", href: view.github, Icon: linkIcons.github },
+    { label: "Website", href: view.website, Icon: linkIcons.website },
+  ].filter((link) => link.href != null);
+}
+
+const linkIcons = { linkedin: LinkedinSVG, github: GithubSVG, website: WebSVG };
 
 interface Props {
-  member:
-    | CollectionEntry<"eBoard">
-    | CollectionEntry<"formerEBoard">
-    | CollectionEntry<"founders">;
+  member: MemberType;
 }
 
+// lowk should rename the prop to chud
 const { member } = Astro.props;
-const id = member.id;
-
-let image;
-let role;
-let roles;
-let linkedin;
-let github;
-let website;
-
-const { name } = member.data;
-
-switch (member.collection) {
-  case "eBoard":
-    ({ role, image, linkedin, github, website } = member.data);
-    break;
-  case "formerEBoard":
-    ({ roles, linkedin, github, website } = member.data);
-    break;
-  case "founders":
-    ({ role } = member.data);
-    break;
-}
-
-const links = [];
-if (linkedin)
-  links.push({ label: "Linkedin", href: linkedin, Icon: LinkedinSVG });
-if (github) links.push({ label: "Github", href: github, Icon: GithubSVG });
-if (website) links.push({ label: "Website", href: website, Icon: WebSVG });
+const view = memberView(member);
+const { name, hasPhoto, image, roles } = view;
+const links = allLinks(view, linkIcons);
 ---
 
-<article id={id}>
+<article id={member.id}>
   {
-    member.collection === "eBoard" &&
-      (image ? (
-        <Image
-          class="member-img"
-          src={image}
-          alt={name}
-          width={200}
-          height={200}
-        />
-      ) : (
-        <MissingSVG class="member-img" width={200} height={200} />
-      ))
+    hasPhoto && image ? (
+      <Image
+        class="member-img"
+        src={image}
+        alt={name}
+        width={200}
+        height={200}
+      />
+    ) : (
+      <MissingSVG class="member-img" width={200} height={200} />
+    )
   }
   <div class="meta">
     <div class="meta-row">
       <p class="meta-label">// NAME //</p>
       <p class="meta-value meta-name">{name}</p>
     </div>
-    {
-      member.collection === "formerEBoard" ? (
-        <div class="meta-row">
-          <p class="meta-label">// ROLES //</p>
-          {roles &&
-            roles.map((r) => (
-              <p class="meta-value">
-                {r.role} ({r.yearsActive})
-              </p>
-            ))}
-        </div>
-      ) : (
-        <div class="meta-row">
-          <p class="meta-label">// ROLE //</p>
-          <p class="meta-value">{role}</p>
-        </div>
-      )
-    }
+    <div class="meta-row">
+      <p class="meta-label">// {roles.length > 1 ? "ROLES" : "ROLE"} //</p>
+      {
+        roles.map((r) => (
+          <p class="meta-value">
+            {r.role} {r.yearsActive}
+          </p>
+        ))
+      }
+    </div>
     {
       links.length > 0 && (
         <div class="meta-row">
