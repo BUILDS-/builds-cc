@@ -157,7 +157,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
 </style>
 
 <script>
-  import assertExist from "@lib/assertExist";
+  import { assertExist } from "@lib/fp";
   import isMobile from "@lib/isMobile";
   import {
     createLayout,
@@ -205,7 +205,8 @@ const allEvents = (await getCollection("clubEvents")).sort(
     const frag = document.createDocumentFragment();
     const children = Array.from($eventsContainer.children);
     for (let i = children.length - 1; i >= 0; i--) {
-      frag.appendChild(children[i]);
+      const child = children[i];
+      if (child !== undefined) frag.appendChild(child);
     }
     $eventsContainer.appendChild(frag);
   }

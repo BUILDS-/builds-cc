@@ -40,8 +40,7 @@ const url = Astro.url.pathname;
    * to this much much later
    * */
 
-  import assertExist from "@lib/assertExist";
-  import { debounce } from "@lib/fp";
+  import { assertExist, debounce } from "@lib/fp";
   import isMobile from "@lib/isMobile";
   import { createLayout, type DOMTarget } from "animejs";
   import { getCurrentUrl } from "swup";

@@ -16,7 +16,7 @@ const { speed = 20, content = [] } = Astro.props;
 
 <script>
   import { animate, type JSAnimation, linear } from "animejs";
-  import assertExist from "@lib/assertExist.ts";
+  import { assertExist } from "@lib/fp";
 
   class MarqueeSlide extends HTMLElement {
     #animation!: JSAnimation;

@@ -16,7 +16,7 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
    * */
 
   import { toggleNav } from "@lib/navState";
-  import assertExist from "@lib/assertExist";
+  import { assertExist } from "@lib/fp";
   import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
   import { animate } from "animejs";
 
