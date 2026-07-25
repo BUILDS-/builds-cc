@@ -102,17 +102,18 @@ const links = allLinks(view, linkIcons);
 
 <article id={member.id}>
   {
-    hasPhoto && image ? (
-      <Image
-        class="member-img"
-        src={image}
-        alt={name}
-        width={200}
-        height={200}
-      />
-    ) : (
-      <MissingSVG class="member-img" width={200} height={200} />
-    )
+    hasPhoto &&
+      (image ? (
+        <Image
+          class="member-img"
+          src={image}
+          alt={name}
+          width={200}
+          height={200}
+        />
+      ) : (
+        <MissingSVG class="member-img" width={200} height={200} />
+      ))
   }
   <div class="meta">
     <div class="meta-row">
