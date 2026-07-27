@@ -18,6 +18,8 @@ const { speed = 20, content = [] } = Astro.props;
   import { animate, type JSAnimation, linear } from "animejs";
   import { assertExist } from "@lib/fp";
 
+  // TODO: Need to seriously consider if using Web Components here was a good idea
+
   class MarqueeSlide extends HTMLElement {
     #animation!: JSAnimation;
     #track: HTMLDivElement | null = null;

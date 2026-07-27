@@ -5,19 +5,40 @@ import Member from "@components/Eboard/Member.astro";
 import EBoardSection from "@components/Eboard/EBoardSection.astro";
 import { getCollection } from "astro:content";
 
-const eBoard = (await getCollection("eBoard")).sort(
-  (a, b) => a.data.position - b.data.position,
-);
-const formerEBoard = (await getCollection("formerEBoard")).sort((a, b) => {
-  if (!a.data.roles || !b.data.roles) return -99;
-  return (
-    Number(b.data.roles[0].yearsActive.split("-")[1]) -
-    Number(a.data.roles[0].yearsActive.split("-")[1])
-  );
+type Role = {
+  role: string;
+  yearsActive: string;
+};
+
+function posComparefn(
+  a: { data: { position: number } },
+  b: { data: { position: number } },
+): number {
+  return a.data.position - b.data.position;
+}
+
+function latestYear(roles: Role[]): number | null {
+  const role = roles[0];
+  if (role == null) return null;
+
+  const year = role.yearsActive.split("-")[1];
+  if (year == null) return null;
+
+  return Number(year);
+}
+
+const eBoard = (await getCollection("eBoard")).toSorted(posComparefn);
+
+const formerEBoard = (await getCollection("formerEBoard")).toSorted((a, b) => {
+  const memberA = latestYear(a.data.roles);
+  const memberB = latestYear(b.data.roles);
+
+  if (memberA != null && memberB != null) {
+    return memberB - memberA;
+  } else return 0;
 });
-const founders = (await getCollection("founders")).sort(
-  (a, b) => a.data.position - b.data.position,
-);
+
+const founders = (await getCollection("founders")).toSorted(posComparefn);
 ---
 
 <Layout>
