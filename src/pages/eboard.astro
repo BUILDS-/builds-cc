@@ -35,7 +35,7 @@ const formerEBoard = (await getCollection("formerEBoard")).toSorted((a, b) => {
 
   if (memberA != null && memberB != null) {
     return memberB - memberA;
-  } else return 0;
+  } else return -1;
 });
 
 const founders = (await getCollection("founders")).toSorted(posComparefn);

@@ -30,7 +30,9 @@
     GAP,
     GAPDesktop,
   } from "@lib/constants";
+  import { assertExist } from "@lib/fp";
   import isMobile from "@lib/isMobile";
+  import { calcFrame } from "@lib/layout/SVGGeometry";
   import { animate } from "animejs";
 
   // SVG related code below
@@ -42,45 +44,37 @@
   const innerRects = document.querySelectorAll(
     "#inner-mask-body, #inner-rect-border",
   );
-  let vh = document.documentElement.clientHeight;
-  let vw = document.documentElement.clientWidth;
 
-  function updateSVGWrapper() {
-    vh = document.documentElement.clientHeight;
-    vw = document.documentElement.clientWidth;
+  function updateFrame() {
+    const vh = document.documentElement.clientHeight;
+    const vw = document.documentElement.clientWidth;
     // console.log(`width: ${vw}`);
     // console.log(`height: ${vh}`);
 
-    if ($svgFrame == null) throw new Error("svgFrame does not exist");
+    assertExist($svgFrame, "$svgFrame does not exist");
     $svgFrame.setAttribute("width", `${vw}`);
     $svgFrame.setAttribute("height", `${vh}`);
     $svgFrame.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
 
+    const mobile = isMobile();
+    const { outer, inner } = calcFrame(vw, vh, mobile);
+
     outerRects.forEach((r) => {
-      r.setAttribute("width", `${vw}`);
-      r.setAttribute("height", `${vh}`);
+      r.setAttribute("width", `${outer.width}`);
+      r.setAttribute("height", `${outer.height}`);
     });
 
-    if (isMobile()) {
-      // Mobile check, based on logo's media query
-      innerRects.forEach((r) => {
-        r.setAttribute("x", `${GAP}`);
-        r.setAttribute("y", `${GAP * 2}`);
-        r.setAttribute("width", `${vw - 2 * GAP}`);
-        r.setAttribute("height", `${vh - 3 * GAP}`);
-      });
-    } else {
-      innerRects.forEach((r) => {
-        r.setAttribute("x", `${GAPDesktop}`);
-        r.setAttribute("y", `${GAPDesktop * 3}`);
-        r.setAttribute("width", `${vw - 2 * GAPDesktop}`);
-        r.setAttribute("height", `${vh - 4 * GAPDesktop}`);
-      });
-    }
+    // Mobile check, based on logo's media query
+    innerRects.forEach((r) => {
+      r.setAttribute("x", `${inner.x}`);
+      r.setAttribute("y", `${inner.y}`);
+      r.setAttribute("width", `${inner.width}`);
+      r.setAttribute("height", `${inner.height}`);
+    });
   }
 
-  updateSVGWrapper(); // Initial call to draw SVG
-  window.addEventListener("resize", updateSVGWrapper);
+  updateFrame(); // Initial call to draw SVG
+  window.addEventListener("resize", updateFrame);
 
   document.addEventListener("navOpen", () => {
     animate(innerRects, {

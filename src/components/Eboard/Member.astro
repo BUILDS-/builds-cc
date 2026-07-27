@@ -14,6 +14,7 @@ type MemberType =
   | CollectionEntry<"founders">;
 
 type MemberView = Readonly<{
+  // Having readonly might just be too much noise so I'm considering removing it
   name: string;
   hasPhoto: boolean;
   /*
