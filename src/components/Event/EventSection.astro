@@ -571,7 +571,7 @@ const allEvents = (await getCollection("clubEvents")).sort(
   document.addEventListener("swup:page:view", (e) => {
     const swupEvent = e as CustomEvent;
     const toUrl = swupEvent.detail.visit.to.url;
-    console.log(toUrl);
+    // console.log(toUrl);
     if (toUrl === "/events/") {
       initEvents();
     }

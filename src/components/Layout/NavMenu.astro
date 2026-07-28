@@ -132,12 +132,13 @@ const url = Astro.url.pathname;
 
   $navMenu.addEventListener("click", (e) => onNavClick(e));
 
+  // Animation starts on swup view transition start
   document.addEventListener("swup:animation:out:start", () => {
-    // Animation starts on swup view transition start
     updateActiveLink();
   });
+
+  // Animation when forward/back are pressed in a browser
   document.addEventListener("swup:history:popstate", () => {
-    // Animation when forward/back are pressed in a browser
     updateActiveLink();
   });
 
