@@ -9,6 +9,7 @@
       "@assets/*": ["./src/assets/*"],
       "@lib/*": ["./src/lib/*"]
     },
+    "types": ["bun-types"],
     "noUncheckedIndexedAccess": true
   }
 }
