@@ -15,9 +15,9 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
    * in order to reveal MobileNavMenu.
    * */
 
-  import { toggleNav } from "@lib/navState";
+  import { toggleNav } from "@lib/layout/navState";
+  import { navSlideParams } from "@lib/layout/navAnimations";
   import { assertExist } from "@lib/fp";
-  import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
   import { animate } from "animejs";
 
   const $hamburger = document.querySelector<HTMLDivElement>("#hamburger");
@@ -26,19 +26,11 @@ import HamburgerIconSVG from "@assets/hamburger-menu.svg";
   $hamburger.addEventListener("click", toggleNav);
 
   document.addEventListener("navOpen", () => {
-    animate($hamburger, {
-      duration: NAV_DURATION,
-      ease: NAV_EASE,
-      translateY: `${NAV_SLIDE_DIST}`,
-    });
+    animate($hamburger, navSlideParams("open"));
   });
 
   document.addEventListener("navClose", () => {
-    animate($hamburger, {
-      duration: NAV_DURATION,
-      ease: NAV_EASE,
-      translateY: `0`,
-    });
+    animate($hamburger, navSlideParams("close"));
   });
 </script>
 

@@ -9,27 +9,19 @@ import BuildsSVG from "@assets/BUILDS-Cropped.svg";
 </header>
 
 <script>
-  import { NAV_DURATION, NAV_EASE, NAV_SLIDE_DIST } from "@lib/constants";
-  import { closeNav } from "@lib/navState";
+  import { navSlideParams } from "@lib/layout/navAnimations";
+  import { closeNav } from "@lib/layout/navState";
   import { animate } from "animejs";
 
   const $header = document.querySelector("header");
   $header?.addEventListener("click", closeNav);
 
   document.addEventListener("navOpen", () => {
-    animate(`#logo-container`, {
-      duration: NAV_DURATION,
-      ease: NAV_EASE,
-      top: `+=${NAV_SLIDE_DIST}`,
-    });
+    animate(`#logo-container`, navSlideParams("open"));
   });
 
   document.addEventListener("navClose", () => {
-    animate(`#logo-container`, {
-      duration: NAV_DURATION,
-      ease: NAV_EASE,
-      top: `-=${NAV_SLIDE_DIST}`,
-    });
+    animate(`#logo-container`, navSlideParams("close"));
   });
 </script>
 <style>

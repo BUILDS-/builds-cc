@@ -23,15 +23,9 @@
   </svg>
 </div>
 <script>
-  import {
-    NAV_SLIDE_DIST,
-    NAV_DURATION,
-    NAV_EASE,
-    GAP,
-    GAPDesktop,
-  } from "@lib/constants";
   import { assertExist } from "@lib/fp";
   import isMobile from "@lib/isMobile";
+  import { frameMorphParams } from "@lib/layout/navAnimations";
   import { calcFrame } from "@lib/layout/SVGGeometry";
   import { animate } from "animejs";
 
@@ -77,21 +71,11 @@
   window.addEventListener("resize", updateFrame);
 
   document.addEventListener("navOpen", () => {
-    animate(innerRects, {
-      duration: NAV_DURATION,
-      ease: NAV_EASE,
-      y: `+=${NAV_SLIDE_DIST}`,
-      height: `-=${NAV_SLIDE_DIST}`,
-    });
+    animate(innerRects, frameMorphParams("open"));
   });
 
   document.addEventListener("navClose", () => {
-    animate(innerRects, {
-      duration: NAV_DURATION,
-      ease: NAV_EASE,
-      y: `-=${NAV_SLIDE_DIST}`,
-      height: `+=${NAV_SLIDE_DIST}`,
-    });
+    animate(innerRects, frameMorphParams("close"));
   });
 </script>
 <style>
