@@ -13,13 +13,13 @@ const url = Astro.url.pathname;
         </a>
       </li>
       <li>
-        <a href="/events" aria-label="Builds events page"
+        <a href="/events/" aria-label="Builds events page"
           ><span class="nav-text">Events</span>
           {url === "/events/" ? <span class="highlight" /> : ""}
         </a>
       </li>
       <li>
-        <a href="/eboard" aria-label="Builds eboard page"
+        <a href="/eboard/" aria-label="Builds eboard page"
           ><span class="nav-text">E-Board</span>
           {url === "/eboard/" ? <span class="highlight" /> : ""}
         </a>
@@ -30,10 +30,10 @@ const url = Astro.url.pathname;
 
 <script>
   /*
-   * Wasted a lot of time on this component.
-   *
    * There is something finnicky going on with padding, line-height
-   * and margin that would cause jitter when animated.
+   * and margin that would cause .highlight to jitter when animated with animejs.
+   *
+   * It must be how I wrote my css.
    *
    * I don't want to waste more time on something stupid
    * (that I'm probably responsible for) and will come back
@@ -42,6 +42,7 @@ const url = Astro.url.pathname;
 
   import { assertExist, debounce } from "@lib/fp";
   import isMobile from "@lib/isMobile";
+  import { matchActiveLink } from "@lib/layout/matchActiveLink";
   import { createLayout, type DOMTarget } from "animejs";
   import { getCurrentUrl } from "swup";
 
@@ -50,6 +51,10 @@ const url = Astro.url.pathname;
 
   const $navUl = $navMenu.querySelector(".nav-ul");
   const $allLinks = $navMenu.querySelectorAll("a");
+  const hrefs = Array.from(
+    $allLinks,
+    ($link) => $link.getAttribute("href") ?? "",
+  );
 
   const { navLayout, $highlight } = initNavLayout();
 
@@ -69,32 +74,6 @@ const url = Astro.url.pathname;
     return { navLayout, $highlight };
   }
 
-  function onNavClick(e: PointerEvent) {
-    assertExist(e.target, "e.target does not exist");
-    assertExist($highlight, "$highlight does not exist");
-    const target = e.target as HTMLElement;
-    const $anchor = target.closest("a");
-
-    if ($anchor != null) {
-      isMobile()
-        ? $anchor?.appendChild($highlight)
-        : navLayout.update(() => $anchor?.appendChild($highlight));
-    }
-  }
-
-  function updateActiveLink() {
-    assertExist($highlight, "$highlight does not exist");
-    const url = getCurrentUrl();
-    $allLinks.forEach(($link) => {
-      const href = $link.getAttribute("href");
-      if (href === url) {
-        isMobile()
-          ? $link.appendChild($highlight)
-          : navLayout.update(() => $link.appendChild($highlight));
-      }
-    });
-  }
-
   function toggleNav() {
     // Mobile only function
     if (!isMobile()) return;
@@ -112,6 +91,43 @@ const url = Astro.url.pathname;
       $navMenu.style.opacity = "0";
       $navMenu.style.visibility = "hidden";
     }
+  }
+
+  function onNavClick(e: PointerEvent) {
+    assertExist(e.target, "e.target does not exist");
+    assertExist($highlight, "$highlight does not exist");
+    const target = e.target as HTMLElement;
+    const $anchor = target.closest("a");
+
+    assertExist($anchor, "There is no closest anchor element");
+
+    /*
+     * The only difference here is using navLayout animates the highlight
+     * But on mobile no one will see this animation anyways,
+     * so no need to use animejs's layout update
+     *
+     * Also applies to the function below
+     */
+    if (isMobile()) $anchor.appendChild($highlight);
+    else navLayout.update(() => $anchor.appendChild($highlight));
+  }
+
+  function updateActiveLink() {
+    /* This function specifically handles navigation
+     * of anything that didn't use the navMenu.
+     *
+     * Like a button, or clicking on the logo.
+     * */
+    assertExist($highlight, "$highlight does not exist");
+    assertExist($navMenu, "$navMenu does not exist");
+    const url = getCurrentUrl();
+    // console.log(`swup url: ${url}`);
+
+    const active = matchActiveLink(url, hrefs);
+    const $link = $navMenu.querySelector(`a[href='${active}']`);
+    if ($link == null) return;
+    if (isMobile()) $link.appendChild($highlight);
+    else navLayout.update(() => $link.appendChild($highlight));
   }
 
   $navMenu.addEventListener("click", (e) => onNavClick(e));

@@ -41,4 +41,8 @@ export default defineConfig({
       cssVariable: "--font-Atkinson",
     },
   ],
+  build: {
+    format: "directory",
+  },
+  trailingSlash: "always",
 });
