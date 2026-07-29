@@ -22,59 +22,40 @@ const { speed = 20, content = [] } = Astro.props;
 
   class MarqueeSlide extends HTMLElement {
     #animation!: JSAnimation;
-    #track: HTMLDivElement | null = null;
-    #set: HTMLDivElement | null = null;
-    #SPEED = 0;
 
     constructor() {
       super();
-      this.addEventListener("mouseenter", this.pauseAnimation);
-      this.addEventListener("mouseleave", this.resumeAnimation);
+      this.addEventListener("mouseenter", () => this.#animation?.pause());
+      this.addEventListener("mouseleave", () => this.#animation?.resume());
     }
 
-    copyCount() {
-      assertExist(this.#set, "#set is null");
-      const strideWidth = this.#set.getBoundingClientRect().width;
-      return Math.ceil((window.innerWidth * 2) / strideWidth);
+    copyCount(strideWidth: number, windowWidth: number) {
+      if (strideWidth <= 0) return 0;
+      return Math.ceil((windowWidth * 2) / strideWidth);
     }
 
-    animateTrack() {
-      assertExist(this.#set, "#set is null");
-      assertExist(this.#track, "#track is null");
-      const strideWidth = this.#set.getBoundingClientRect().width;
-      // console.log(strideWidth);
+    connectedCallback() {
+      const $track = this.querySelector(".marquee-track");
+      assertExist($track, "$track does not exist");
 
-      return animate(this.#track, {
+      const $set = this.querySelector(".marquee-set");
+      assertExist($set, "$set does not exist");
+
+      const strideWidth = $set.getBoundingClientRect().width;
+      const speed = Number(this.dataset.speed ?? 20);
+
+      const n = this.copyCount(strideWidth, window.innerWidth);
+      const clones = Array.from({ length: n }, () => $set.cloneNode(true));
+      clones.forEach((clone) => $track.appendChild(clone));
+      // console.log(clones);
+
+      this.#animation = animate($track, {
         translateX: -strideWidth,
-        duration: (strideWidth / this.#SPEED) * 1000,
+        duration: (strideWidth / speed) * 1000,
         delay: 300,
         loop: true,
         ease: linear(0, 1),
       });
-    }
-
-    pauseAnimation() {
-      this.#animation.pause();
-    }
-
-    resumeAnimation() {
-      this.#animation.resume();
-    }
-
-    connectedCallback() {
-      this.#track = this.querySelector(".marquee-track");
-      this.#set = this.querySelector(".marquee-set");
-      assertExist(this.#track, "#track does not exist");
-      assertExist(this.#set, "$set does not exist");
-
-      this.#SPEED = Number(this.dataset.speed ?? 20);
-
-      for (let i = this.copyCount(); i > 0; i--) {
-        const clone = this.#set.cloneNode(true);
-        this.#track.appendChild(clone);
-      }
-
-      this.#animation = this.animateTrack();
     }
 
     disconnectedCallback() {

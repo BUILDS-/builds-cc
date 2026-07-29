@@ -54,7 +54,9 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
     <article class="desc-card">
       <Image src={cardOne} alt="Builds lab plaque" loading="eager" />
       <div class="desc-container">
-        <h3 class="desc-text">Enjoy Our Hackerspace</h3>
+        <h3 class="desc-text">
+          Enjoy Our <span class="accent">Hackerspace</span>
+        </h3>
         <p>
           Our hackerspace is open whenever CDS is open. Come in and work on your
           projects, or just hang out and chat with other members. Our amazing
@@ -66,7 +68,9 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
     <article class="desc-card">
       <Image src={cardTwo} alt="Builds safety hard hat" loading="eager" />
       <div class="desc-container">
-        <h3 class="desc-text">Pursue Personal Projects</h3>
+        <h3 class="desc-text">
+          Pursue <span class="accent">Personal Projects</span>
+        </h3>
         <p>
           We provide everything you need to bring your ideas to life. We have a
           variety of tools and equipment available for use, including a 3D
@@ -77,7 +81,7 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
     <article class="desc-card">
       <Image src={cardThree} alt="Builds room" loading="eager" />
       <div class="desc-container">
-        <h3 class="desc-text">Attend Events</h3>
+        <h3 class="desc-text">Attend <span class="accent">Events</span></h3>
         <p>
           We host events as well. Learn some new technologies during our
           workshop events, gain academic and professional knowledge during our
@@ -124,7 +128,7 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
   <section class="contacts">
     <PlaceholderBlock class="placeholder-2" />
     <div class="contact-card">
-      <h3 class="accent">Contact Us</h3>
+      <h3><span class="accent">Contact</span> Us</h3>
       <p>
         665 Commonwealth Ave
         <br /> Room 220
@@ -195,9 +199,6 @@ import PlaceholderBlock from "@components/PlaceholderBlock.astro";
 
       .desc-container {
         padding: 0 var(--mobile-padding-inner) var(--mobile-padding-inner);
-      }
-      h3 {
-        color: var(--color-accent);
       }
     }
 
