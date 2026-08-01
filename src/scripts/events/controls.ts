@@ -14,7 +14,8 @@ export function initSwitchHighlight() {
     ease: "out(5.82)",
     children: "span",
   });
-  $switchHighlight = document.querySelector<HTMLElement>(".switch-highlight");
+  $switchHighlight =
+    document.querySelector<HTMLSpanElement>(".switch-highlight");
 }
 
 export function initControls(
@@ -27,12 +28,14 @@ export function initControls(
     l: Layout,
   ) => void,
 ) {
-  const $controls = document.querySelector(".controls");
+  const $controls = document.querySelector<HTMLDivElement>(".controls");
   assertExist($controls, "$controls does not exist");
   if (isMobile()) {
     // If we're on mobile completely remove the controls
     $controls.remove();
   } else {
+    $controls.style.visibility = "visible";
+    $controls.style.opacity = "1";
     $controls.addEventListener("click", (e) => {
       const $btn = (e.target as HTMLElement).closest("button");
       const layout = $btn?.id;

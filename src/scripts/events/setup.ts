@@ -1,5 +1,5 @@
-import { createLayout, type Draggable, type AutoLayout } from "animejs";
-import { assertExist } from "@lib/fp";
+import { createLayout, type AutoLayout } from "animejs";
+import { assertExist, assertNever } from "@lib/fp";
 import isMobile from "@scripts/isMobile";
 import { teardownDialog, initModal } from "./dialog";
 import {
@@ -12,21 +12,33 @@ import { offsetAnim, initDrag } from "./drag";
 
 type Layout = "grid" | "drag";
 let currLayout: Layout | null = null;
-let allDraggable: Draggable[] = []; // Holds all draggable elements, used to disable them later
 let teardown: (() => void) | null = null;
 let autoLayout: AutoLayout | null = null; // Holds object returned from createLayout()
 
-function reverseDOM($eventsContainer: HTMLDivElement) {
-  // A neat DOM feature with fragment
+const LAYOUT_CONFIG = {
+  grid: { duration: 300, ease: "out(3)" },
+  drag: { duration: 200, ease: "out(3)" },
+};
+
+function reverseDOM($htmlElm: HTMLElement) {
+  // Only 1 render with fragement (neat little thingy)
   // Prevents browser from re-rendering when you append each card
-  // Only 1 render with fragement
   const frag = document.createDocumentFragment();
-  const children = Array.from($eventsContainer.children);
-  for (let i = children.length - 1; i >= 0; i--) {
-    const child = children[i];
-    if (child !== undefined) frag.appendChild(child);
-  }
-  $eventsContainer.appendChild(frag);
+  const children = Array.from($htmlElm.children).toReversed();
+  frag.append(...children);
+  $htmlElm.appendChild(frag);
+}
+
+function updateFn($eventsContainer: HTMLDivElement, layout: Layout) {
+  // This is a small helper to only be called for switchLayout
+  reverseDOM($eventsContainer);
+  assertExist(
+    teardown,
+    "teardown should exist at this point, something went wrong",
+  );
+  teardown();
+  teardown = null;
+  $eventsContainer.dataset.layout = layout;
 }
 
 function switchLayout(
@@ -44,55 +56,24 @@ function switchLayout(
 
   currLayout = layout;
 
-  switch (layout) {
-    case "grid":
-      autoLayout
-        .update(
-          () => {
-            reverseDOM($eventsContainer);
-            assertExist(
-              teardown,
-              "teardown should exist at this point, something went wrong",
-            );
-            teardown();
-            teardown = null;
-            allDraggable = [];
-            $eventsContainer.dataset.layout = layout;
-          },
-          { duration: 300, ease: "out(3)" },
-        )
-        .then(() => {
-          if (currLayout !== layout) return; // user must've switched layout
+  autoLayout
+    .update(() => {
+      updateFn($eventsContainer, layout);
+    }, LAYOUT_CONFIG[layout])
+    .then(() => {
+      if (currLayout !== layout) return; // user must've switched layout
+      switch (layout) {
+        case "grid":
           teardown = initGrid($allCards);
-        });
-      return;
-    case "drag":
-      autoLayout
-        .update(
-          () => {
-            reverseDOM($eventsContainer);
-            assertExist(
-              teardown,
-              "teardown should exist at this point, something went wrong",
-            );
-            teardown();
-            teardown = null;
-            $eventsContainer.dataset.layout = layout;
-          },
-          {
-            duration: 250,
-            ease: "out(3)",
-          },
-        )
-        .then(() => {
-          if (currLayout !== layout) return;
-          allDraggable = initDrag($eventsContainer, $allCards);
+          return;
+        case "drag":
+          const allDraggable = initDrag($eventsContainer, $allCards);
           teardown = offsetAnim(allDraggable);
-        });
-      return;
-    default:
-      throw new Error("Impossible state");
-  }
+          return;
+        default:
+          assertNever(layout);
+      }
+    });
 }
 
 /* --- Page initialization --- */
@@ -100,11 +81,6 @@ export default function setup() {
   // In the case user navigated away in drag mode, tear it all down.
   teardown?.();
   teardown = null;
-  allDraggable.forEach((d) => {
-    // console.log(`draggable: ${d}`);
-    d.revert();
-  });
-  allDraggable = [];
   autoLayout?.revert();
   autoLayout = null;
   currLayout = null;

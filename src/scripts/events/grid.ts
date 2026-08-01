@@ -1,12 +1,15 @@
-import { animate, utils } from "animejs";
+import { animate, stagger } from "animejs";
+import isMobile from "@scripts/isMobile";
 
 export function gridIntroAnim($allCards: NodeListOf<HTMLDivElement>) {
-  // Plays only once on page load
+  // Should only play on page load, no more.
   $allCards.forEach(($card) => ($card.style.opacity = "1"));
+  const mobile = isMobile();
   return animate($allCards, {
-    y: { from: "50px" },
+    x: { from: mobile ? "0" : "-150px" },
+    y: { from: mobile ? "50px" : "0" },
     opacity: { from: 0 },
-    delay: utils.stagger(70),
+    delay: stagger(70),
     ease: "out(3)",
     duration: 400,
   });
