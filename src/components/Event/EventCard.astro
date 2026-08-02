@@ -47,7 +47,10 @@ const time = date.toLocaleTimeString("en-us", { timeStyle: "short", timeZone: TI
         </ul>
       )
     }
-
+    <div class="meta-row">
+      <p class="meta-label">// EVENT DESCRIPTION //</p>
+      <p class="dialog-description">{description}</p>
+    </div>
     <div class="meta-row">
       <p class="meta-label">// DATE //</p>
       <p class="meta-value">{`${day} @ ${time}`}</p>
@@ -57,10 +60,6 @@ const time = date.toLocaleTimeString("en-us", { timeStyle: "short", timeZone: TI
       <p class="meta-value">{location}</p>
     </div>
 
-    <div class="meta-row">
-      <p class="meta-label">// EVENT DESCRIPTION //</p>
-      <p class="dialog-description">{description}</p>
-    </div>
 
     {
       instructors.length > 0 && (

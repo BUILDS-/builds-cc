@@ -67,7 +67,9 @@ const { speed = 20, content = [] } = Astro.props;
 
       const n = this.copyCount(strideWidth, window.innerWidth);
       const clones = Array.from({ length: n }, () => $set.cloneNode(true));
-      clones.forEach((clone) => $track.appendChild(clone));
+      for (const clone of clones) {
+        $track.appendChild(clone);
+      }
       // console.log(clones);
 
       this.#animation = animate($track, {

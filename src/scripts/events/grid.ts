@@ -3,7 +3,9 @@ import isMobile from "@scripts/isMobile";
 
 export function gridIntroAnim($allCards: NodeListOf<HTMLDivElement>) {
   // Should only play on page load, no more.
-  $allCards.forEach(($card) => ($card.style.opacity = "1"));
+  for (const $card of $allCards) {
+    $card.style.opacity = "1";
+  }
   const mobile = isMobile();
   return animate($allCards, {
     x: { from: mobile ? "0" : "-150px" },
@@ -17,7 +19,7 @@ export function gridIntroAnim($allCards: NodeListOf<HTMLDivElement>) {
 
 export function initGrid($allCards: NodeListOf<HTMLDivElement>) {
   const AC = new AbortController(); // To handle removing EventListeners
-  $allCards.forEach(($card) => {
+  for (const $card of $allCards) {
     $card.addEventListener(
       "mouseenter",
       () =>
@@ -38,17 +40,17 @@ export function initGrid($allCards: NodeListOf<HTMLDivElement>) {
         }),
       { signal: AC.signal },
     );
-  });
+  }
 
   return () => {
     // Returns a teardown function to clean up for later
     AC.abort();
-    $allCards.forEach(($card) => {
+    for (const $card of $allCards) {
       // Manual reset here instead of revert()
       // Lazy solution because I dont want to keep record of each animate object for each card
       // Regardless I think animate objects are garbage collected after they are complete?
       $card.style.transform = "";
       $card.style.margin = "";
-    });
+    }
   };
 }

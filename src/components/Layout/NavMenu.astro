@@ -157,13 +157,13 @@ const url = Astro.url.pathname;
   // Below are code responsible for navOpen and navClose events
   // which should only happen on mobile screen sizes
 
-  $allLinks.forEach(($link) => {
+  for (const $link of $allLinks) {
     $link.addEventListener("click", () => {
       if (!isMobile()) return;
       document.body.removeAttribute("data-nav-open");
       document.dispatchEvent(new CustomEvent("navClose"));
     });
-  });
+  }
 
   document.addEventListener("navOpen", toggleNav);
   document.addEventListener("navClose", toggleNav);

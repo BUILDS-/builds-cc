@@ -53,18 +53,19 @@
     const mobile = isMobile();
     const { outer, inner } = calcFrame(vw, vh, mobile);
 
-    outerRects.forEach((r) => {
+    for (const r of outerRects) {
       r.setAttribute("width", `${outer.width}`);
       r.setAttribute("height", `${outer.height}`);
-    });
+    }
 
     // Mobile check, based on logo's media query
-    innerRects.forEach((r) => {
+
+    for (const r of innerRects) {
       r.setAttribute("x", `${inner.x}`);
       r.setAttribute("y", `${inner.y}`);
       r.setAttribute("width", `${inner.width}`);
       r.setAttribute("height", `${inner.height}`);
-    });
+    }
   }
 
   updateFrame(); // Initial call to draw SVG

@@ -28,7 +28,10 @@ function openModal($card: HTMLElement) {
 
   $clone.innerHTML = $card.innerHTML;
   $clone.removeAttribute("style");
-  $clone.querySelectorAll("*").forEach(($el) => $el.removeAttribute("style"));
+  const allClones = $clone.querySelectorAll("*");
+  for (const $el of allClones) {
+    $el.removeAttribute("style");
+  }
 
   $dialog.innerHTML = "";
   $dialog.appendChild($clone);

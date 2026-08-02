@@ -17,6 +17,11 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
     <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
+    <meta
+      name="description"
+      content="Website for BU Information Lab and Design Space"
+    />
+
     <title>BUILDS.cc</title>
   </head>
   <body>
@@ -42,7 +47,7 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
 
   function closeNavMobile() {
     const $linkBtns = document.querySelectorAll(".link-btn");
-    $linkBtns.forEach(($link) => {
+    for (const $link of $linkBtns) {
       $link.addEventListener("click", () => {
         // Clicking on any link should have a "closing" animation for the mobile nav menu
         if (document.body.hasAttribute("data-nav-open")) {
@@ -50,7 +55,7 @@ import SVGWrapper from "@components/Layout/SVGWrapper.astro";
           document.dispatchEvent(new CustomEvent("navClose"));
         }
       });
-    });
+    }
   }
 
   function resetScroll() {

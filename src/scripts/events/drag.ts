@@ -43,8 +43,8 @@ export function offsetAnim($allDraggable: Draggable[]): () => void {
 
   return () => {
     // Returns a teardown function to clean up for later
-    $allDraggable.forEach(($draggable) => {
-      $draggable.revert();
-    });
+    for (const $drag of $allDraggable) {
+      $drag.revert();
+    }
   };
 }
