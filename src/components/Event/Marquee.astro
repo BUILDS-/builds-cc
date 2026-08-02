@@ -15,18 +15,39 @@ const { speed = 20, content = [] } = Astro.props;
 </marquee-slide>
 
 <script>
-  import { animate, type JSAnimation, linear } from "animejs";
+  import { animate, sync, linear, type JSAnimation } from "animejs";
   import { assertExist } from "@lib/fp";
 
   // TODO: Need to seriously consider if using Web Components here was a good idea
 
   class MarqueeSlide extends HTMLElement {
     #animation!: JSAnimation;
+    #interval: ReturnType<typeof setInterval> | undefined;
 
     constructor() {
       super();
-      this.addEventListener("mouseenter", () => this.#animation?.pause());
-      this.addEventListener("mouseleave", () => this.#animation?.resume());
+      // Borrowing the debounce logic a little here
+      let value = 1;
+      this.addEventListener("mouseenter", () => {
+        clearInterval(this.#interval);
+        this.#interval = setInterval(() => {
+          value = Math.max(0, value - 0.2);
+          sync(() => (this.#animation.speed = value));
+          if (value <= 0) {
+            clearInterval(this.#interval);
+          }
+        }, 50);
+      });
+      this.addEventListener("mouseleave", () => {
+        clearInterval(this.#interval);
+        this.#interval = setInterval(() => {
+          value = Math.min(1, value + 0.2);
+          sync(() => (this.#animation.speed = value));
+          if (value >= 1) {
+            clearInterval(this.#interval);
+          }
+        }, 50);
+      });
     }
 
     copyCount(strideWidth: number, windowWidth: number) {
