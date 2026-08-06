@@ -5,10 +5,10 @@
   "author": "Tiger Liu",
   "contributors": [
     "Philip Tran",
-    "Tiger Liu",
     "Rafay Adnan",
     "Ben Gonzalez",
-    "Layne Pierce"
+    "Layne Pierce",
+    "Ivan Khramtchenko"
   ],
   "engines": {
     "node": ">=22.12.0"

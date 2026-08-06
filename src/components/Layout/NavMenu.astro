@@ -99,6 +99,7 @@ const url = Astro.url.pathname;
     const target = e.target as HTMLElement;
     const $anchor = target.closest("a");
 
+    // This happens occasionally, why?
     assertExist($anchor, "There is no closest anchor element");
 
     /*
