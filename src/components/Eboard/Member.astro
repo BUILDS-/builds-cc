@@ -92,16 +92,17 @@ const linkIcons = { linkedin: LinkedinSVG, github: GithubSVG, website: WebSVG };
 
 interface Props {
   member: MemberType;
+  class?: string;
 }
 
 // lowk should rename the prop to chud
-const { member } = Astro.props;
+const { member, class: className, ...rest } = Astro.props;
 const view = memberView(member);
 const { name, hasPhoto, image, roles } = view;
 const links = allLinks(view, linkIcons);
 ---
 
-<article id={member.id}>
+<article id={member.id} class=`${className}` {...rest}>
   {
     hasPhoto &&
       (image ? (
@@ -116,7 +117,7 @@ const links = allLinks(view, linkIcons);
         <MissingSVG class="member-img" width={200} height={200} />
       ))
   }
-  <div class="meta">
+  <div class=`${className} meta` {...rest}>
     <div class="meta-row">
       <p class="meta-label">// NAME //</p>
       <p class="meta-value meta-name">{name}</p>
@@ -135,7 +136,7 @@ const links = allLinks(view, linkIcons);
       links.length > 0 && (
         <div class="meta-row">
           <p class="meta-label">// LINKS //</p>
-          <p class="meta-value links">
+      <p class=`meta-value links ${className}` {...rest}>
             {links.map((link) => (
               <a
                 target="_blank"

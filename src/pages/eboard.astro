@@ -48,10 +48,24 @@ const founders = (await getCollection("founders")).toSorted(posComparefn);
   </EBoardSection>
 
   <EBoardSection title="FORMER">
-    {formerEBoard.map((member) => <Member member={member} />)}
+    {
+      formerEBoard.map((member) => (
+        <Member class="left-align" member={member} />
+      ))
+    }
   </EBoardSection>
 
   <EBoardSection title="FOUNDERS">
-    {founders.map((member) => <Member member={member} />)}
+    {founders.map((member) => <Member class="left-align" member={member} />)}
   </EBoardSection>
 </Layout>
+
+<style>
+  /* Ugly way to achieve this but it works :/ */
+  .left-align {
+    justify-content: start;
+    align-items: start;
+    text-align: start;
+    margin: 0 0 16px;
+  }
+</style>
