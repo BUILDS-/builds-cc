@@ -61,11 +61,16 @@ const founders = (await getCollection("founders")).toSorted(posComparefn);
 </Layout>
 
 <style>
-  /* Ugly way to achieve this but it works :/ */
-  .left-align {
-    justify-content: start;
-    align-items: start;
-    text-align: start;
-    margin: 0 0 16px;
+
+  @media (min-width: 800px) {
+    /* Ugly way to achieve this but it works :/ */
+    .left-align {
+      justify-content: start;
+      align-items: start;
+      text-align: start;
+      margin: 0 0 16px;
+    }
   }
+}
+
 </style>
