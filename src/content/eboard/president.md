@@ -1,7 +1,6 @@
 ---
-name: "Rafay Adnan"
+name: "Ben Gonzalez"
 role: "President"
-image: "../../assets/eboard/radnan.jpeg"
-linkedin: "https://www.linkedin.com/in/rafay-a-b323ab209/"
+image: "../../assets/eboard/missing.svg"
 position: 0
 ---
